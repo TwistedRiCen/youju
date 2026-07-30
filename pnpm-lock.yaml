@@ -41,6 +41,16 @@ importers:
         specifier: ^4.0.0
         version: 4.0.18(@types/node@24.13.3)(tsx@4.23.1)
 
+  packages/domain:
+    dependencies:
+      '@sinclair/typebox':
+        specifier: ^0.34.0
+        version: 0.34.52
+    devDependencies:
+      vitest:
+        specifier: ^4.0.0
+        version: 4.0.18(@types/node@24.13.3)(tsx@4.23.1)
+
 packages:
   '@esbuild/aix-ppc64@0.28.1':
     resolution:
@@ -602,6 +612,12 @@ packages:
       }
     cpu: [x64]
     os: [win32]
+
+  '@sinclair/typebox@0.34.52':
+    resolution:
+      {
+        integrity: sha512-XiMQh7qqVlxZzcVD+kkGMNGMzcTrDMLWI7S4x7z1MkCkbDPrekpZXEUK0eZqZFMuHQg2a2DZOcDIh9o5v3Gonw==,
+      }
 
   '@standard-schema/spec@1.1.0':
     resolution:
@@ -1870,6 +1886,8 @@ snapshots:
 
   '@rollup/rollup-win32-x64-msvc@4.62.3':
     optional: true
+
+  '@sinclair/typebox@0.34.52': {}
 
   '@standard-schema/spec@1.1.0': {}
 
