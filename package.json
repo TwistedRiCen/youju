@@ -32,5 +32,10 @@
     "typescript": "^5.0.0",
     "typescript-eslint": "^8.0.0",
     "vitest": "^4.0.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "@rolldown/binding-wasm32-wasi>@napi-rs/wasm-runtime": "1.1.6"
+    }
   }
 }
