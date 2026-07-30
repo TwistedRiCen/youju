@@ -1,0 +1,1249 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`AI structured output contracts > keeps a reviewable snapshot of the extraction JSON Schema 1`] = `
+{
+  "additionalProperties": false,
+  "properties": {
+    "analysisVersionId": {
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "type": "string",
+      Symbol(TypeBox.Kind): "String",
+    },
+    "facts": {
+      "items": {
+        "anyOf": [
+          {
+            "additionalProperties": false,
+            "properties": {
+              "confidenceLevel": {
+                "anyOf": [
+                  {
+                    "const": "high",
+                    "type": "string",
+                    Symbol(TypeBox.Kind): "Literal",
+                  },
+                  {
+                    "const": "needs_confirmation",
+                    "type": "string",
+                    Symbol(TypeBox.Kind): "Literal",
+                  },
+                  {
+                    "const": "conflicted",
+                    "type": "string",
+                    Symbol(TypeBox.Kind): "Literal",
+                  },
+                  {
+                    "const": "unknown",
+                    "type": "string",
+                    Symbol(TypeBox.Kind): "Literal",
+                  },
+                ],
+                Symbol(TypeBox.Kind): "Union",
+              },
+              "factType": {
+                "const": "order",
+                "type": "string",
+                Symbol(TypeBox.Kind): "Literal",
+              },
+              "fieldName": {
+                "const": "purchase_time",
+                "type": "string",
+                Symbol(TypeBox.Kind): "Literal",
+              },
+              "normalizedValue": {
+                "minLength": 1,
+                "type": "string",
+                Symbol(TypeBox.Kind): "String",
+              },
+              "sources": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "evidenceId": {
+                      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+                      "type": "string",
+                      Symbol(TypeBox.Kind): "String",
+                    },
+                    "page": {
+                      "minimum": 1,
+                      "type": "integer",
+                      Symbol(TypeBox.Kind): "Integer",
+                      Symbol(TypeBox.Optional): "Optional",
+                    },
+                    "region": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "height": {
+                          "minimum": 0,
+                          "type": "integer",
+                          Symbol(TypeBox.Kind): "Integer",
+                        },
+                        "width": {
+                          "minimum": 0,
+                          "type": "integer",
+                          Symbol(TypeBox.Kind): "Integer",
+                        },
+                        "x": {
+                          "minimum": 0,
+                          "type": "integer",
+                          Symbol(TypeBox.Kind): "Integer",
+                        },
+                        "y": {
+                          "minimum": 0,
+                          "type": "integer",
+                          Symbol(TypeBox.Kind): "Integer",
+                        },
+                      },
+                      "required": [
+                        "x",
+                        "y",
+                        "width",
+                        "height",
+                      ],
+                      "type": "object",
+                      Symbol(TypeBox.Kind): "Object",
+                      Symbol(TypeBox.Optional): "Optional",
+                    },
+                  },
+                  "required": [
+                    "evidenceId",
+                  ],
+                  "type": "object",
+                  Symbol(TypeBox.Kind): "Object",
+                },
+                "minItems": 1,
+                "type": "array",
+                Symbol(TypeBox.Kind): "Array",
+              },
+              "value": {
+                "minLength": 1,
+                "type": "string",
+                Symbol(TypeBox.Kind): "String",
+              },
+            },
+            "required": [
+              "confidenceLevel",
+              "sources",
+              "factType",
+              "fieldName",
+              "value",
+              "normalizedValue",
+            ],
+            "type": "object",
+            Symbol(TypeBox.Kind): "Object",
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "confidenceLevel": {
+                "anyOf": [
+                  {
+                    "const": "high",
+                    "type": "string",
+                    Symbol(TypeBox.Kind): "Literal",
+                  },
+                  {
+                    "const": "needs_confirmation",
+                    "type": "string",
+                    Symbol(TypeBox.Kind): "Literal",
+                  },
+                  {
+                    "const": "conflicted",
+                    "type": "string",
+                    Symbol(TypeBox.Kind): "Literal",
+                  },
+                  {
+                    "const": "unknown",
+                    "type": "string",
+                    Symbol(TypeBox.Kind): "Literal",
+                  },
+                ],
+                Symbol(TypeBox.Kind): "Union",
+              },
+              "factType": {
+                "const": "order",
+                "type": "string",
+                Symbol(TypeBox.Kind): "Literal",
+              },
+              "fieldName": {
+                "const": "order_number",
+                "type": "string",
+                Symbol(TypeBox.Kind): "Literal",
+              },
+              "normalizedValue": {
+                "minLength": 1,
+                "type": "string",
+                Symbol(TypeBox.Kind): "String",
+              },
+              "sources": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "evidenceId": {
+                      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+                      "type": "string",
+                      Symbol(TypeBox.Kind): "String",
+                    },
+                    "page": {
+                      "minimum": 1,
+                      "type": "integer",
+                      Symbol(TypeBox.Kind): "Integer",
+                      Symbol(TypeBox.Optional): "Optional",
+                    },
+                    "region": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "height": {
+                          "minimum": 0,
+                          "type": "integer",
+                          Symbol(TypeBox.Kind): "Integer",
+                        },
+                        "width": {
+                          "minimum": 0,
+                          "type": "integer",
+                          Symbol(TypeBox.Kind): "Integer",
+                        },
+                        "x": {
+                          "minimum": 0,
+                          "type": "integer",
+                          Symbol(TypeBox.Kind): "Integer",
+                        },
+                        "y": {
+                          "minimum": 0,
+                          "type": "integer",
+                          Symbol(TypeBox.Kind): "Integer",
+                        },
+                      },
+                      "required": [
+                        "x",
+                        "y",
+                        "width",
+                        "height",
+                      ],
+                      "type": "object",
+                      Symbol(TypeBox.Kind): "Object",
+                      Symbol(TypeBox.Optional): "Optional",
+                    },
+                  },
+                  "required": [
+                    "evidenceId",
+                  ],
+                  "type": "object",
+                  Symbol(TypeBox.Kind): "Object",
+                },
+                "minItems": 1,
+                "type": "array",
+                Symbol(TypeBox.Kind): "Array",
+              },
+              "value": {
+                "minLength": 1,
+                "type": "string",
+                Symbol(TypeBox.Kind): "String",
+              },
+            },
+            "required": [
+              "confidenceLevel",
+              "sources",
+              "factType",
+              "fieldName",
+              "value",
+              "normalizedValue",
+            ],
+            "type": "object",
+            Symbol(TypeBox.Kind): "Object",
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "confidenceLevel": {
+                "anyOf": [
+                  {
+                    "const": "high",
+                    "type": "string",
+                    Symbol(TypeBox.Kind): "Literal",
+                  },
+                  {
+                    "const": "needs_confirmation",
+                    "type": "string",
+                    Symbol(TypeBox.Kind): "Literal",
+                  },
+                  {
+                    "const": "conflicted",
+                    "type": "string",
+                    Symbol(TypeBox.Kind): "Literal",
+                  },
+                  {
+                    "const": "unknown",
+                    "type": "string",
+                    Symbol(TypeBox.Kind): "Literal",
+                  },
+                ],
+                Symbol(TypeBox.Kind): "Union",
+              },
+              "factType": {
+                "const": "order",
+                "type": "string",
+                Symbol(TypeBox.Kind): "Literal",
+              },
+              "fieldName": {
+                "const": "platform_name",
+                "type": "string",
+                Symbol(TypeBox.Kind): "Literal",
+              },
+              "normalizedValue": {
+                "minLength": 1,
+                "type": "string",
+                Symbol(TypeBox.Kind): "String",
+              },
+              "sources": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "evidenceId": {
+                      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+                      "type": "string",
+                      Symbol(TypeBox.Kind): "String",
+                    },
+                    "page": {
+                      "minimum": 1,
+                      "type": "integer",
+                      Symbol(TypeBox.Kind): "Integer",
+                      Symbol(TypeBox.Optional): "Optional",
+                    },
+                    "region": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "height": {
+                          "minimum": 0,
+                          "type": "integer",
+                          Symbol(TypeBox.Kind): "Integer",
+                        },
+                        "width": {
+                          "minimum": 0,
+                          "type": "integer",
+                          Symbol(TypeBox.Kind): "Integer",
+                        },
+                        "x": {
+                          "minimum": 0,
+                          "type": "integer",
+                          Symbol(TypeBox.Kind): "Integer",
+                        },
+                        "y": {
+                          "minimum": 0,
+                          "type": "integer",
+                          Symbol(TypeBox.Kind): "Integer",
+                        },
+                      },
+                      "required": [
+                        "x",
+                        "y",
+                        "width",
+                        "height",
+                      ],
+                      "type": "object",
+                      Symbol(TypeBox.Kind): "Object",
+                      Symbol(TypeBox.Optional): "Optional",
+                    },
+                  },
+                  "required": [
+                    "evidenceId",
+                  ],
+                  "type": "object",
+                  Symbol(TypeBox.Kind): "Object",
+                },
+                "minItems": 1,
+                "type": "array",
+                Symbol(TypeBox.Kind): "Array",
+              },
+              "value": {
+                "minLength": 1,
+                "type": "string",
+                Symbol(TypeBox.Kind): "String",
+              },
+            },
+            "required": [
+              "confidenceLevel",
+              "sources",
+              "factType",
+              "fieldName",
+              "value",
+              "normalizedValue",
+            ],
+            "type": "object",
+            Symbol(TypeBox.Kind): "Object",
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "confidenceLevel": {
+                "anyOf": [
+                  {
+                    "const": "high",
+                    "type": "string",
+                    Symbol(TypeBox.Kind): "Literal",
+                  },
+                  {
+                    "const": "needs_confirmation",
+                    "type": "string",
+                    Symbol(TypeBox.Kind): "Literal",
+                  },
+                  {
+                    "const": "conflicted",
+                    "type": "string",
+                    Symbol(TypeBox.Kind): "Literal",
+                  },
+                  {
+                    "const": "unknown",
+                    "type": "string",
+                    Symbol(TypeBox.Kind): "Literal",
+                  },
+                ],
+                Symbol(TypeBox.Kind): "Union",
+              },
+              "factType": {
+                "const": "payment",
+                "type": "string",
+                Symbol(TypeBox.Kind): "Literal",
+              },
+              "fieldName": {
+                "const": "paid_amount",
+                "type": "string",
+                Symbol(TypeBox.Kind): "Literal",
+              },
+              "normalizedValue": {
+                "pattern": "^(?:0|[1-9][0-9]*)$",
+                "type": "string",
+                Symbol(TypeBox.Kind): "String",
+              },
+              "sources": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "evidenceId": {
+                      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+                      "type": "string",
+                      Symbol(TypeBox.Kind): "String",
+                    },
+                    "page": {
+                      "minimum": 1,
+                      "type": "integer",
+                      Symbol(TypeBox.Kind): "Integer",
+                      Symbol(TypeBox.Optional): "Optional",
+                    },
+                    "region": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "height": {
+                          "minimum": 0,
+                          "type": "integer",
+                          Symbol(TypeBox.Kind): "Integer",
+                        },
+                        "width": {
+                          "minimum": 0,
+                          "type": "integer",
+                          Symbol(TypeBox.Kind): "Integer",
+                        },
+                        "x": {
+                          "minimum": 0,
+                          "type": "integer",
+                          Symbol(TypeBox.Kind): "Integer",
+                        },
+                        "y": {
+                          "minimum": 0,
+                          "type": "integer",
+                          Symbol(TypeBox.Kind): "Integer",
+                        },
+                      },
+                      "required": [
+                        "x",
+                        "y",
+                        "width",
+                        "height",
+                      ],
+                      "type": "object",
+                      Symbol(TypeBox.Kind): "Object",
+                      Symbol(TypeBox.Optional): "Optional",
+                    },
+                  },
+                  "required": [
+                    "evidenceId",
+                  ],
+                  "type": "object",
+                  Symbol(TypeBox.Kind): "Object",
+                },
+                "minItems": 1,
+                "type": "array",
+                Symbol(TypeBox.Kind): "Array",
+              },
+              "value": {
+                "pattern": "^(?:0|[1-9][0-9]*)(?:\\.[0-9]{1,2})?$",
+                "type": "string",
+                Symbol(TypeBox.Kind): "String",
+              },
+            },
+            "required": [
+              "confidenceLevel",
+              "sources",
+              "factType",
+              "fieldName",
+              "value",
+              "normalizedValue",
+            ],
+            "type": "object",
+            Symbol(TypeBox.Kind): "Object",
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "confidenceLevel": {
+                "anyOf": [
+                  {
+                    "const": "high",
+                    "type": "string",
+                    Symbol(TypeBox.Kind): "Literal",
+                  },
+                  {
+                    "const": "needs_confirmation",
+                    "type": "string",
+                    Symbol(TypeBox.Kind): "Literal",
+                  },
+                  {
+                    "const": "conflicted",
+                    "type": "string",
+                    Symbol(TypeBox.Kind): "Literal",
+                  },
+                  {
+                    "const": "unknown",
+                    "type": "string",
+                    Symbol(TypeBox.Kind): "Literal",
+                  },
+                ],
+                Symbol(TypeBox.Kind): "Union",
+              },
+              "factType": {
+                "const": "merchant",
+                "type": "string",
+                Symbol(TypeBox.Kind): "Literal",
+              },
+              "fieldName": {
+                "const": "merchant_name",
+                "type": "string",
+                Symbol(TypeBox.Kind): "Literal",
+              },
+              "normalizedValue": {
+                "minLength": 1,
+                "type": "string",
+                Symbol(TypeBox.Kind): "String",
+              },
+              "sources": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "evidenceId": {
+                      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+                      "type": "string",
+                      Symbol(TypeBox.Kind): "String",
+                    },
+                    "page": {
+                      "minimum": 1,
+                      "type": "integer",
+                      Symbol(TypeBox.Kind): "Integer",
+                      Symbol(TypeBox.Optional): "Optional",
+                    },
+                    "region": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "height": {
+                          "minimum": 0,
+                          "type": "integer",
+                          Symbol(TypeBox.Kind): "Integer",
+                        },
+                        "width": {
+                          "minimum": 0,
+                          "type": "integer",
+                          Symbol(TypeBox.Kind): "Integer",
+                        },
+                        "x": {
+                          "minimum": 0,
+                          "type": "integer",
+                          Symbol(TypeBox.Kind): "Integer",
+                        },
+                        "y": {
+                          "minimum": 0,
+                          "type": "integer",
+                          Symbol(TypeBox.Kind): "Integer",
+                        },
+                      },
+                      "required": [
+                        "x",
+                        "y",
+                        "width",
+                        "height",
+                      ],
+                      "type": "object",
+                      Symbol(TypeBox.Kind): "Object",
+                      Symbol(TypeBox.Optional): "Optional",
+                    },
+                  },
+                  "required": [
+                    "evidenceId",
+                  ],
+                  "type": "object",
+                  Symbol(TypeBox.Kind): "Object",
+                },
+                "minItems": 1,
+                "type": "array",
+                Symbol(TypeBox.Kind): "Array",
+              },
+              "value": {
+                "minLength": 1,
+                "type": "string",
+                Symbol(TypeBox.Kind): "String",
+              },
+            },
+            "required": [
+              "confidenceLevel",
+              "sources",
+              "factType",
+              "fieldName",
+              "value",
+              "normalizedValue",
+            ],
+            "type": "object",
+            Symbol(TypeBox.Kind): "Object",
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "confidenceLevel": {
+                "anyOf": [
+                  {
+                    "const": "high",
+                    "type": "string",
+                    Symbol(TypeBox.Kind): "Literal",
+                  },
+                  {
+                    "const": "needs_confirmation",
+                    "type": "string",
+                    Symbol(TypeBox.Kind): "Literal",
+                  },
+                  {
+                    "const": "conflicted",
+                    "type": "string",
+                    Symbol(TypeBox.Kind): "Literal",
+                  },
+                  {
+                    "const": "unknown",
+                    "type": "string",
+                    Symbol(TypeBox.Kind): "Literal",
+                  },
+                ],
+                Symbol(TypeBox.Kind): "Union",
+              },
+              "factType": {
+                "const": "product",
+                "type": "string",
+                Symbol(TypeBox.Kind): "Literal",
+              },
+              "fieldName": {
+                "const": "product_name",
+                "type": "string",
+                Symbol(TypeBox.Kind): "Literal",
+              },
+              "normalizedValue": {
+                "minLength": 1,
+                "type": "string",
+                Symbol(TypeBox.Kind): "String",
+              },
+              "sources": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "evidenceId": {
+                      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+                      "type": "string",
+                      Symbol(TypeBox.Kind): "String",
+                    },
+                    "page": {
+                      "minimum": 1,
+                      "type": "integer",
+                      Symbol(TypeBox.Kind): "Integer",
+                      Symbol(TypeBox.Optional): "Optional",
+                    },
+                    "region": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "height": {
+                          "minimum": 0,
+                          "type": "integer",
+                          Symbol(TypeBox.Kind): "Integer",
+                        },
+                        "width": {
+                          "minimum": 0,
+                          "type": "integer",
+                          Symbol(TypeBox.Kind): "Integer",
+                        },
+                        "x": {
+                          "minimum": 0,
+                          "type": "integer",
+                          Symbol(TypeBox.Kind): "Integer",
+                        },
+                        "y": {
+                          "minimum": 0,
+                          "type": "integer",
+                          Symbol(TypeBox.Kind): "Integer",
+                        },
+                      },
+                      "required": [
+                        "x",
+                        "y",
+                        "width",
+                        "height",
+                      ],
+                      "type": "object",
+                      Symbol(TypeBox.Kind): "Object",
+                      Symbol(TypeBox.Optional): "Optional",
+                    },
+                  },
+                  "required": [
+                    "evidenceId",
+                  ],
+                  "type": "object",
+                  Symbol(TypeBox.Kind): "Object",
+                },
+                "minItems": 1,
+                "type": "array",
+                Symbol(TypeBox.Kind): "Array",
+              },
+              "value": {
+                "minLength": 1,
+                "type": "string",
+                Symbol(TypeBox.Kind): "String",
+              },
+            },
+            "required": [
+              "confidenceLevel",
+              "sources",
+              "factType",
+              "fieldName",
+              "value",
+              "normalizedValue",
+            ],
+            "type": "object",
+            Symbol(TypeBox.Kind): "Object",
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "confidenceLevel": {
+                "anyOf": [
+                  {
+                    "const": "high",
+                    "type": "string",
+                    Symbol(TypeBox.Kind): "Literal",
+                  },
+                  {
+                    "const": "needs_confirmation",
+                    "type": "string",
+                    Symbol(TypeBox.Kind): "Literal",
+                  },
+                  {
+                    "const": "conflicted",
+                    "type": "string",
+                    Symbol(TypeBox.Kind): "Literal",
+                  },
+                  {
+                    "const": "unknown",
+                    "type": "string",
+                    Symbol(TypeBox.Kind): "Literal",
+                  },
+                ],
+                Symbol(TypeBox.Kind): "Union",
+              },
+              "factType": {
+                "const": "delivery",
+                "type": "string",
+                Symbol(TypeBox.Kind): "Literal",
+              },
+              "fieldName": {
+                "const": "received_time",
+                "type": "string",
+                Symbol(TypeBox.Kind): "Literal",
+              },
+              "normalizedValue": {
+                "minLength": 1,
+                "type": "string",
+                Symbol(TypeBox.Kind): "String",
+              },
+              "sources": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "evidenceId": {
+                      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+                      "type": "string",
+                      Symbol(TypeBox.Kind): "String",
+                    },
+                    "page": {
+                      "minimum": 1,
+                      "type": "integer",
+                      Symbol(TypeBox.Kind): "Integer",
+                      Symbol(TypeBox.Optional): "Optional",
+                    },
+                    "region": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "height": {
+                          "minimum": 0,
+                          "type": "integer",
+                          Symbol(TypeBox.Kind): "Integer",
+                        },
+                        "width": {
+                          "minimum": 0,
+                          "type": "integer",
+                          Symbol(TypeBox.Kind): "Integer",
+                        },
+                        "x": {
+                          "minimum": 0,
+                          "type": "integer",
+                          Symbol(TypeBox.Kind): "Integer",
+                        },
+                        "y": {
+                          "minimum": 0,
+                          "type": "integer",
+                          Symbol(TypeBox.Kind): "Integer",
+                        },
+                      },
+                      "required": [
+                        "x",
+                        "y",
+                        "width",
+                        "height",
+                      ],
+                      "type": "object",
+                      Symbol(TypeBox.Kind): "Object",
+                      Symbol(TypeBox.Optional): "Optional",
+                    },
+                  },
+                  "required": [
+                    "evidenceId",
+                  ],
+                  "type": "object",
+                  Symbol(TypeBox.Kind): "Object",
+                },
+                "minItems": 1,
+                "type": "array",
+                Symbol(TypeBox.Kind): "Array",
+              },
+              "value": {
+                "minLength": 1,
+                "type": "string",
+                Symbol(TypeBox.Kind): "String",
+              },
+            },
+            "required": [
+              "confidenceLevel",
+              "sources",
+              "factType",
+              "fieldName",
+              "value",
+              "normalizedValue",
+            ],
+            "type": "object",
+            Symbol(TypeBox.Kind): "Object",
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "confidenceLevel": {
+                "anyOf": [
+                  {
+                    "const": "high",
+                    "type": "string",
+                    Symbol(TypeBox.Kind): "Literal",
+                  },
+                  {
+                    "const": "needs_confirmation",
+                    "type": "string",
+                    Symbol(TypeBox.Kind): "Literal",
+                  },
+                  {
+                    "const": "conflicted",
+                    "type": "string",
+                    Symbol(TypeBox.Kind): "Literal",
+                  },
+                  {
+                    "const": "unknown",
+                    "type": "string",
+                    Symbol(TypeBox.Kind): "Literal",
+                  },
+                ],
+                Symbol(TypeBox.Kind): "Union",
+              },
+              "factType": {
+                "const": "issue",
+                "type": "string",
+                Symbol(TypeBox.Kind): "Literal",
+              },
+              "fieldName": {
+                "const": "problem_description",
+                "type": "string",
+                Symbol(TypeBox.Kind): "Literal",
+              },
+              "normalizedValue": {
+                "minLength": 1,
+                "type": "string",
+                Symbol(TypeBox.Kind): "String",
+              },
+              "sources": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "evidenceId": {
+                      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+                      "type": "string",
+                      Symbol(TypeBox.Kind): "String",
+                    },
+                    "page": {
+                      "minimum": 1,
+                      "type": "integer",
+                      Symbol(TypeBox.Kind): "Integer",
+                      Symbol(TypeBox.Optional): "Optional",
+                    },
+                    "region": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "height": {
+                          "minimum": 0,
+                          "type": "integer",
+                          Symbol(TypeBox.Kind): "Integer",
+                        },
+                        "width": {
+                          "minimum": 0,
+                          "type": "integer",
+                          Symbol(TypeBox.Kind): "Integer",
+                        },
+                        "x": {
+                          "minimum": 0,
+                          "type": "integer",
+                          Symbol(TypeBox.Kind): "Integer",
+                        },
+                        "y": {
+                          "minimum": 0,
+                          "type": "integer",
+                          Symbol(TypeBox.Kind): "Integer",
+                        },
+                      },
+                      "required": [
+                        "x",
+                        "y",
+                        "width",
+                        "height",
+                      ],
+                      "type": "object",
+                      Symbol(TypeBox.Kind): "Object",
+                      Symbol(TypeBox.Optional): "Optional",
+                    },
+                  },
+                  "required": [
+                    "evidenceId",
+                  ],
+                  "type": "object",
+                  Symbol(TypeBox.Kind): "Object",
+                },
+                "minItems": 1,
+                "type": "array",
+                Symbol(TypeBox.Kind): "Array",
+              },
+              "value": {
+                "minLength": 1,
+                "type": "string",
+                Symbol(TypeBox.Kind): "String",
+              },
+            },
+            "required": [
+              "confidenceLevel",
+              "sources",
+              "factType",
+              "fieldName",
+              "value",
+              "normalizedValue",
+            ],
+            "type": "object",
+            Symbol(TypeBox.Kind): "Object",
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "confidenceLevel": {
+                "anyOf": [
+                  {
+                    "const": "high",
+                    "type": "string",
+                    Symbol(TypeBox.Kind): "Literal",
+                  },
+                  {
+                    "const": "needs_confirmation",
+                    "type": "string",
+                    Symbol(TypeBox.Kind): "Literal",
+                  },
+                  {
+                    "const": "conflicted",
+                    "type": "string",
+                    Symbol(TypeBox.Kind): "Literal",
+                  },
+                  {
+                    "const": "unknown",
+                    "type": "string",
+                    Symbol(TypeBox.Kind): "Literal",
+                  },
+                ],
+                Symbol(TypeBox.Kind): "Union",
+              },
+              "factType": {
+                "const": "communication",
+                "type": "string",
+                Symbol(TypeBox.Kind): "Literal",
+              },
+              "fieldName": {
+                "const": "merchant_response",
+                "type": "string",
+                Symbol(TypeBox.Kind): "Literal",
+              },
+              "normalizedValue": {
+                "minLength": 1,
+                "type": "string",
+                Symbol(TypeBox.Kind): "String",
+              },
+              "sources": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "evidenceId": {
+                      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+                      "type": "string",
+                      Symbol(TypeBox.Kind): "String",
+                    },
+                    "page": {
+                      "minimum": 1,
+                      "type": "integer",
+                      Symbol(TypeBox.Kind): "Integer",
+                      Symbol(TypeBox.Optional): "Optional",
+                    },
+                    "region": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "height": {
+                          "minimum": 0,
+                          "type": "integer",
+                          Symbol(TypeBox.Kind): "Integer",
+                        },
+                        "width": {
+                          "minimum": 0,
+                          "type": "integer",
+                          Symbol(TypeBox.Kind): "Integer",
+                        },
+                        "x": {
+                          "minimum": 0,
+                          "type": "integer",
+                          Symbol(TypeBox.Kind): "Integer",
+                        },
+                        "y": {
+                          "minimum": 0,
+                          "type": "integer",
+                          Symbol(TypeBox.Kind): "Integer",
+                        },
+                      },
+                      "required": [
+                        "x",
+                        "y",
+                        "width",
+                        "height",
+                      ],
+                      "type": "object",
+                      Symbol(TypeBox.Kind): "Object",
+                      Symbol(TypeBox.Optional): "Optional",
+                    },
+                  },
+                  "required": [
+                    "evidenceId",
+                  ],
+                  "type": "object",
+                  Symbol(TypeBox.Kind): "Object",
+                },
+                "minItems": 1,
+                "type": "array",
+                Symbol(TypeBox.Kind): "Array",
+              },
+              "value": {
+                "minLength": 1,
+                "type": "string",
+                Symbol(TypeBox.Kind): "String",
+              },
+            },
+            "required": [
+              "confidenceLevel",
+              "sources",
+              "factType",
+              "fieldName",
+              "value",
+              "normalizedValue",
+            ],
+            "type": "object",
+            Symbol(TypeBox.Kind): "Object",
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "confidenceLevel": {
+                "anyOf": [
+                  {
+                    "const": "high",
+                    "type": "string",
+                    Symbol(TypeBox.Kind): "Literal",
+                  },
+                  {
+                    "const": "needs_confirmation",
+                    "type": "string",
+                    Symbol(TypeBox.Kind): "Literal",
+                  },
+                  {
+                    "const": "conflicted",
+                    "type": "string",
+                    Symbol(TypeBox.Kind): "Literal",
+                  },
+                  {
+                    "const": "unknown",
+                    "type": "string",
+                    Symbol(TypeBox.Kind): "Literal",
+                  },
+                ],
+                Symbol(TypeBox.Kind): "Union",
+              },
+              "factType": {
+                "const": "resolution",
+                "type": "string",
+                Symbol(TypeBox.Kind): "Literal",
+              },
+              "fieldName": {
+                "const": "requested_resolution",
+                "type": "string",
+                Symbol(TypeBox.Kind): "Literal",
+              },
+              "normalizedValue": {
+                "minLength": 1,
+                "type": "string",
+                Symbol(TypeBox.Kind): "String",
+              },
+              "sources": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "evidenceId": {
+                      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+                      "type": "string",
+                      Symbol(TypeBox.Kind): "String",
+                    },
+                    "page": {
+                      "minimum": 1,
+                      "type": "integer",
+                      Symbol(TypeBox.Kind): "Integer",
+                      Symbol(TypeBox.Optional): "Optional",
+                    },
+                    "region": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "height": {
+                          "minimum": 0,
+                          "type": "integer",
+                          Symbol(TypeBox.Kind): "Integer",
+                        },
+                        "width": {
+                          "minimum": 0,
+                          "type": "integer",
+                          Symbol(TypeBox.Kind): "Integer",
+                        },
+                        "x": {
+                          "minimum": 0,
+                          "type": "integer",
+                          Symbol(TypeBox.Kind): "Integer",
+                        },
+                        "y": {
+                          "minimum": 0,
+                          "type": "integer",
+                          Symbol(TypeBox.Kind): "Integer",
+                        },
+                      },
+                      "required": [
+                        "x",
+                        "y",
+                        "width",
+                        "height",
+                      ],
+                      "type": "object",
+                      Symbol(TypeBox.Kind): "Object",
+                      Symbol(TypeBox.Optional): "Optional",
+                    },
+                  },
+                  "required": [
+                    "evidenceId",
+                  ],
+                  "type": "object",
+                  Symbol(TypeBox.Kind): "Object",
+                },
+                "minItems": 1,
+                "type": "array",
+                Symbol(TypeBox.Kind): "Array",
+              },
+              "value": {
+                "minLength": 1,
+                "type": "string",
+                Symbol(TypeBox.Kind): "String",
+              },
+            },
+            "required": [
+              "confidenceLevel",
+              "sources",
+              "factType",
+              "fieldName",
+              "value",
+              "normalizedValue",
+            ],
+            "type": "object",
+            Symbol(TypeBox.Kind): "Object",
+          },
+        ],
+        Symbol(TypeBox.Kind): "Union",
+      },
+      "type": "array",
+      Symbol(TypeBox.Kind): "Array",
+    },
+    "uncertainties": {
+      "items": {
+        "minLength": 1,
+        "type": "string",
+        Symbol(TypeBox.Kind): "String",
+      },
+      "type": "array",
+      Symbol(TypeBox.Kind): "Array",
+    },
+    "warnings": {
+      "items": {
+        "minLength": 1,
+        "type": "string",
+        Symbol(TypeBox.Kind): "String",
+      },
+      "type": "array",
+      Symbol(TypeBox.Kind): "Array",
+    },
+  },
+  "required": [
+    "analysisVersionId",
+    "facts",
+    "uncertainties",
+    "warnings",
+  ],
+  "type": "object",
+  Symbol(TypeBox.Kind): "Object",
+}
+`;
