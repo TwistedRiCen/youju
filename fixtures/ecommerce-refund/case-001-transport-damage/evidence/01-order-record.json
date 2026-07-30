@@ -1,0 +1,22 @@
+{
+  "fictional": true,
+  "evidence": {
+    "id": "00000000-0000-4000-8000-000000000101",
+    "caseId": "00000000-0000-4000-8000-000000000001",
+    "originalName": "synthetic-order-record.txt",
+    "mediaType": "text/plain",
+    "size": 184,
+    "sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+    "importedAt": "2026-07-04T02:01:00.000Z",
+    "sourceCreatedAt": "2026-07-01T12:16:00.000Z",
+    "category": "order_record",
+    "storageRef": "fixture://case-001-transport-damage/order-record",
+    "isOriginalPreserved": true,
+    "metadata": {
+      "representation": "synthetic_text",
+      "platform": "示例商城",
+      "merchant": "晴川生活示例店",
+      "product": "便携折叠桌（虚构商品）"
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "fictional": true,
+  "case": {
+    "id": "00000000-0000-4000-8000-000000000001",
+    "scenarioType": "ecommerce_refund",
+    "title": "运输破损退款纠纷（完全虚构）",
+    "createdAt": "2026-07-04T02:00:00.000Z",
+    "updatedAt": "2026-07-04T02:30:00.000Z",
+    "status": "in_progress",
+    "requestedResolution": "退货并退还已支付金额89900分",
+    "storageMode": "local",
+    "schemaVersion": 1
+  }
+}

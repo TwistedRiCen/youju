@@ -1,0 +1,20 @@
+{
+  "fictional": true,
+  "evidence": {
+    "id": "00000000-0000-4000-8000-000000000103",
+    "caseId": "00000000-0000-4000-8000-000000000001",
+    "originalName": "synthetic-product-issue-description.txt",
+    "mediaType": "text/plain",
+    "size": 138,
+    "sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+    "importedAt": "2026-07-04T02:03:00.000Z",
+    "sourceCreatedAt": "2026-07-03T06:35:00.000Z",
+    "category": "product_issue_photo",
+    "storageRef": "fixture://case-001-transport-damage/product-issue",
+    "isOriginalPreserved": true,
+    "metadata": {
+      "representation": "synthetic_text_in_place_of_m2_binary",
+      "description": "包裹外箱凹陷，桌板边角开裂并有明显压痕"
+    }
+  }
+}

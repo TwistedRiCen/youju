@@ -1,0 +1,20 @@
+{
+  "fictional": true,
+  "evidence": {
+    "id": "00000000-0000-4000-8000-000000000104",
+    "caseId": "00000000-0000-4000-8000-000000000001",
+    "originalName": "synthetic-merchant-communication.txt",
+    "mediaType": "text/plain",
+    "size": 212,
+    "sha256": "4444444444444444444444444444444444444444444444444444444444444444",
+    "importedAt": "2026-07-04T02:04:00.000Z",
+    "sourceCreatedAt": "2026-07-03T08:00:00.000Z",
+    "category": "merchant_communication",
+    "storageRef": "fixture://case-001-transport-damage/merchant-communication",
+    "isOriginalPreserved": true,
+    "metadata": {
+      "representation": "synthetic_text",
+      "merchantResponse": "商家称破损由用户使用造成，因此拒绝退货退款"
+    }
+  }
+}

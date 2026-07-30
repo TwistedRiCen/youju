@@ -16,6 +16,12 @@ importers:
       '@types/node':
         specifier: ^24.0.0
         version: 24.13.3
+      '@youju/rule-engine':
+        specifier: workspace:*
+        version: link:packages/rule-engine
+      '@youju/test-support':
+        specifier: workspace:*
+        version: link:packages/test-support
       eslint:
         specifier: ^9.0.0
         version: 9.39.5
@@ -75,6 +81,25 @@ importers:
       yaml:
         specifier: ^2.0.0
         version: 2.9.0
+    devDependencies:
+      vitest:
+        specifier: ^4.0.0
+        version: 4.0.18(@types/node@24.13.3)(tsx@4.23.1)(yaml@2.9.0)
+
+  packages/test-support:
+    dependencies:
+      '@sinclair/typebox':
+        specifier: ^0.34.0
+        version: 0.34.52
+      '@youju/ai-core':
+        specifier: workspace:*
+        version: link:../ai-core
+      '@youju/domain':
+        specifier: workspace:*
+        version: link:../domain
+      '@youju/rule-engine':
+        specifier: workspace:*
+        version: link:../rule-engine
     devDependencies:
       vitest:
         specifier: ^4.0.0

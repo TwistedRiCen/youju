@@ -1,0 +1,20 @@
+{
+  "fictional": true,
+  "evidence": {
+    "id": "00000000-0000-4000-8000-000000000102",
+    "caseId": "00000000-0000-4000-8000-000000000001",
+    "originalName": "synthetic-payment-record.txt",
+    "mediaType": "text/plain",
+    "size": 96,
+    "sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+    "importedAt": "2026-07-04T02:02:00.000Z",
+    "sourceCreatedAt": "2026-07-01T12:16:00.000Z",
+    "category": "payment_record",
+    "storageRef": "fixture://case-001-transport-damage/payment-record",
+    "isOriginalPreserved": true,
+    "metadata": {
+      "representation": "synthetic_text",
+      "paidAmountFen": 89900
+    }
+  }
+}
