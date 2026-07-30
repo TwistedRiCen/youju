@@ -13,6 +13,7 @@
     "lint": "eslint .",
     "typecheck": "tsc -p tsconfig.json --noEmit && pnpm -r --if-present typecheck",
     "test": "vitest run",
+    "check:forbidden-content": "tsx scripts/check-forbidden-content.ts",
     "validate:fixtures": "tsx scripts/validate-fixtures.ts",
     "build": "pnpm -r --if-present build",
     "e2e": "playwright test",
