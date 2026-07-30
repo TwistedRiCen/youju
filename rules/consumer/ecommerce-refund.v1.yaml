@@ -1,0 +1,33 @@
+id: consumer.ecommerce.refund.basic
+version: 1.0.0
+scenario: ecommerce_refund
+source:
+  description: 网购退款纠纷材料整理的稳定方法
+  scope: 中国大陆普通消费场景，仅用于材料整理
+  stable: true
+  lastVerifiedAt: '2026-07-29'
+  maintainer: YouJu contributors
+requiredFacts:
+  - purchase_time
+  - merchant_name
+  - product_name
+  - paid_amount
+  - problem_description
+  - requested_resolution
+recommendedEvidence:
+  - category: order_record
+    label: 订单记录
+    sourceReference: stable-method:order-record
+  - category: payment_record
+    label: 支付凭证
+    sourceReference: stable-method:payment-record
+  - category: product_issue_photo
+    label: 商品问题照片
+    sourceReference: stable-method:product-photo
+  - category: merchant_communication
+    label: 商家沟通记录
+    sourceReference: stable-method:merchant-communication
+warnings:
+  - preserve_original_files
+  - preserve_original_device
+  - avoid_editing_original_screenshots
