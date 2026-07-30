@@ -18,7 +18,7 @@
 ### 2.1 运行时与构建
 
 - Node.js 24 LTS；
-- pnpm 10.34.5；
+- pnpm 10.34.0；
 - TypeScript strict；
 - ESM；
 - pnpm workspace，不引入 Nx、Turborepo 或 Lerna。

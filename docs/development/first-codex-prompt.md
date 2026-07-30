@@ -21,11 +21,11 @@
 执行要求：
 - 若环境支持 superpowers skills，先使用 using-git-worktrees 创建隔离工作区，再按 test-driven-development 执行 Task 1；若不支持，仍须在独立 feature branch 中工作。
 - 严格按计划先写失败测试、实际运行并确认失败，再创建最小配置使其通过。
-- Node.js 使用24 LTS；pnpm使用10.34.5，并在 packageManager 中固定该版本。
+- Node.js 使用24 LTS；pnpm使用10.34.0，并在 packageManager 中固定该版本。
 - 不添加计划之外的工具，不引入Nx、Turborepo、Lerna、数据库、容器编排或CI。
 - 不修改已批准的设计规格。
 - 不写占位业务代码，不创建空包。
-- 不提交任何API Key、.env、真实用户材料或真实订单信息。
+- 不提交任何API Key、.env、用户提供的真实材料或真实订单信息。
 - 仅在所有Task 1验证命令实际通过后提交。
 
 完成前必须运行并报告真实结果：

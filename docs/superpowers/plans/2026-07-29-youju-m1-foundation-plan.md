@@ -1,12 +1,12 @@
 # 有据 M1 Foundation Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** 建立有据V0.1可持续开发的仓库底座，交付运行时领域契约、规则引擎基础、AI Schema、黄金案例1、Web/API外壳、自动化测试和CI。
 
 **Architecture:** 使用pnpm TypeScript monorepo，包之间只通过公开入口通信。M1不实现真实证据存储、PDF导出或AI调用，只建立这些后续能力依赖的稳定契约和可运行集成骨架。Web提供项目边界首页和开发态黄金案例诊断页；API只提供无状态健康检查与安全日志基线。
 
-**Tech Stack:** Node.js 24 LTS, pnpm 10.34.5, TypeScript strict, Vue 3, Vite 8, Fastify 5, TypeBox, YAML, Vitest, Playwright, ESLint, Prettier, GitHub Actions.
+**Tech Stack:** Node.js 24 LTS, pnpm 10.34.0, TypeScript strict, Vue 3, Vite 8, Fastify 5, TypeBox, YAML, Vitest, Playwright, ESLint, Prettier, GitHub Actions.
 
 ## Global Constraints
 
@@ -71,7 +71,7 @@ tests/e2e/home-and-diagnostics.spec.ts         # M1 smoke E2E
 - Consumes: approved design spec and `AGENTS.md`.
 - Produces: root commands `lint`, `typecheck`, `test`, `validate:fixtures`, `build`, `e2e`, `verify`; workspace package naming convention `@youju/*`.
 
-- [ ] **Step 1: Rename the default branch and create an isolated implementation branch**
+- [x] **Step 1: Rename the default branch and create an isolated implementation branch**
 
 Run:
 
@@ -84,7 +84,7 @@ fi
 
 Expected: current branch is `feat/m1-foundation`; `git status --short` contains no implementation changes. When an isolated worktree already created this branch, the command leaves it unchanged.
 
-- [ ] **Step 2: Write the failing root configuration test**
+- [x] **Step 2: Write the failing root configuration test**
 
 Create `tests/config/root-config.test.ts`:
 
@@ -115,7 +115,7 @@ describe('root workspace configuration', () => {
 })
 ```
 
-- [ ] **Step 3: Run the test to verify it fails before configuration exists**
+- [x] **Step 3: Run the test to verify it fails before configuration exists**
 
 Run:
 
@@ -123,9 +123,9 @@ Run:
 pnpm exec vitest run tests/config/root-config.test.ts
 ```
 
-Expected: FAIL because root package configuration and/or Vitest dependency is missing. If `pnpm` is unavailable, install pnpm 10.34.5 first and record the exact installed version in `packageManager`.
+Expected: FAIL because root package configuration and/or Vitest dependency is missing. If `pnpm` is unavailable, install pnpm 10.34.0 first and record the exact installed version in `packageManager`.
 
-- [ ] **Step 4: Create the root workspace files**
+- [x] **Step 4: Create the root workspace files**
 
 Create `.nvmrc`:
 
@@ -150,7 +150,7 @@ prefer-frozen-lockfile=true
 minimum-release-age=1440
 ```
 
-Create root `package.json` with the pinned pnpm 10.34.5 version in `packageManager`:
+Create root `package.json` with the pinned pnpm 10.34.0 version in `packageManager`:
 
 ```json
 {
@@ -158,7 +158,7 @@ Create root `package.json` with the pinned pnpm 10.34.5 version in `packageManag
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@10.34.5",
+  "packageManager": "pnpm@10.34.0",
   "engines": {
     "node": ">=24 <25",
     "pnpm": ">=10 <11"
@@ -189,7 +189,7 @@ Create root `package.json` with the pinned pnpm 10.34.5 version in `packageManag
 }
 ```
 
-Before installation, replace only `packageManager` with the exact pnpm 10.34.5 version printed by `pnpm --version`; keep all major-version constraints unchanged.
+Before installation, replace only `packageManager` with the exact pnpm 10.34.0 version printed by `pnpm --version`; keep all major-version constraints unchanged.
 
 Create `tsconfig.base.json`:
 
@@ -316,7 +316,7 @@ test-results/
 *.log
 ```
 
-- [ ] **Step 5: Install dependencies and run the root test**
+- [x] **Step 5: Install dependencies and run the root test**
 
 Run:
 
@@ -327,7 +327,7 @@ pnpm exec vitest run tests/config/root-config.test.ts
 
 Expected: PASS.
 
-- [ ] **Step 6: Run formatting and static checks**
+- [x] **Step 6: Run formatting and static checks**
 
 Run:
 
@@ -338,7 +338,7 @@ pnpm exec eslint tests/config/root-config.test.ts
 
 Expected: both commands PASS.
 
-- [ ] **Step 7: Commit the workspace baseline**
+- [x] **Step 7: Commit the workspace baseline**
 
 ```bash
 git add .nvmrc .npmrc pnpm-workspace.yaml package.json pnpm-lock.yaml tsconfig.base.json tsconfig.json eslint.config.js prettier.config.mjs vitest.config.ts .editorconfig .gitignore tests/config/root-config.test.ts
@@ -361,7 +361,7 @@ git commit -m "chore: initialize TypeScript workspace"
 - Consumes: root TypeScript configuration.
 - Produces: `CaseEventSchema`, `EvidenceFileSchema`, `FactCandidateSchema`, `ConfirmedFactSchema`, `TimelineEntrySchema`, `AnalysisVersionSchema`, `ReviewStatusSchema`, and inferred TypeScript types.
 
-- [ ] **Step 1: Write failing domain contract tests**
+- [x] **Step 1: Write failing domain contract tests**
 
 Create `packages/domain/tests/schemas.test.ts`:
 
@@ -442,7 +442,7 @@ describe('domain schemas', () => {
 })
 ```
 
-- [ ] **Step 2: Run the package test and confirm failure**
+- [x] **Step 2: Run the package test and confirm failure**
 
 Run:
 
@@ -452,7 +452,7 @@ pnpm exec vitest run packages/domain/tests/schemas.test.ts
 
 Expected: FAIL because package and schemas do not exist.
 
-- [ ] **Step 3: Create the domain package and minimal schemas**
+- [x] **Step 3: Create the domain package and minimal schemas**
 
 Create `packages/domain/package.json`:
 
@@ -534,7 +534,7 @@ export const TimePrecisionSchema = Type.Union([
 Use `Type.String({ pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$' })` for UUIDs and an explicit ISO-8601 UTC pattern for timestamps; `Type.Union([Type.String(), Type.Null()])` for nullable text, and `Type.Integer({ minimum: 1 })` for schema versions. Export inferred `Static<typeof Schema>` types from `src/index.ts`.
 
 
-- [ ] **Step 4: Run tests and type checking**
+- [x] **Step 4: Run tests and type checking**
 
 Run:
 
@@ -545,7 +545,7 @@ pnpm --filter @youju/domain typecheck
 
 Expected: PASS.
 
-- [ ] **Step 5: Commit the domain contracts**
+- [x] **Step 5: Commit the domain contracts**
 
 ```bash
 git add packages/domain package.json pnpm-lock.yaml
@@ -570,7 +570,7 @@ git commit -m "feat: define domain contracts"
 - Consumes: `@youju/domain` evidence categories and confirmed fact field names.
 - Produces: `EcommerceRefundRuleSchema`, `evaluateRule(input): RuleFinding[]`, and rule file `consumer.ecommerce.refund.basic@1.0.0`.
 
-- [ ] **Step 1: Write failing rule evaluation tests**
+- [x] **Step 1: Write failing rule evaluation tests**
 
 Create test cases that pass confirmed fields `purchase_time`, `merchant_name`, `product_name`, `paid_amount`, `problem_description`, `requested_resolution` and evidence categories. Assert:
 
@@ -590,7 +590,7 @@ expect(findings).toEqual([
 
 Add a second test asserting no missing-required-fact finding when all required facts are present.
 
-- [ ] **Step 2: Run and confirm failure**
+- [x] **Step 2: Run and confirm failure**
 
 ```bash
 pnpm exec vitest run packages/rule-engine/tests/evaluate-rule.test.ts
@@ -598,7 +598,7 @@ pnpm exec vitest run packages/rule-engine/tests/evaluate-rule.test.ts
 
 Expected: FAIL because rule engine is absent.
 
-- [ ] **Step 3: Implement the rule schema and evaluator**
+- [x] **Step 3: Implement the rule schema and evaluator**
 
 Create `packages/rule-engine/package.json` with:
 
@@ -690,7 +690,7 @@ warnings:
 
 `evaluateRule()` must be pure, deterministic, and must not reference UI or AI packages. Missing facts produce `severity: 'blocking'` and `resultType: 'missing_fact'`; missing recommended evidence produces `severity: 'warning'` and `resultType: 'missing_evidence'`.
 
-- [ ] **Step 4: Run package and cross-package tests**
+- [x] **Step 4: Run package and cross-package tests**
 
 ```bash
 pnpm --filter @youju/rule-engine test
@@ -700,7 +700,7 @@ pnpm --filter @youju/domain test
 
 Expected: PASS.
 
-- [ ] **Step 5: Commit the rule engine**
+- [x] **Step 5: Commit the rule engine**
 
 ```bash
 git add packages/rule-engine rules/consumer/ecommerce-refund.v1.yaml package.json pnpm-lock.yaml
@@ -727,7 +727,7 @@ git commit -m "feat: add ecommerce refund rule engine"
 - Consumes: `@youju/domain` categories, fact types and source references.
 - Produces: runtime schemas for classification, fact extraction, timeline candidates, missing-material suggestions and statement drafts.
 
-- [ ] **Step 1: Write failing contract tests**
+- [x] **Step 1: Write failing contract tests**
 
 Include tests that:
 
@@ -762,7 +762,7 @@ Example valid extraction:
 }
 ```
 
-- [ ] **Step 2: Run and confirm failure**
+- [x] **Step 2: Run and confirm failure**
 
 ```bash
 pnpm exec vitest run packages/ai-core/tests/contracts.test.ts
@@ -770,7 +770,7 @@ pnpm exec vitest run packages/ai-core/tests/contracts.test.ts
 
 Expected: FAIL because contracts are absent.
 
-- [ ] **Step 3: Implement strict TypeBox schemas**
+- [x] **Step 3: Implement strict TypeBox schemas**
 
 Create `packages/ai-core/package.json` with:
 
@@ -830,7 +830,7 @@ Rules:
 - statement input references only `confirmedFactIds`;
 - no field represents legal conclusion, compensation or success probability.
 
-- [ ] **Step 4: Run tests, typecheck and export a JSON Schema snapshot**
+- [x] **Step 4: Run tests, typecheck and export a JSON Schema snapshot**
 
 Create a test snapshot for `ExtractFactsResultSchema` so accidental contract changes are reviewed.
 
@@ -843,7 +843,7 @@ pnpm --filter @youju/ai-core typecheck
 
 Expected: PASS and a committed stable snapshot.
 
-- [ ] **Step 5: Commit AI contracts**
+- [x] **Step 5: Commit AI contracts**
 
 ```bash
 git add packages/ai-core package.json pnpm-lock.yaml
@@ -874,7 +874,7 @@ git commit -m "feat: define AI output contracts"
 - Consumes: domain, rule and AI schemas.
 - Produces: `loadGoldenCase(path): GoldenCase`, CLI `pnpm validate:fixtures`, and case ID `case-001-transport-damage`.
 
-- [ ] **Step 1: Write failing fixture loader tests**
+- [x] **Step 1: Write failing fixture loader tests**
 
 The test must load the fixture and assert:
 
@@ -891,7 +891,7 @@ expect(fixture.expected.timeline).toHaveLength(4)
 
 Add a test that changes `fictional` to `false` in an in-memory object and confirms schema validation fails. This prevents accidental real-person fixtures.
 
-- [ ] **Step 2: Run and confirm failure**
+- [x] **Step 2: Run and confirm failure**
 
 ```bash
 pnpm exec vitest run packages/test-support/tests/load-fixture.test.ts
@@ -899,7 +899,7 @@ pnpm exec vitest run packages/test-support/tests/load-fixture.test.ts
 
 Expected: FAIL because fixture loader and data are absent.
 
-- [ ] **Step 3: Create the test-support package and fully fictional fixture**
+- [x] **Step 3: Create the test-support package and fully fictional fixture**
 
 Create `packages/test-support/package.json` with:
 
@@ -993,7 +993,7 @@ M1 fixture uses JSON/text representations of four synthetic materials; M2 will a
 
 Every fixture file must contain `fictional: true` or inherit it from a validated manifest. Do not use real platform logos, real store names, real phone numbers, real order numbers or real addresses.
 
-- [ ] **Step 4: Implement validator CLI**
+- [x] **Step 4: Implement validator CLI**
 
 `scripts/validate-fixtures.ts` must:
 
@@ -1011,7 +1011,7 @@ PASS case-001-transport-damage: 4 evidence, 6 confirmed facts, 4 timeline entrie
 Validated 1 golden case.
 ```
 
-- [ ] **Step 5: Run fixture and package tests**
+- [x] **Step 5: Run fixture and package tests**
 
 ```bash
 pnpm --filter @youju/test-support test
@@ -1020,7 +1020,7 @@ pnpm validate:fixtures
 
 Expected: PASS with the exact case count.
 
-- [ ] **Step 6: Commit the golden case**
+- [x] **Step 6: Commit the golden case**
 
 ```bash
 git add packages/test-support fixtures scripts/validate-fixtures.ts package.json pnpm-lock.yaml
@@ -1050,7 +1050,7 @@ git commit -m "test: add first fictional golden case"
 - Consumes: domain, rule-engine, ai-core and the browser-safe `@youju/test-support/browser` export.
 - Produces: routes `/` and development-only `/dev/diagnostics`; PWA manifest; visible product boundary.
 
-- [ ] **Step 1: Write failing Home and diagnostics tests**
+- [x] **Step 1: Write failing Home and diagnostics tests**
 
 Home test must assert visible text:
 
@@ -1062,7 +1062,7 @@ Home test must assert visible text:
 
 Diagnostics test must assert case ID, evidence count `4`, confirmed fact count `6`, timeline count `4`, and rule validation status `通过`.
 
-- [ ] **Step 2: Run and confirm failure**
+- [x] **Step 2: Run and confirm failure**
 
 ```bash
 pnpm exec vitest run apps/web/tests/home.test.ts apps/web/tests/diagnostics.test.ts
@@ -1070,7 +1070,7 @@ pnpm exec vitest run apps/web/tests/home.test.ts apps/web/tests/diagnostics.test
 
 Expected: FAIL because app is absent.
 
-- [ ] **Step 3: Scaffold the minimal Vue application**
+- [x] **Step 3: Scaffold the minimal Vue application**
 
 Create `apps/web/package.json` with these package identities and scripts; resolve exact compatible patch versions during `pnpm install` and preserve them in `pnpm-lock.yaml`:
 
@@ -1122,7 +1122,7 @@ Requirements:
 
 Home actions may be disabled placeholders only when clearly labeled `M2开放`; do not create fake working upload or AI controls.
 
-- [ ] **Step 4: Implement fixture summary adapter**
+- [x] **Step 4: Implement fixture summary adapter**
 
 `loadGoldenCaseSummary()` imports `goldenCase001Summary` from `@youju/test-support/browser` and returns only low-risk synthetic counts:
 
@@ -1139,7 +1139,7 @@ export interface GoldenCaseSummary {
 
 It must not expose a generic production path for loading user files from the server.
 
-- [ ] **Step 5: Run Web tests and build**
+- [x] **Step 5: Run Web tests and build**
 
 ```bash
 pnpm --filter @youju/web test
@@ -1149,7 +1149,7 @@ pnpm --filter @youju/web build
 
 Expected: PASS; production build does not contain `/dev/diagnostics` route.
 
-- [ ] **Step 6: Commit the Web shell**
+- [x] **Step 6: Commit the Web shell**
 
 ```bash
 git add apps/web package.json pnpm-lock.yaml
@@ -1176,7 +1176,7 @@ git commit -m "feat: add web application shell"
 - Consumes: no business storage package.
 - Produces: `buildApp(): FastifyInstance`, `GET /health`, and redacted logging configuration reusable by M3 relay.
 
-- [ ] **Step 1: Write failing health and redaction tests**
+- [x] **Step 1: Write failing health and redaction tests**
 
 Health response must equal:
 
@@ -1199,7 +1199,7 @@ Redaction test must serialize a request-like object containing:
 
 and assert the serialized log contains `[Redacted]` and never contains `sk-test-secret`.
 
-- [ ] **Step 2: Run and confirm failure**
+- [x] **Step 2: Run and confirm failure**
 
 ```bash
 pnpm exec vitest run apps/api/tests/health.test.ts apps/api/tests/log-redaction.test.ts
@@ -1207,7 +1207,7 @@ pnpm exec vitest run apps/api/tests/health.test.ts apps/api/tests/log-redaction.
 
 Expected: FAIL because API package is absent.
 
-- [ ] **Step 3: Implement Fastify app factory**
+- [x] **Step 3: Implement Fastify app factory**
 
 Create `apps/api/package.json`:
 
@@ -1245,7 +1245,7 @@ Create `tsconfig.json` for source and tests with `noEmit: true`, and `tsconfig.b
 - not import filesystem persistence, database clients, queues or object storage;
 - expose app injection for tests.
 
-- [ ] **Step 4: Run API tests and build**
+- [x] **Step 4: Run API tests and build**
 
 ```bash
 pnpm --filter @youju/api test
@@ -1255,7 +1255,7 @@ pnpm --filter @youju/api build
 
 Expected: PASS.
 
-- [ ] **Step 5: Commit the API shell**
+- [x] **Step 5: Commit the API shell**
 
 ```bash
 git add apps/api package.json pnpm-lock.yaml
@@ -1276,11 +1276,11 @@ git commit -m "feat: add stateless API shell"
 - Consumes: Web dev server, fixture loader, domain/rule/AI schemas.
 - Produces: browser smoke coverage and a single integration test proving case1 conforms across packages.
 
-- [ ] **Step 1: Write failing integration test**
+- [x] **Step 1: Write failing integration test**
 
 The integration test must load case1, validate every domain record, run the rule engine, and compare the result to `expected/findings.json` exactly. It must also validate the artificial AI expected output against `ExtractFactsResultSchema`.
 
-- [ ] **Step 2: Write failing Playwright test**
+- [x] **Step 2: Write failing Playwright test**
 
 Test projects:
 
@@ -1296,7 +1296,7 @@ Assertions:
 - diagnostics counts equal fixture values;
 - viewport has no horizontal overflow.
 
-- [ ] **Step 3: Run and confirm failures before config**
+- [x] **Step 3: Run and confirm failures before config**
 
 ```bash
 pnpm exec vitest run tests/integration/golden-case-contracts.test.ts
@@ -1305,13 +1305,13 @@ pnpm exec playwright test tests/e2e/home-and-diagnostics.spec.ts
 
 Expected: FAIL because root integration project and Playwright config are absent.
 
-- [ ] **Step 4: Implement test configuration and minimal fixes**
+- [x] **Step 4: Implement test configuration and minimal fixes**
 
 `playwright.config.ts` must start only `@youju/web` for M1. Do not start API unless a browser test needs it. Use deterministic port `4173`, retain trace on first retry, and disable screenshots on success.
 
 Add a second inline project named `root-integration` with `include: ['tests/integration/**/*.test.ts']` to `vitest.config.ts`.
 
-- [ ] **Step 5: Run integration and E2E tests**
+- [x] **Step 5: Run integration and E2E tests**
 
 ```bash
 pnpm exec vitest run tests/integration/golden-case-contracts.test.ts
@@ -1320,7 +1320,7 @@ pnpm e2e
 
 Expected: PASS in all configured projects.
 
-- [ ] **Step 6: Commit integration coverage**
+- [x] **Step 6: Commit integration coverage**
 
 ```bash
 git add playwright.config.ts vitest.config.ts tests package.json pnpm-lock.yaml
@@ -1341,7 +1341,7 @@ git commit -m "test: add foundation integration coverage"
 - Consumes: all root quality commands.
 - Produces: CI job and `pnpm check:forbidden-content` guard.
 
-- [ ] **Step 1: Write a failing forbidden-content test**
+- [x] **Step 1: Write a failing forbidden-content test**
 
 The test constructs a temporary secret with `'sk-' + 'a'.repeat(32)` at runtime and asserts the scanner reports it, while a normal synthetic fixture passes. Do not commit a literal long secret-like token. Scanner patterns must include:
 
@@ -1350,7 +1350,7 @@ The test constructs a temporary secret with `'sk-' + 'a'.repeat(32)` at runtime 
 - text markers `REAL_USER_DATA` and `真实用户材料`;
 - real-looking mainland mobile numbers in fixture directories, allowing only documented fake ranges in tests.
 
-- [ ] **Step 2: Run and confirm failure**
+- [x] **Step 2: Run and confirm failure**
 
 ```bash
 pnpm exec vitest run tests/config/forbidden-content.test.ts
@@ -1358,7 +1358,7 @@ pnpm exec vitest run tests/config/forbidden-content.test.ts
 
 Expected: FAIL because scanner is absent.
 
-- [ ] **Step 3: Implement scanner and root command**
+- [x] **Step 3: Implement scanner and root command**
 
 Add:
 
@@ -1368,7 +1368,7 @@ Add:
 
 The scanner must skip `.git`, `node_modules`, `dist`, reports and lockfile; print file path and rule ID but never echo the matched secret value.
 
-- [ ] **Step 4: Create GitHub Actions workflow**
+- [x] **Step 4: Create GitHub Actions workflow**
 
 Workflow triggers on pull requests and pushes to `main`. Steps:
 
@@ -1388,7 +1388,7 @@ Workflow triggers on pull requests and pushes to `main`. Steps:
 
 Do not add deployment, secrets or real model calls.
 
-- [ ] **Step 5: Run the complete local CI sequence**
+- [x] **Step 5: Run the complete local CI sequence**
 
 ```bash
 pnpm check:forbidden-content
@@ -1402,7 +1402,7 @@ pnpm e2e
 
 Expected: all PASS.
 
-- [ ] **Step 6: Commit CI guardrails**
+- [x] **Step 6: Commit CI guardrails**
 
 ```bash
 git add .github/workflows/ci.yml scripts/check-forbidden-content.ts tests/config/forbidden-content.test.ts package.json pnpm-lock.yaml
@@ -1425,7 +1425,7 @@ git commit -m "chore: add CI and repository safety checks"
 - Consumes: completed M1 implementation.
 - Produces: reproducible setup, security reporting path and final verification evidence.
 
-- [ ] **Step 1: Write operational documentation**
+- [x] **Step 1: Write operational documentation**
 
 README must state:
 
@@ -1439,7 +1439,7 @@ README must state:
 
 `SECURITY.md` must explicitly request private reporting for API Key leakage, XSS, file parsing and evidence mix-up issues; it must not promise a response time you cannot guarantee.
 
-- [ ] **Step 2: Run a placeholder and contradiction scan**
+- [x] **Step 2: Run a placeholder and contradiction scan**
 
 Run:
 
@@ -1451,7 +1451,7 @@ rg -n "TBD|TODO|FIXME|implement later|真实用户材料|sk-[A-Za-z0-9_-]{20,}" 
 
 Expected: no unresolved placeholder in product, configuration or operational documentation and no secret-like value. Implementation plans are reviewed separately during plan self-review because the command itself contains the scanner terms. Test fixtures explicitly testing scanner patterns must be excluded by exact path or use constructed strings rather than literal secrets.
 
-- [ ] **Step 3: Run full milestone verification**
+- [x] **Step 3: Run full milestone verification**
 
 ```bash
 pnpm verify
@@ -1465,7 +1465,7 @@ Expected:
 - `git diff --check`: no output;
 - `git status --short`: only intended documentation/checklist modifications before commit.
 
-- [ ] **Step 4: Review against the approved spec**
+- [x] **Step 4: Review against the approved spec**
 
 Record evidence for M1 sections:
 
@@ -1481,14 +1481,14 @@ Record evidence for M1 sections:
 
 Any uncovered M1 requirement must be fixed before commit; do not defer with a placeholder.
 
-- [ ] **Step 5: Commit documentation and milestone closure**
+- [x] **Step 5: Commit documentation and milestone closure**
 
 ```bash
 git add README.md CONTRIBUTING.md SECURITY.md docs AGENTS.md
 git commit -m "docs: complete M1 foundation guidance"
 ```
 
-- [ ] **Step 6: Create the M1 verification tag only after a clean full run**
+- [x] **Step 6: Create the M1 verification tag only after a clean full run**
 
 ```bash
 git status --short
@@ -1504,13 +1504,13 @@ Expected: clean status, all verification commands PASS, annotated tag created lo
 
 Before claiming completion, verify:
 
-- [ ] Every public schema is exported through a package public entry.
-- [ ] No package imports another package through `../` source traversal.
-- [ ] No user data persistence exists in API.
-- [ ] No API Key input or storage UI exists in M1.
-- [ ] No real brand, person, phone, address, order or payment record is included.
-- [ ] Production Web build excludes development diagnostics.
-- [ ] AI contracts reject source-free facts and unknown legal fields.
-- [ ] Rule evaluation is deterministic and exact-output tested.
-- [ ] `pnpm verify` passes from a clean checkout.
-- [ ] Git history contains one focused commit per task.
+- [x] Every public schema is exported through a package public entry.
+- [x] No package imports another package through `../` source traversal.
+- [x] No user data persistence exists in API.
+- [x] No API Key input or storage UI exists in M1.
+- [x] No real brand, person, phone, address, order or payment record is included.
+- [x] Production Web build excludes development diagnostics.
+- [x] AI contracts reject source-free facts and unknown legal fields.
+- [x] Rule evaluation is deterministic and exact-output tested.
+- [x] `pnpm verify` passes from a clean checkout.
+- [x] Git history contains one focused commit per task.

@@ -1,0 +1,68 @@
+# 有据 YouJu
+
+有据是一款面向中国普通用户的事实与材料整理工具。V0.1 只面向“网购商品出现质量、破损、描述不符等问题，商家拒绝退款或未妥善处理”这一场景。
+
+项目帮助用户保存原始材料、整理已确认事实、建立时间线、识别材料缺口，并为后续生成可打印、可长期保存的材料包建立基础。项目不提供法律咨询、法律结论、赔偿计算、胜诉率或投诉成功率预测，也不自动投诉、自动维权、曝光或评价商家。
+
+## 当前状态
+
+当前仓库完成 M1 Foundation：运行时领域契约、确定性规则基础、AI 结构化输出契约、完全虚构的黄金案例、Web/PWA 与无状态 API 外壳、跨包测试和 CI。
+
+M1 尚未实现真实材料导入、本地事件存储、PDF/ZIP 导出或真实 AI 调用。这些能力只能在后续里程碑通过设计和任务审查后实现。
+
+## 核心原则
+
+- 本地优先：原始材料默认保存在用户设备，不默认上传业务服务器。
+- AI 可选：未配置 AI 时，核心流程仍需完整可用。
+- 用户确认：AI 只能产生候选内容，未经用户确认不得进入正式输出。
+- 无状态服务端：API 不保存用户事件、材料、事实、时间线或 API Key。
+- 确定性优先：规则、状态、完整性检查和正式输出过滤由可测试代码完成。
+
+## 环境要求
+
+- Node.js 24 LTS
+- pnpm 10.34.0
+
+根 `package.json` 的 `packageManager` 固定 pnpm 版本，`.nvmrc` 固定 Node 主版本。
+
+## 本地开始
+
+```bash
+pnpm install --frozen-lockfile
+pnpm exec playwright install chromium webkit
+pnpm dev
+```
+
+开发服务器默认提供：
+
+- Web：Vite 默认地址；
+- API：`http://localhost:3000`，健康检查为 `GET /health`；
+- 开发态诊断页：`/dev/diagnostics`，生产构建不包含该路由。
+
+完整质量门禁：
+
+```bash
+pnpm check:forbidden-content
+pnpm verify
+```
+
+详细环境、单项命令和故障排查见[本地开发指南](docs/development/local-development.md)。
+
+## 黄金案例政策
+
+`fixtures/` 只能包含完全虚构的合成材料，不得包含真实姓名、手机号、地址、平台或店铺身份、订单、支付记录、聊天记录和 API Key。M1 的案例 001 使用 JSON 与文本表示，不包含图片或 PDF 二进制材料。
+
+新增或修改案例后必须运行：
+
+```bash
+pnpm validate:fixtures
+pnpm check:forbidden-content
+```
+
+## 参与与安全
+
+- 贡献流程：[CONTRIBUTING.md](CONTRIBUTING.md)
+- 安全报告：[SECURITY.md](SECURITY.md)
+- 已批准设计：[有据 V0.1 产品与技术设计规格](docs/superpowers/specs/2026-07-29-youju-v0.1-design.md)
+- 总实施计划：[V0.1 Master Implementation Plan](docs/superpowers/plans/2026-07-29-youju-v0.1-master-plan.md)
+- M1 实施计划：[M1 Foundation Implementation Plan](docs/superpowers/plans/2026-07-29-youju-m1-foundation-plan.md)
