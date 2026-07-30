@@ -21,7 +21,10 @@
   "devDependencies": {
     "@eslint/js": "^9.0.0",
     "@playwright/test": "^1.0.0",
+    "@sinclair/typebox": "^0.34.0",
     "@types/node": "^24.0.0",
+    "@youju/ai-core": "workspace:*",
+    "@youju/domain": "workspace:*",
     "@youju/rule-engine": "workspace:*",
     "@youju/test-support": "workspace:*",
     "eslint": "^9.0.0",

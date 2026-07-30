@@ -16,9 +16,18 @@ importers:
       '@playwright/test':
         specifier: ^1.0.0
         version: 1.62.0
+      '@sinclair/typebox':
+        specifier: ^0.34.0
+        version: 0.34.52
       '@types/node':
         specifier: ^24.0.0
         version: 24.13.3
+      '@youju/ai-core':
+        specifier: workspace:*
+        version: link:packages/ai-core
+      '@youju/domain':
+        specifier: workspace:*
+        version: link:packages/domain
       '@youju/rule-engine':
         specifier: workspace:*
         version: link:packages/rule-engine
