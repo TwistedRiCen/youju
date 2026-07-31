@@ -318,6 +318,20 @@ Service Worker 只缓存应用静态资源，不得缓存、同步或上传用�
 - 不得自行 push、创建 PR、合并、打标签、发布或删除分支。
 - M1 完整验收前不得合并到 `main`。
 
+## 单智能体执行约束
+
+- 本项目默认采用单智能体 Inline Execution。
+- 所有实现、测试、代码审查和验证均由当前主智能体串行完成。
+- 禁止创建、调用、委派或并行运行任何子智能体、后台智能体或独立审查智能体。
+- 禁止使用会创建子智能体的技能，包括：
+  - `subagent-driven-development`
+  - `dispatching-parallel-agents`
+  - `requesting-code-review`
+- `executing-plans`、`test-driven-development` 和 `verification-before-completion` 可以使用，但其步骤必须由当前主智能体亲自执行。
+- 如果某个技能要求必须创建子智能体，应跳过该技能，并按照本项目已有的测试、审查和验证规则由主智能体完成。
+- 不得因为代码审查、测试隔离、上下文管理或提高速度而例外创建子智能体。
+- 如果误创建了子智能体，必须立即停止，报告其是否修改文件，并等待用户确认后再继续。
+
 ---
 
 ## 10. Codex 完成报告
