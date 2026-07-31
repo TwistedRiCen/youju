@@ -488,7 +488,7 @@ git commit -m "feat: add local case workspace"
 - Consumes: repository revision checks and workspace autosave.
 - Produces: `BrowserCapabilities`, `CaseWriteLock`, read-only secondary tabs and `concurrent_edit_conflict` feedback.
 
-- [ ] **Step 1: Write failing capability and multi-page tests**
+- [x] **Step 1: Write failing capability and multi-page tests**
 
 ```typescript
 export interface BrowserCapabilities {
@@ -508,7 +508,7 @@ export interface CaseWriteLease {
 
 Playwright opens two pages in one context on the same case. Assert the first shows `可编辑`, the second shows `另一标签页正在编辑，本页只读`, and the second has disabled form inputs. After closing the first page, the second can explicitly acquire editing. A repository test with stale revision must still return `concurrent_edit_conflict` when Web Locks are absent.
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 ```powershell
 pnpm exec vitest run apps/web/tests/browser-capabilities.test.ts
@@ -517,7 +517,7 @@ pnpm exec playwright test tests/e2e/case-concurrency.spec.ts --project=chromium-
 
 Expected: FAIL because capability detection and write-lock coordination are absent.
 
-- [ ] **Step 3: Implement capability detection and locking**
+- [x] **Step 3: Implement capability detection and locking**
 
 Use the lock name `youju:case:<caseId>`. When `navigator.locks` exists, request an exclusive lock with `ifAvailable: true` and retain it until lease release. Use `BroadcastChannel('youju:case-locks')` only for notifications, never as the authority. Without Web Locks, allow repository revision checks to remain the final write guard. On conflict, stop autosave, keep the visible form values and require reload; do not merge.
 
@@ -527,7 +527,7 @@ Show:
 - OPFS missing: structured editing available, materials and formal attachment export unavailable;
 - missing Web Locks/BroadcastChannel: editing continues with revision protection and a compatibility notice.
 
-- [ ] **Step 4: Run GREEN and Task gates**
+- [x] **Step 4: Run GREEN and Task gates**
 
 ```powershell
 pnpm --filter @youju/web test
@@ -540,7 +540,7 @@ git diff --check
 git status --short
 ```
 
-- [ ] **Step 5: Commit and stop**
+- [x] **Step 5: Commit and stop**
 
 ```powershell
 git add apps/web/src/browser apps/web/src/concurrency apps/web/src/composables apps/web/src/views/CaseWorkspaceView.vue apps/web/tests tests/e2e/case-concurrency.spec.ts docs/superpowers/plans/2026-07-31-youju-m2-no-ai-core-plan.md

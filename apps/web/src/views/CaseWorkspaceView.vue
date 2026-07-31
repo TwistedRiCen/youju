@@ -1,9 +1,12 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, reactive, ref } from 'vue'
+import { computed, onMounted, onUnmounted, reactive, ref, shallowRef } from 'vue'
 import { useRoute } from 'vue-router'
 import type { FactDraft, UuidV4 } from '@youju/domain'
+import { detectBrowserCapabilities } from '../browser/browser-capabilities.js'
+import type { BrowserCapabilities } from '../browser/browser-capabilities.js'
 import { createAutosave } from '../composables/use-autosave.js'
 import type { AutosaveController } from '../composables/use-autosave.js'
+import { useCaseWriteLock } from '../composables/use-case-write-lock.js'
 import {
   fenToYuan,
   getCaseRepository,
@@ -17,10 +20,14 @@ import type { CaseRepository } from '../storage/index.js'
 const route = useRoute()
 const caseId = String(route.params.caseId ?? '') as UuidV4
 
+const capabilities: BrowserCapabilities = detectBrowserCapabilities()
+const { mode: writeMode, acquire, release } = useCaseWriteLock()
+
 const loading = ref(true)
 const notFound = ref(false)
+const loadError = ref('')
 const caseTitle = ref('')
-const drafts = ref<readonly FactDraft[]>([])
+const drafts = shallowRef<readonly FactDraft[]>([])
 const values = reactive<Record<string, string>>({})
 
 let autosave: AutosaveController<readonly FactDraft[]> | null = null
@@ -77,6 +84,35 @@ function toPersistedValue(draft: FactDraft, raw: string): string | null {
   return raw
 }
 
+function toPlainDraft(draft: FactDraft, value: string, updatedAt: string): FactDraft {
+  const base = {
+    id: draft.id,
+    caseId: draft.caseId,
+    value,
+    sourceRefs: draft.sourceRefs.map((source) => ({ evidenceId: source.evidenceId })),
+    updatedAt,
+    revision: draft.revision,
+  }
+  switch (draft.factType) {
+    case 'payment':
+      return { ...base, factType: 'payment', fieldName: 'paid_amount' }
+    case 'order':
+      return { ...base, factType: 'order', fieldName: draft.fieldName }
+    case 'merchant':
+      return { ...base, factType: 'merchant', fieldName: 'merchant_name' }
+    case 'product':
+      return { ...base, factType: 'product', fieldName: 'product_name' }
+    case 'delivery':
+      return { ...base, factType: 'delivery', fieldName: 'received_time' }
+    case 'issue':
+      return { ...base, factType: 'issue', fieldName: 'problem_description' }
+    case 'communication':
+      return { ...base, factType: 'communication', fieldName: 'merchant_response' }
+    case 'resolution':
+      return { ...base, factType: 'resolution', fieldName: 'requested_resolution' }
+  }
+}
+
 function buildDraftsForSave(): readonly FactDraft[] | null {
   const now = new Date().toISOString()
   const savedDrafts: FactDraft[] = []
@@ -86,7 +122,7 @@ function buildDraftsForSave(): readonly FactDraft[] | null {
     if (value === null) {
       return null
     }
-    savedDrafts.push({ ...draft, value, updatedAt: now })
+    savedDrafts.push(toPlainDraft(draft, value, now))
   }
   return savedDrafts
 }
@@ -110,6 +146,10 @@ const onVisibilityChange = (): void => {
 
 onMounted(async () => {
   try {
+    if (!capabilities.indexedDb) {
+      loadError.value = '当前浏览器不支持本地存储，无法加载本地事件。'
+      return
+    }
     repository = await getCaseRepository()
     const aggregate = await loadCase(repository, caseId)
     if (aggregate === null) {
@@ -135,14 +175,22 @@ onMounted(async () => {
         )
       },
     })
+    await acquire(caseId)
     document.addEventListener('visibilitychange', onVisibilityChange)
+  } catch {
+    loadError.value = '本地存储不可用，请重新加载页面。'
   } finally {
     loading.value = false
   }
 })
 
+async function retryAcquire(): Promise<void> {
+  await acquire(caseId)
+}
+
 onUnmounted(() => {
   document.removeEventListener('visibilitychange', onVisibilityChange)
+  void release()
   void autosave?.dispose()
 })
 </script>
@@ -156,9 +204,25 @@ onUnmounted(() => {
       <p>该事件不存在或已被删除。</p>
       <a href="/">返回首页</a>
     </section>
+    <section v-else-if="loadError" class="load-error">
+      <h1>无法加载事件</h1>
+      <p>{{ loadError }}</p>
+      <a href="/">返回首页</a>
+    </section>
     <section v-else class="overview">
       <h1>{{ caseTitle }}</h1>
       <p class="save-status">{{ statusText }}</p>
+      <p v-if="writeMode === 'writer'" class="write-mode">可编辑</p>
+      <div v-else class="read-only">
+        <p>另一标签页正在编辑，本页只读</p>
+        <button type="button" @click="retryAcquire">获取编辑权</button>
+      </div>
+      <p v-if="!capabilities.opfs" class="notice">
+        当前浏览器不支持 OPFS，材料导入与附件导出不可用。
+      </p>
+      <p v-if="!capabilities.webLocks || !capabilities.broadcastChannel" class="notice">
+        当前浏览器不支持多标签页编辑保护，请避免同时在多个标签页编辑。
+      </p>
       <div v-for="draft in drafts" :key="draft.id" class="field">
         <label :for="inputId(draft.fieldName)">{{ fieldLabel(draft.fieldName) }}</label>
         <input
@@ -166,6 +230,7 @@ onUnmounted(() => {
           :id="inputId(draft.fieldName)"
           v-model="values[draft.fieldName]"
           type="datetime-local"
+          :disabled="writeMode === 'reader'"
           @input="scheduleSave"
         />
         <input
@@ -174,6 +239,7 @@ onUnmounted(() => {
           v-model="values[draft.fieldName]"
           type="text"
           :inputmode="draft.fieldName === 'paid_amount' ? 'decimal' : undefined"
+          :disabled="writeMode === 'reader'"
           @input="scheduleSave"
         />
       </div>
@@ -203,6 +269,45 @@ h1 {
   margin: 0 0 1.25rem;
   color: #527067;
   font-weight: 700;
+}
+
+.write-mode {
+  display: inline-block;
+  margin: 0 0 1rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  background: #dcebe2;
+  color: #1d5c3a;
+  font-weight: 700;
+}
+
+.read-only {
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid #e0c5a6;
+  border-radius: 0.6rem;
+  background: #fdf3e5;
+}
+
+.read-only p {
+  margin: 0 0 0.5rem;
+  color: #8a4b1d;
+  font-weight: 700;
+}
+
+.read-only button {
+  padding: 0.45rem 0.85rem;
+  border: 0;
+  border-radius: 0.5rem;
+  background: #8a4b1d;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.notice {
+  color: #7a5a32;
+  line-height: 1.6;
 }
 
 .field {

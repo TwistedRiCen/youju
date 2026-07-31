@@ -30,7 +30,36 @@ test('autosaves workspace edits and recovers them after reload', async ({ page }
 
   await expect(page.getByLabel('商家名称')).toHaveValue('晴川生活示例店')
   await page.getByLabel('商家名称').fill('修改后的商家名称')
-  await page.waitForTimeout(700)
+  await expect
+    .poll(async () =>
+      page.evaluate(async () => {
+        const url = '/src/storage/index.ts'
+        const storage = (await import(url)) as {
+          openYoujuDatabase: (migrations: readonly unknown[]) => Promise<{ version: number }>
+          DATABASE_MIGRATIONS: readonly unknown[]
+          IndexedDbCaseRepository: new (database: unknown) => {
+            listCases(): Promise<readonly { caseEvent: { id: string } }[]>
+            getCase(caseId: string): Promise<{
+              factDrafts: readonly { fieldName: string; value: string }[]
+            } | null>
+          }
+        }
+        const database = await storage.openYoujuDatabase(storage.DATABASE_MIGRATIONS)
+        const repository = new storage.IndexedDbCaseRepository(database)
+        const cases = await repository.listCases()
+        const first = cases[0]
+        const aggregate =
+          first === undefined ? null : await repository.getCase(first.caseEvent.id)
+        return {
+          databaseVersion: database.version,
+          caseCount: cases.length,
+          merchantValue:
+            aggregate?.factDrafts.find((draft) => draft.fieldName === 'merchant_name')?.value ??
+            null,
+        }
+      }),
+    )
+    .toEqual({ databaseVersion: 2, caseCount: 1, merchantValue: '修改后的商家名称' })
 
   await page.reload()
   await expect(page.getByLabel('商家名称')).toHaveValue('修改后的商家名称')
