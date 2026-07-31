@@ -1272,7 +1272,7 @@ git commit -m "feat: add rule and statement workflow"
 - Consumes: immutable current case, facts, timeline, statement, findings and ready evidence metadata.
 - Produces: `ExportSnapshot`, `validateExportSnapshot()`, stable names, safe CSV and inert HTML.
 
-- [ ] **Step 1: Write failing preflight tests**
+- [x] **Step 1: Write failing preflight tests**
 
 ```typescript
 expect(validateExportSnapshot(validSnapshot)).toEqual({
@@ -1289,7 +1289,7 @@ expect(validateExportSnapshot({ ...validSnapshot, statement: staleStatement })).
 
 Add exact blocking cases for missing required fact, required source absent, unresolved conflict, unconfirmed timeline reference, missing ready evidence, missing OPFS capability, missing blob and hash mismatch. Warning-only missing recommended evidence does not block.
 
-- [ ] **Step 2: Write failing output safety tests**
+- [x] **Step 2: Write failing output safety tests**
 
 Assert:
 
@@ -1300,7 +1300,7 @@ Assert:
 - duplicate sanitized attachment names receive deterministic numeric suffixes;
 - ZIP entry names reject absolute paths, backslashes, control characters and `..` segments.
 
-- [ ] **Step 3: Run RED**
+- [x] **Step 3: Run RED**
 
 ```powershell
 pnpm exec vitest run packages/document-export/tests/preflight.test.ts packages/document-export/tests/safe-text-output.test.ts
@@ -1308,7 +1308,7 @@ pnpm exec vitest run packages/document-export/tests/preflight.test.ts packages/d
 
 Expected: FAIL because `@youju/document-export` does not exist.
 
-- [ ] **Step 4: Implement the package without PDF or ZIP dependencies**
+- [x] **Step 4: Implement the package without PDF or ZIP dependencies**
 
 Create `package.json` with package name `@youju/document-export`, standard scripts and public export `./src/index.ts`, then connect only the existing workspace contracts:
 
@@ -1365,7 +1365,7 @@ export type ExportPreflightResult =
 
 Every reason and warning is a discriminated typed object, not a free-form string. CSV uses UTF-8 with BOM for spreadsheet compatibility. HTML is a complete offline document with `lang="zh-CN"` and no script or remote resource. The application service sets case status to `ready_to_export` only for a ready result and to `in_progress` for a previously ready/exported case that becomes blocked.
 
-- [ ] **Step 5: Run GREEN and package gates**
+- [x] **Step 5: Run GREEN and package gates**
 
 ```powershell
 pnpm --filter @youju/document-export test
@@ -1377,7 +1377,7 @@ git diff --check
 git status --short
 ```
 
-- [ ] **Step 6: Commit and stop**
+- [x] **Step 6: Commit and stop**
 
 ```powershell
 git add packages/document-export pnpm-lock.yaml docs/superpowers/plans/2026-07-31-youju-m2-no-ai-core-plan.md

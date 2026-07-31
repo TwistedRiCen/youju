@@ -1,0 +1,23 @@
+{
+  "name": "@youju/document-export",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "lint": "eslint src tests",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "build": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@youju/domain": "workspace:*",
+    "@youju/rule-engine": "workspace:*",
+    "@youju/timeline": "workspace:*"
+  },
+  "devDependencies": {
+    "vitest": "^4.0.0"
+  }
+}
