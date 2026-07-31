@@ -1,6 +1,7 @@
 import { evidenceStoragePath } from '@youju/evidence-store'
 import type { EvidenceBlobStore } from '@youju/evidence-store'
 import type { CaseRepository } from '../storage/index.js'
+import { resumeCaseDeletion } from './delete-case-service.js'
 
 export interface LocalOperationRecoveryDependencies {
   readonly repository: CaseRepository
@@ -14,6 +15,35 @@ export async function recoverLocalOperations(
   const entries = await dependencies.repository.listOperations()
 
   for (const entry of entries) {
+    if (entry.operationType === 'evidence_delete') {
+      const metadata = (await dependencies.repository.listEvidence(entry.caseId)).find(
+        (item) => item.id === entry.evidenceId,
+      )
+      await dependencies.blobStore.delete(entry.storageRef).catch(() => undefined)
+      if (metadata !== undefined) {
+        await dependencies.repository.removeEvidence(entry.evidenceId)
+      }
+      const blobGone = !(await dependencies.blobStore.exists(entry.storageRef))
+      const metadataGone =
+        (await dependencies.repository.listEvidence(entry.caseId)).find(
+          (item) => item.id === entry.evidenceId,
+        ) === undefined
+      if (blobGone && metadataGone) {
+        await dependencies.repository.deleteOperation(entry.operationId)
+      }
+      cleaned.push(entry.operationId)
+      continue
+    }
+    if (entry.operationType === 'case_delete') {
+      await resumeCaseDeletion(
+        entry.operationId,
+        entry.caseId,
+        entry.startedAt,
+        dependencies,
+      )
+      cleaned.push(entry.operationId)
+      continue
+    }
     if (entry.operationType === 'package_export') {
       await dependencies.blobStore.deleteTemporary(entry.operationId)
       await dependencies.repository.deleteOperation(entry.operationId)

@@ -22,7 +22,7 @@ export const EVIDENCE_CATEGORY_LABELS: Readonly<Record<EvidenceCategory, string>
 
 let blobStore: EvidenceBlobStore | null = null
 
-function getEvidenceBlobStore(): EvidenceBlobStore {
+export function getEvidenceBlobStore(): EvidenceBlobStore {
   if (blobStore === null) {
     blobStore = new OpfsEvidenceBlobStore()
   }

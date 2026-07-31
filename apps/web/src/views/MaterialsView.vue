@@ -11,6 +11,9 @@ import {
   updateEvidenceCategory,
 } from '../services/evidence-service.js'
 import type { FileImportOutcome } from '../services/evidence-service.js'
+import { getCaseRepository } from '../services/case-service.js'
+import { deleteEvidence } from '../services/reference-service.js'
+import { EvidenceReferencedError } from '../services/reference-service.js'
 
 const route = useRoute()
 const caseId = String(route.params.caseId ?? '') as UuidV4
@@ -20,6 +23,8 @@ const loading = ref(true)
 const importing = ref(false)
 const evidence = ref<readonly EvidenceFile[]>([])
 const messages = ref<readonly { fileName: string; text: string }[]>([])
+const deleteError = ref('')
+const referenceDetails = ref<string[]>([])
 
 const errorTexts: Readonly<Record<string, string>> = {
   file_type_mismatch: '文件扩展名、类型与内容不一致',
@@ -71,6 +76,26 @@ async function applyCategory(payload: {
   const updated = await updateEvidenceCategory(caseId, payload.evidenceId, payload.category)
   evidence.value = evidence.value.map((item) => (item.id === updated.id ? updated : item))
 }
+
+async function removeEvidenceItem(evidenceId: string): Promise<void> {
+  deleteError.value = ''
+  referenceDetails.value = []
+  try {
+    const repository = await getCaseRepository()
+    const { getEvidenceBlobStore } = await import('../services/evidence-service.js')
+    await deleteEvidence(caseId, evidenceId, repository, getEvidenceBlobStore())
+    evidence.value = await listCaseEvidence(caseId)
+  } catch (error) {
+    if (error instanceof EvidenceReferencedError) {
+      deleteError.value = '该材料被正式内容引用，不能删除'
+      referenceDetails.value = error.references.map((reference) =>
+        reference.type === 'confirmed_fact' ? '被确认事实引用' : '被时间线条目引用',
+      )
+    } else {
+      deleteError.value = '删除失败，请重试'
+    }
+  }
+}
 </script>
 
 <template>
@@ -83,6 +108,10 @@ async function applyCategory(payload: {
     </p>
     <template v-else>
       <EvidenceImportField :disabled="importing" @files="importFiles" />
+      <p v-if="deleteError" class="delete-error">{{ deleteError }}</p>
+      <ul v-if="referenceDetails.length > 0" class="delete-references">
+        <li v-for="(detail, index) in referenceDetails" :key="index">{{ detail }}</li>
+      </ul>
       <ul v-if="messages.length > 0" class="messages">
         <li v-for="(message, index) in messages" :key="index">
           {{ message.fileName }}：{{ message.text }}
@@ -91,7 +120,12 @@ async function applyCategory(payload: {
     </template>
 
     <p v-if="loading">正在加载材料…</p>
-    <EvidenceList v-else :evidence="evidence" @category-change="applyCategory" />
+    <EvidenceList
+      v-else
+      :evidence="evidence"
+      @category-change="applyCategory"
+      @remove-evidence="removeEvidenceItem"
+    />
   </main>
 </template>
 
@@ -124,5 +158,14 @@ h1 {
   padding-left: 1.25rem;
   color: #31564c;
   line-height: 1.7;
+}
+
+.delete-error {
+  color: #a03b1e;
+  font-weight: 700;
+}
+
+.delete-references {
+  color: #7a4b20;
 }
 </style>

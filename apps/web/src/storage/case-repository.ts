@@ -69,6 +69,7 @@ export interface CaseRepository {
   findEvidenceByHash(caseId: UuidV4, sha256: string): Promise<EvidenceFile | null>
   addReadyEvidence(evidence: EvidenceFile, operationId: UuidV4): Promise<void>
   removeEvidence(evidenceId: UuidV4): Promise<void>
+  deleteAllCaseRecords(caseId: UuidV4): Promise<void>
   listConfirmedFacts(caseId: UuidV4): Promise<readonly ConfirmedFact[]>
   confirmFact(command: ConfirmFactCommand): Promise<ConfirmedFact>
   putTimelineDraft(entry: TimelineEntry): Promise<void>

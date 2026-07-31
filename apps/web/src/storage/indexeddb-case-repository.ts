@@ -235,6 +235,44 @@ export class IndexedDbCaseRepository implements CaseRepository {
     }
   }
 
+  async deleteAllCaseRecords(caseId: UuidV4): Promise<void> {
+    try {
+      const transaction = this.database.transaction(
+        [
+          'cases',
+          'factDrafts',
+          'confirmedFacts',
+          'timelineEntries',
+          'statementDrafts',
+          'confirmedStatements',
+          'evidenceMetadata',
+        ],
+        'readwrite',
+      )
+      await transaction.objectStore('cases').delete(caseId)
+      for (const storeName of [
+        'factDrafts',
+        'confirmedFacts',
+        'timelineEntries',
+        'statementDrafts',
+        'confirmedStatements',
+        'evidenceMetadata',
+      ] as const) {
+        let cursor = await transaction
+          .objectStore(storeName)
+          .index('by_caseId')
+          .openCursor(caseId)
+        while (cursor !== null) {
+          await cursor.delete()
+          cursor = await cursor.continue()
+        }
+      }
+      await transaction.done
+    } catch (error) {
+      throw toStorageError(error)
+    }
+  }
+
   async listConfirmedFacts(caseId: UuidV4): Promise<readonly ConfirmedFact[]> {
     try {
       const transaction = this.database.transaction('confirmedFacts', 'readonly')

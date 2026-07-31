@@ -6,6 +6,7 @@ const props = defineProps<{ evidence: readonly EvidenceFile[] }>()
 
 const emit = defineEmits<{
   categoryChange: [payload: { evidenceId: string; category: EvidenceCategory }]
+  removeEvidence: [evidenceId: string]
 }>()
 
 const categories = Object.keys(EVIDENCE_CATEGORY_LABELS) as EvidenceCategory[]
@@ -39,6 +40,14 @@ function onChange(evidenceId: string, event: Event): void {
         <p>大小：{{ item.size }} 字节</p>
         <p>导入时间：{{ item.importedAt }}</p>
         <p class="hash">SHA-256：{{ item.sha256 }}</p>
+        <button
+          type="button"
+          class="remove-button"
+          :aria-label="`删除材料：${item.originalName}`"
+          @click="emit('removeEvidence', item.id)"
+        >
+          删除材料
+        </button>
       </li>
     </ul>
   </section>
@@ -80,5 +89,16 @@ select {
 
 .empty {
   color: #527067;
+}
+
+.remove-button {
+  margin-top: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  border: 0;
+  border-radius: 0.4rem;
+  background: #a03b1e;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
 }
 </style>

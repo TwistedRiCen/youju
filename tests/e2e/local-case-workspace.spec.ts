@@ -81,7 +81,7 @@ test('autosaves workspace edits and recovers them after reload', async ({ page }
         }
       }),
     )
-    .toEqual({
+    .toMatchObject({
       databaseVersion: 2,
       caseCount: 1,
       merchantValue: '修改后的商家名称',

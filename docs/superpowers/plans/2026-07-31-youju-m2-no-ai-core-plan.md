@@ -1543,7 +1543,7 @@ git commit -m "feat: generate submission packages"
 - Consumes: all case child stores and `EvidenceBlobStore`.
 - Produces: material reference inspection, blocked referenced deletion, journaled hard deletion and post-delete verification.
 
-- [ ] **Step 1: Write failing reference and service tests**
+- [x] **Step 1: Write failing reference and service tests**
 
 ```typescript
 expect(await referenceService.findEvidenceReferences(caseId, evidenceId)).toEqual([
@@ -1559,7 +1559,7 @@ await expect(referenceService.deleteEvidence(caseId, evidenceId)).rejects.toMatc
 
 For individual unreferenced evidence deletion, assert an `evidence_delete` journal survives a one-time OPFS failure and recovery completes only after both the blob and metadata are absent. For whole-case deletion, inject a blob store that fails once. Assert the first run returns `delete_verification_failed` with `remaining: ['opfs']`, does not report success, leaves a `deleting` journal entry, and a second run completes idempotently.
 
-- [ ] **Step 2: Write failing real-browser deletion test**
+- [x] **Step 2: Write failing real-browser deletion test**
 
 Create a case with material, facts, timeline and statement. Assert individual deletion of a referenced material is blocked and lists references. Open the event deletion page, verify counts, enter an incorrect title and remain blocked, enter the exact title, delete, then assert:
 
@@ -1569,7 +1569,7 @@ Create a case with material, facts, timeline and statement. Assert individual de
 - no temporary import or export file remains;
 - no hidden backup or trash record exists.
 
-- [ ] **Step 3: Run RED**
+- [x] **Step 3: Run RED**
 
 ```powershell
 pnpm exec vitest run apps/web/tests/deletion.test.ts
@@ -1578,7 +1578,7 @@ pnpm exec playwright test tests/e2e/verified-deletion.spec.ts --project=chromium
 
 Expected: FAIL because reference protection and verified cross-storage deletion are absent.
 
-- [ ] **Step 4: Implement deletion and verification**
+- [x] **Step 4: Implement deletion and verification**
 
 ```typescript
 export type DeleteCaseResult =
@@ -1612,7 +1612,7 @@ Individual evidence deletion uses `evidence_delete/deleting`, removes the OPFS b
 
 The UI shows counts and recommends export without requiring it. Deletion requires exact event title, is immediate, has no undo and only shows success after verification.
 
-- [ ] **Step 5: Run GREEN and Task gates**
+- [x] **Step 5: Run GREEN and Task gates**
 
 ```powershell
 pnpm --filter @youju/web test
@@ -1626,7 +1626,7 @@ git diff --check
 git status --short
 ```
 
-- [ ] **Step 6: Commit and stop**
+- [x] **Step 6: Commit and stop**
 
 ```powershell
 git add apps/web/src apps/web/tests tests/e2e/verified-deletion.spec.ts docs/superpowers/plans/2026-07-31-youju-m2-no-ai-core-plan.md

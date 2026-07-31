@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 import CaseWorkspaceView from './views/CaseWorkspaceView.vue'
 import CreateCaseView from './views/CreateCaseView.vue'
+import DeleteCaseView from './views/DeleteCaseView.vue'
 import ExportView from './views/ExportView.vue'
 import FactsView from './views/FactsView.vue'
 import FindingsView from './views/FindingsView.vue'
@@ -55,6 +56,11 @@ const routes: RouteRecordRaw[] = [
     path: '/cases/:caseId/export',
     name: 'case-export',
     component: ExportView,
+  },
+  {
+    path: '/cases/:caseId/delete',
+    name: 'case-delete',
+    component: DeleteCaseView,
   },
 ]
 

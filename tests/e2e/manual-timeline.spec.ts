@@ -36,7 +36,11 @@ async function importEvidence(page: Page): Promise<void> {
   await page.getByRole('link', { name: '返回事件工作台' }).click()
 }
 
-test('adds, confirms and reorders timeline entries with conflict detection', async ({ page }) => {
+test('adds, confirms and reorders timeline entries with conflict detection', async ({
+  page,
+  browserName,
+}) => {
+  test.skip(browserName === 'webkit', '此 WebKit 构建不支持 OPFS')
   await createCase(page)
   await importEvidence(page)
   await page.getByRole('link', { name: '时间线' }).click()
@@ -66,6 +70,7 @@ test('adds, confirms and reorders timeline entries with conflict detection', asy
   }
 
   await page.reload()
+  await expect(page.locator('li.timeline-item h2').first()).toBeVisible()
   const order = await page
     .locator('li.timeline-item h2')
     .allTextContents()
