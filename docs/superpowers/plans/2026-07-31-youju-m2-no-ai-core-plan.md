@@ -275,7 +275,7 @@ git commit -m "feat: extend no-AI domain contracts"
 - Consumes: M2 domain contracts from Task 1.
 - Produces: `CaseRepository`, `IndexedDbCaseRepository`, ordered database migrations through version 2 and the eight approved object stores.
 
-- [ ] **Step 1: Write the failing real-browser repository contract**
+- [x] **Step 1: Write the failing real-browser repository contract**
 
 The Playwright test dynamically imports `/src/storage/index.ts` in the served browser and asserts:
 
@@ -299,7 +299,7 @@ expect(updated.revision).toBe(2)
 
 Add a second writer update with `expectedRevision: 1` and assert a typed `concurrent_edit_conflict`. Close and reopen the repository and assert data survives. Create a legacy version 1 database with a case, open the current version 2 database and assert migration preserves it. Inject a migration that throws, assert its upgrade transaction aborts and the version 1 data remains readable. Open an artificial database at a newer version and assert the app refuses writes without deleting it.
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 ```powershell
 pnpm exec playwright test tests/e2e/case-repository.spec.ts --project=chromium-desktop
@@ -307,7 +307,7 @@ pnpm exec playwright test tests/e2e/case-repository.spec.ts --project=chromium-d
 
 Expected: FAIL because the repository module does not exist. The dev server and Playwright must start successfully, making this a valid behavior RED.
 
-- [ ] **Step 3: Add the reviewed dependency**
+- [x] **Step 3: Add the reviewed dependency**
 
 Install exactly:
 
@@ -317,7 +317,7 @@ pnpm --filter @youju/web add idb@8.0.3
 
 Record in `m2-dependencies.md`: ISC license, Promise/typed IndexedDB purpose, active modern-browser support, native IndexedDB alternative, and rejection of callback-heavy transaction code. Do not add `idb-keyval`.
 
-- [ ] **Step 4: Implement the port and schema**
+- [x] **Step 4: Implement the port and schema**
 
 Use:
 
@@ -361,7 +361,7 @@ export interface CaseRepository {
 
 Database `youju-local` current version 2 uses ordered migrations. Version 1 creates `cases` and `factDrafts`; version 2 adds `confirmedFacts`, `timelineEntries`, `statementDrafts`, `confirmedStatements`, `evidenceMetadata` and `operationJournal` plus child `caseId` indexes. A fresh database executes both migrations in one upgrade transaction. `openYoujuDatabase()` accepts an explicit migration list so failure-abort behavior is testable, while production always passes the exported fixed list. `blocked`, `blocking` and `terminated` produce low-sensitivity storage errors. A newer unknown database version reports `storage_not_supported` and blocks writes; it is never deleted automatically.
 
-- [ ] **Step 5: Run GREEN and regression gates**
+- [x] **Step 5: Run GREEN and regression gates**
 
 ```powershell
 pnpm exec playwright test tests/e2e/case-repository.spec.ts --project=chromium-desktop
@@ -373,7 +373,7 @@ git diff --check
 git status --short
 ```
 
-- [ ] **Step 6: Commit and stop**
+- [x] **Step 6: Commit and stop**
 
 ```powershell
 git add apps/web/package.json apps/web/src/storage tests/e2e/case-repository.spec.ts docs/development/m2-dependencies.md pnpm-lock.yaml docs/superpowers/plans/2026-07-31-youju-m2-no-ai-core-plan.md

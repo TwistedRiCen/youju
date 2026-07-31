@@ -16,6 +16,7 @@
     "@youju/domain": "workspace:*",
     "@youju/rule-engine": "workspace:*",
     "@youju/test-support": "workspace:*",
+    "idb": "8.0.3",
     "vue": "^3.0.0",
     "vue-router": "^4.0.0"
   },
