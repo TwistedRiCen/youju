@@ -217,6 +217,8 @@ onUnmounted(() => {
         <a :href="`/cases/${caseId}/materials`">材料</a>
         <a :href="`/cases/${caseId}/facts`">事实</a>
         <a :href="`/cases/${caseId}/timeline`">时间线</a>
+        <a :href="`/cases/${caseId}/findings`">缺口检查</a>
+        <a :href="`/cases/${caseId}/statement`">陈述</a>
       </nav>
       <p v-if="writeMode === 'writer'" class="write-mode">可编辑</p>
       <div v-else class="read-only">

@@ -1157,7 +1157,7 @@ git commit -m "feat: add timeline editing and conflicts"
 - Consumes: current confirmed facts, confirmed timeline, deterministic rule findings and rule version.
 - Produces: `buildStatementDraft()`, `confirmStatement()`, rule findings UI and stale-statement invalidation.
 
-- [ ] **Step 1: Write failing deterministic statement tests**
+- [x] **Step 1: Write failing deterministic statement tests**
 
 ```typescript
 const draft = buildStatementDraft({
@@ -1176,11 +1176,11 @@ expect(draft.confirmedFactIds).toEqual(confirmedFacts.map(({ id }) => id))
 
 Assert a statement is current only when its fact IDs, timeline IDs and rule version exactly match the latest formal snapshot. Replacing a fact or confirming another timeline entry makes it stale. Draft, old confirmed versions and stale versions remain stored but are excluded from formal output.
 
-- [ ] **Step 2: Write failing browser workflow**
+- [x] **Step 2: Write failing browser workflow**
 
 The E2E test shows exact blocking required-fact findings and warning recommended-evidence findings, confirms the generated statement, edits a confirmed merchant fact, and asserts the statement becomes `内容已过期，请重新确认`.
 
-- [ ] **Step 3: Run RED**
+- [x] **Step 3: Run RED**
 
 ```powershell
 pnpm exec vitest run packages/domain/tests/statements.test.ts apps/web/tests/findings-and-statement.test.ts
@@ -1189,7 +1189,7 @@ pnpm exec playwright test tests/e2e/statement-workflow.spec.ts --project=chromiu
 
 Expected: FAIL because statement functions, persistence and pages are absent.
 
-- [ ] **Step 4: Implement deterministic statement behavior**
+- [x] **Step 4: Implement deterministic statement behavior**
 
 ```typescript
 export interface FormalSnapshotIdentity {
@@ -1225,7 +1225,7 @@ export function isStatementCurrent(
 
 Load the existing versioned YAML as a Vite raw asset and pass it through `parseEcommerceRefundRule()`; do not duplicate rule data in Web code. Repository methods persist statement drafts and append confirmed statement versions. Any fact, timeline or rule identity change invalidates current status by comparison, not by destructive update.
 
-- [ ] **Step 5: Run GREEN and Task gates**
+- [x] **Step 5: Run GREEN and Task gates**
 
 ```powershell
 pnpm --filter @youju/domain test
@@ -1240,7 +1240,7 @@ git diff --check
 git status --short
 ```
 
-- [ ] **Step 6: Commit and stop**
+- [x] **Step 6: Commit and stop**
 
 ```powershell
 git add packages/domain apps/web/src apps/web/tests tests/e2e/statement-workflow.spec.ts docs/superpowers/plans/2026-07-31-youju-m2-no-ai-core-plan.md

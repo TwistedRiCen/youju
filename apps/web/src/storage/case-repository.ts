@@ -5,7 +5,9 @@ import type {
   EvidenceFile,
   FactDraft,
   ConfirmedFact,
+  ConfirmedStatement,
   OperationJournalEntry,
+  StatementDraft,
   TimelineEntry,
   UuidV4,
   UtcTimestamp,
@@ -73,6 +75,10 @@ export interface CaseRepository {
   confirmTimelineEntry(id: UuidV4): Promise<TimelineEntry>
   listTimeline(caseId: UuidV4): Promise<readonly TimelineEntry[]>
   reorderTimeline(caseId: UuidV4, orderedIds: readonly UuidV4[]): Promise<void>
+  putStatementDraft(draft: StatementDraft): Promise<void>
+  listStatementDrafts(caseId: UuidV4): Promise<readonly StatementDraft[]>
+  appendConfirmedStatement(statement: ConfirmedStatement): Promise<void>
+  listConfirmedStatements(caseId: UuidV4): Promise<readonly ConfirmedStatement[]>
   updateEvidenceCategory(
     caseId: UuidV4,
     evidenceId: UuidV4,

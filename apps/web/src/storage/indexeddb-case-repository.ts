@@ -3,10 +3,12 @@ import type {
   CaseEvent,
   ConfirmFactCommand,
   ConfirmedFact,
+  ConfirmedStatement,
   EvidenceCategory,
   EvidenceFile,
   FactDraft,
   OperationJournalEntry,
+  StatementDraft,
   TimelineEntry,
   UuidV4,
 } from '@youju/domain'
@@ -407,6 +409,58 @@ export class IndexedDbCaseRepository implements CaseRepository {
         })
       }
       await transaction.done
+    } catch (error) {
+      throw toStorageError(error)
+    }
+  }
+
+  async putStatementDraft(draft: StatementDraft): Promise<void> {
+    try {
+      const transaction = this.database.transaction('statementDrafts', 'readwrite')
+      await transaction.objectStore('statementDrafts').put(draft)
+      await transaction.done
+    } catch (error) {
+      throw toStorageError(error)
+    }
+  }
+
+  async listStatementDrafts(caseId: UuidV4): Promise<readonly StatementDraft[]> {
+    try {
+      const transaction = this.database.transaction('statementDrafts', 'readonly')
+      const records = await transaction
+        .objectStore('statementDrafts')
+        .index('by_caseId')
+        .getAll(caseId)
+      await transaction.done
+      return records.sort((a, b) =>
+        a.updatedAt === b.updatedAt ? (a.id < b.id ? -1 : 1) : a.updatedAt < b.updatedAt ? -1 : 1,
+      )
+    } catch (error) {
+      throw toStorageError(error)
+    }
+  }
+
+  async appendConfirmedStatement(statement: ConfirmedStatement): Promise<void> {
+    try {
+      const transaction = this.database.transaction('confirmedStatements', 'readwrite')
+      await transaction.objectStore('confirmedStatements').put(statement)
+      await transaction.done
+    } catch (error) {
+      throw toStorageError(error)
+    }
+  }
+
+  async listConfirmedStatements(caseId: UuidV4): Promise<readonly ConfirmedStatement[]> {
+    try {
+      const transaction = this.database.transaction('confirmedStatements', 'readonly')
+      const records = await transaction
+        .objectStore('confirmedStatements')
+        .index('by_caseId')
+        .getAll(caseId)
+      await transaction.done
+      return records.sort((a, b) =>
+        a.version === b.version ? (a.id < b.id ? -1 : 1) : a.version - b.version,
+      )
     } catch (error) {
       throw toStorageError(error)
     }

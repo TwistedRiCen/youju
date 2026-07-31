@@ -3,8 +3,10 @@ import type { RouteRecordRaw } from 'vue-router'
 import CaseWorkspaceView from './views/CaseWorkspaceView.vue'
 import CreateCaseView from './views/CreateCaseView.vue'
 import FactsView from './views/FactsView.vue'
+import FindingsView from './views/FindingsView.vue'
 import HomeView from './views/HomeView.vue'
 import MaterialsView from './views/MaterialsView.vue'
+import StatementView from './views/StatementView.vue'
 import TimelineView from './views/TimelineView.vue'
 
 const routes: RouteRecordRaw[] = [
@@ -37,6 +39,16 @@ const routes: RouteRecordRaw[] = [
     path: '/cases/:caseId/timeline',
     name: 'case-timeline',
     component: TimelineView,
+  },
+  {
+    path: '/cases/:caseId/findings',
+    name: 'case-findings',
+    component: FindingsView,
+  },
+  {
+    path: '/cases/:caseId/statement',
+    name: 'case-statement',
+    component: StatementView,
   },
 ]
 
