@@ -1,0 +1,21 @@
+{
+  "name": "@youju/evidence-hash",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "lint": "eslint src tests",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "build": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@noble/hashes": "2.2.0"
+  },
+  "devDependencies": {
+    "vitest": "^4.0.0"
+  }
+}

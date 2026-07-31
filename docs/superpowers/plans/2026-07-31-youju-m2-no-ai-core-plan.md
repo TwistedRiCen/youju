@@ -568,7 +568,7 @@ git commit -m "feat: enforce single-writer case editing"
 - Consumes: byte chunks and browser `Blob` objects.
 - Produces: `sha256Hex()` and `sha256Blob()` with bounded chunk reads.
 
-- [ ] **Step 1: Write failing known-vector and chunk-equivalence tests**
+- [x] **Step 1: Write failing known-vector and chunk-equivalence tests**
 
 ```typescript
 expect(await sha256Hex([new TextEncoder().encode('abc')])).toBe(
@@ -583,7 +583,7 @@ expect(await sha256Blob(new Blob([bytes]), 64 * 1024)).toBe(
 
 Add a test that records each `Blob.slice()` size and asserts no read exceeds the requested chunk size.
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 ```powershell
 pnpm exec vitest run packages/evidence-hash/tests/sha256.test.ts
@@ -591,7 +591,7 @@ pnpm exec vitest run packages/evidence-hash/tests/sha256.test.ts
 
 Expected: FAIL because `@youju/evidence-hash` does not exist.
 
-- [ ] **Step 3: Create the package and install the reviewed dependency**
+- [x] **Step 3: Create the package and install the reviewed dependency**
 
 Create `package.json` first with package name `@youju/evidence-hash`, public export `./src/index.ts` and the standard `lint`, `typecheck`, `test` and `build` scripts used by existing packages. Then run:
 
@@ -611,7 +611,7 @@ export async function sha256Blob(blob: Blob, chunkSize?: number): Promise<string
 
 Import `sha256` from `@noble/hashes/sha2.js` and use `sha256.create().update(chunk).digest()`. Default chunk size is exactly 1 MiB. Record MIT license, zero runtime dependencies, incremental API, Web Crypto one-shot limitation and the exact version in `m2-dependencies.md`.
 
-- [ ] **Step 4: Run GREEN and package gates**
+- [x] **Step 4: Run GREEN and package gates**
 
 ```powershell
 pnpm --filter @youju/evidence-hash test
@@ -623,7 +623,7 @@ git diff --check
 git status --short
 ```
 
-- [ ] **Step 5: Commit and stop**
+- [x] **Step 5: Commit and stop**
 
 ```powershell
 git add packages/evidence-hash docs/development/m2-dependencies.md pnpm-lock.yaml docs/superpowers/plans/2026-07-31-youju-m2-no-ai-core-plan.md
