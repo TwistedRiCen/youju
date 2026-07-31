@@ -46,7 +46,7 @@ pnpm dev
 - `GET http://localhost:3000/health` 返回固定健康状态；
 - Web 的 `/dev/diagnostics` 只在开发模式注册，用于查看黄金案例低敏汇总。
 
-M1 不提供材料上传、事件持久化、导出或真实 AI 控件。诊断页不是生产用户数据入口。
+M2 已开放本地事件创建、材料导入与分类、事实确认、时间线、缺口检查、事实陈述、材料包导出与删除。诊断页不是生产用户数据入口。
 
 ## 4. 常用命令
 
@@ -61,7 +61,7 @@ M1 不提供材料上传、事件持久化、导出或真实 AI 控件。诊断�
 | `pnpm check:forbidden-content` | 扫描密钥、环境文件、真实材料标记和 fixture 手机号           |
 | `pnpm verify`                  | 依次执行 lint、类型检查、测试、fixture 校验、构建和 E2E     |
 
-完整 M1 本地验收：
+完整 M2 本地验收：
 
 ```bash
 pnpm install --frozen-lockfile
@@ -83,7 +83,22 @@ pnpm check:forbidden-content
 
 不得使用真实平台标识、店铺、姓名、手机号、地址、订单、支付记录、聊天记录或文件。
 
-## 6. 故障排查
+案例 001 的 `binary/` 二进制材料由以下命令确定性生成，重跑后应逐字节一致：
+
+```bash
+pnpm exec tsx scripts/generate-m2-binary-fixtures.ts
+pnpm validate:fixtures
+```
+
+## 6. M2 浏览器能力
+
+M2 使用 IndexedDB 保存结构化数据、OPFS 保存原始文件。桌面 Chromium、移动 Chromium 与移动 WebKit 均纳入自动化；不支持 OPFS 的浏览器（如部分内置浏览器）会显示「当前浏览器不能可靠保存原始材料」，结构化编辑仍可用，材料导入与含附件导出被禁用。
+
+支持的文件类型：JPG/JPEG、PNG、WebP、PDF；每事件最多 50 个文件、单文件最多 50 MiB、总量最多 500 MiB。扩展名、MIME 与文件签名不一致时拒绝导入。
+
+材料包固定结构：`有据_事件材料包_YYYYMMDD_HHmm/` 下包含三份 PDF、摘要 CSV、离线附件索引 HTML 与 `06_原始材料/`。
+
+## 7. 故障排查
 
 ### Node 或 pnpm 版本不匹配
 

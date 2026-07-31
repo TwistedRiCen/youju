@@ -1783,7 +1783,7 @@ git commit -m "test: add no-AI golden workflow"
 - Consumes: completed M2 implementation and verification evidence.
 - Produces: accurate operator guidance, M2 security traceability and final milestone record.
 
-- [ ] **Step 1: Update operational documentation**
+- [x] **Step 1: Update operational documentation**
 
 Document:
 
@@ -1796,7 +1796,7 @@ Document:
 - dependency and font provenance links;
 - no claim of permanent storage, encryption, legal advice or guaranteed outcome.
 
-- [ ] **Step 2: Write the M2 threat checklist**
+- [x] **Step 2: Write the M2 threat checklist**
 
 Map each risk to concrete code and tests:
 
@@ -1815,7 +1815,7 @@ Map each risk to concrete code and tests:
 
 Record confirmed facts, remaining product risks and manual browser checks separately. Do not claim manual device checks that were not run.
 
-- [ ] **Step 3: Run document and contradiction scans**
+- [x] **Step 3: Run document and contradiction scans**
 
 ```powershell
 pnpm exec prettier --check README.md docs
@@ -1826,7 +1826,7 @@ rg -n ($scanPatterns -join '|') README.md docs/security docs/development
 
 Expected: Prettier and forbidden-content pass; `rg` has no matches. The plan directory is excluded from the placeholder scan because it contains command examples used for self-review.
 
-- [ ] **Step 4: Run the full milestone verification**
+- [x] **Step 4: Run the full milestone verification**
 
 ```powershell
 pnpm install --frozen-lockfile
@@ -1838,7 +1838,7 @@ git status --short
 
 Expected: frozen install succeeds; lint, typecheck, unit/integration tests, fixture validation, all builds and all E2E projects pass; status lists only Task 16 documentation and checkbox changes.
 
-- [ ] **Step 5: Review line-by-line against approved M2 design**
+- [x] **Step 5: Review line-by-line against approved M2 design**
 
 Record evidence in `m2-threat-checklist.md` for:
 
@@ -1855,7 +1855,7 @@ Record evidence in `m2-threat-checklist.md` for:
 
 Any missing requirement is fixed in the owning earlier Task before completing Task 16; it is not deferred in documentation.
 
-- [ ] **Step 6: Commit and stop**
+- [x] **Step 6: Commit and stop**
 
 ```powershell
 git add README.md docs/development docs/security docs/superpowers/plans/2026-07-31-youju-m2-no-ai-core-plan.md
