@@ -81,6 +81,9 @@ importers:
       '@youju/domain':
         specifier: workspace:*
         version: link:../../packages/domain
+      '@youju/evidence-hash':
+        specifier: workspace:*
+        version: link:../../packages/evidence-hash
       '@youju/evidence-store':
         specifier: workspace:*
         version: link:../../packages/evidence-store

@@ -751,7 +751,7 @@ git commit -m "feat: add OPFS evidence storage"
 - Consumes: `CaseRepository`, `EvidenceBlobStore` and `sha256Blob()`.
 - Produces: deterministic file validation, `importEvidence()`, same-case dedupe and idempotent import recovery.
 
-- [ ] **Step 1: Write failing validation tests**
+- [x] **Step 1: Write failing validation tests**
 
 Create exact signature cases:
 
@@ -766,7 +766,7 @@ Create exact signature cases:
 
 Also assert 51st file, a file larger than 50 MiB, total larger than 500 MiB and insufficient reported quota are rejected without changing existing records.
 
-- [ ] **Step 2: Write failing import orchestration and browser tests**
+- [x] **Step 2: Write failing import orchestration and browser tests**
 
 Use injected fakes to assert stage order:
 
@@ -785,7 +785,7 @@ expect(events).toEqual([
 
 The browser test imports a valid synthetic PNG, asserts `EvidenceFile.sha256` and OPFS bytes, imports the same file again and receives `duplicate_evidence` with the existing evidence ID, then creates an interrupted `writing` journal entry, reloads and asserts temporary data and the entry are removed.
 
-- [ ] **Step 3: Run RED**
+- [x] **Step 3: Run RED**
 
 ```powershell
 pnpm exec vitest run apps/web/tests/file-validation.test.ts apps/web/tests/evidence-import-service.test.ts
@@ -794,7 +794,7 @@ pnpm exec playwright test tests/e2e/evidence-import.spec.ts --project=chromium-d
 
 Expected: FAIL because validation, repository evidence methods and import orchestration are absent.
 
-- [ ] **Step 4: Implement validation and repository methods**
+- [x] **Step 4: Implement validation and repository methods**
 
 Connect the hashing package before implementation:
 
@@ -841,7 +841,7 @@ export async function importEvidence(
 
 Repository additions are explicit: `listEvidence(caseId)`, `findEvidenceByHash(caseId, sha256)`, `addReadyEvidence(evidence, operationId)`, `putOperation(entry)`, `listOperations()` and `deleteOperation(operationId)`. Only `addReadyEvidence` can create `evidenceMetadata`. Recovery rules are exact: `validating`/`hashing` remove journal; `writing` deletes temp then journal; `committing` verifies final file and metadata, completing or rolling back.
 
-- [ ] **Step 5: Run GREEN and Task gates**
+- [x] **Step 5: Run GREEN and Task gates**
 
 ```powershell
 pnpm --filter @youju/web test
@@ -854,7 +854,7 @@ git diff --check
 git status --short
 ```
 
-- [ ] **Step 6: Commit and stop**
+- [x] **Step 6: Commit and stop**
 
 ```powershell
 git add apps/web/src/storage apps/web/src/evidence apps/web/src/services apps/web/tests tests/e2e/evidence-import.spec.ts apps/web/package.json pnpm-lock.yaml docs/superpowers/plans/2026-07-31-youju-m2-no-ai-core-plan.md

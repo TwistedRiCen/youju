@@ -1,5 +1,5 @@
 import type { IDBPDatabase } from 'idb'
-import type { CaseEvent, FactDraft, UuidV4 } from '@youju/domain'
+import type { CaseEvent, EvidenceFile, FactDraft, OperationJournalEntry, UuidV4 } from '@youju/domain'
 import { CaseRepositoryError } from './case-repository.js'
 import type {
   CaseAggregate,
@@ -154,6 +154,108 @@ export class IndexedDbCaseRepository implements CaseRepository {
       }
       await transaction.done
       return updated.revision
+    } catch (error) {
+      throw toStorageError(error)
+    }
+  }
+
+  async listEvidence(caseId: UuidV4): Promise<readonly EvidenceFile[]> {
+    try {
+      const transaction = this.database.transaction('evidenceMetadata', 'readonly')
+      const records = await transaction
+        .objectStore('evidenceMetadata')
+        .index('by_caseId')
+        .getAll(caseId)
+      await transaction.done
+      return records.sort((a, b) =>
+        a.importedAt === b.importedAt
+          ? a.id < b.id
+            ? -1
+            : 1
+          : a.importedAt < b.importedAt
+            ? -1
+            : 1,
+      )
+    } catch (error) {
+      throw toStorageError(error)
+    }
+  }
+
+  async findEvidenceByHash(caseId: UuidV4, sha256: string): Promise<EvidenceFile | null> {
+    try {
+      const transaction = this.database.transaction('evidenceMetadata', 'readonly')
+      const records = await transaction
+        .objectStore('evidenceMetadata')
+        .index('by_caseId')
+        .getAll(caseId)
+      await transaction.done
+      return records.find((record) => record.sha256 === sha256) ?? null
+    } catch (error) {
+      throw toStorageError(error)
+    }
+  }
+
+  async addReadyEvidence(evidence: EvidenceFile, operationId: UuidV4): Promise<void> {
+    try {
+      const transaction = this.database.transaction(
+        ['evidenceMetadata', 'operationJournal'],
+        'readwrite',
+      )
+      const operation = await transaction.objectStore('operationJournal').get(operationId)
+      if (operation === undefined) {
+        throw new CaseRepositoryError('storage_unavailable', '导入操作记录缺失')
+      }
+      await transaction.objectStore('evidenceMetadata').put(evidence)
+      await transaction.done
+    } catch (error) {
+      throw toStorageError(error)
+    }
+  }
+
+  async removeEvidence(evidenceId: UuidV4): Promise<void> {
+    try {
+      const transaction = this.database.transaction('evidenceMetadata', 'readwrite')
+      await transaction.objectStore('evidenceMetadata').delete(evidenceId)
+      await transaction.done
+    } catch (error) {
+      throw toStorageError(error)
+    }
+  }
+
+  async putOperation(entry: OperationJournalEntry): Promise<void> {
+    try {
+      const transaction = this.database.transaction('operationJournal', 'readwrite')
+      await transaction.objectStore('operationJournal').put(entry)
+      await transaction.done
+    } catch (error) {
+      throw toStorageError(error)
+    }
+  }
+
+  async listOperations(): Promise<readonly OperationJournalEntry[]> {
+    try {
+      const transaction = this.database.transaction('operationJournal', 'readonly')
+      const records = await transaction.objectStore('operationJournal').getAll()
+      await transaction.done
+      return records.sort((a, b) =>
+        a.startedAt === b.startedAt
+          ? a.operationId < b.operationId
+            ? -1
+            : 1
+          : a.startedAt < b.startedAt
+            ? -1
+            : 1,
+      )
+    } catch (error) {
+      throw toStorageError(error)
+    }
+  }
+
+  async deleteOperation(operationId: UuidV4): Promise<void> {
+    try {
+      const transaction = this.database.transaction('operationJournal', 'readwrite')
+      await transaction.objectStore('operationJournal').delete(operationId)
+      await transaction.done
     } catch (error) {
       throw toStorageError(error)
     }

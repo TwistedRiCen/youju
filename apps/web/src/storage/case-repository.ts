@@ -1,4 +1,11 @@
-import type { CaseEvent, FactDraft, UuidV4, UtcTimestamp } from '@youju/domain'
+import type {
+  CaseEvent,
+  EvidenceFile,
+  FactDraft,
+  OperationJournalEntry,
+  UuidV4,
+  UtcTimestamp,
+} from '@youju/domain'
 
 export interface StoredCase {
   readonly caseEvent: CaseEvent
@@ -52,5 +59,12 @@ export interface CaseRepository {
     drafts: readonly FactDraft[],
     writerId: string,
   ): Promise<number>
+  listEvidence(caseId: UuidV4): Promise<readonly EvidenceFile[]>
+  findEvidenceByHash(caseId: UuidV4, sha256: string): Promise<EvidenceFile | null>
+  addReadyEvidence(evidence: EvidenceFile, operationId: UuidV4): Promise<void>
+  removeEvidence(evidenceId: UuidV4): Promise<void>
+  putOperation(entry: OperationJournalEntry): Promise<void>
+  listOperations(): Promise<readonly OperationJournalEntry[]>
+  deleteOperation(operationId: UuidV4): Promise<void>
   close(): void
 }
