@@ -6,6 +6,7 @@ import type {
   FactDraft,
   ConfirmedFact,
   OperationJournalEntry,
+  TimelineEntry,
   UuidV4,
   UtcTimestamp,
 } from '@youju/domain'
@@ -68,6 +69,10 @@ export interface CaseRepository {
   removeEvidence(evidenceId: UuidV4): Promise<void>
   listConfirmedFacts(caseId: UuidV4): Promise<readonly ConfirmedFact[]>
   confirmFact(command: ConfirmFactCommand): Promise<ConfirmedFact>
+  putTimelineDraft(entry: TimelineEntry): Promise<void>
+  confirmTimelineEntry(id: UuidV4): Promise<TimelineEntry>
+  listTimeline(caseId: UuidV4): Promise<readonly TimelineEntry[]>
+  reorderTimeline(caseId: UuidV4, orderedIds: readonly UuidV4[]): Promise<void>
   updateEvidenceCategory(
     caseId: UuidV4,
     evidenceId: UuidV4,

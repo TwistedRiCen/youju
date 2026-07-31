@@ -1052,7 +1052,7 @@ git commit -m "feat: add manual fact confirmation"
 - Consumes: current `ConfirmedFact[]` and `TimelineEntry[]`.
 - Produces: `sortTimeline()`, `detectTimelineConflicts()`, timeline persistence and confirmation UI.
 
-- [ ] **Step 1: Write failing pure-function tests**
+- [x] **Step 1: Write failing pure-function tests**
 
 Use an input containing minute, date, approximate and unknown entries. Assert:
 
@@ -1077,11 +1077,11 @@ export type TimelineConflict =
     }
 ```
 
-- [ ] **Step 2: Write failing UI and browser tests**
+- [x] **Step 2: Write failing UI and browser tests**
 
 The E2E test adds four timeline entries, attaches sources, confirms each, reloads and asserts stable order. It then moves a later dated entry before an earlier dated entry and asserts `时间顺序存在冲突` plus a visible export-blocking status.
 
-- [ ] **Step 3: Run RED**
+- [x] **Step 3: Run RED**
 
 ```powershell
 pnpm exec vitest run packages/timeline/tests/timeline.test.ts apps/web/tests/timeline.test.ts
@@ -1090,7 +1090,7 @@ pnpm exec playwright test tests/e2e/manual-timeline.spec.ts --project=chromium-d
 
 Expected: FAIL because `@youju/timeline` and Timeline UI do not exist.
 
-- [ ] **Step 4: Implement package, repository methods, and UI**
+- [x] **Step 4: Implement package, repository methods, and UI**
 
 ```typescript
 export function sortTimeline(entries: readonly TimelineEntry[]): TimelineEntry[]
@@ -1110,7 +1110,7 @@ pnpm --filter @youju/web add @youju/timeline@workspace:*
 
 Repository methods are `putTimelineDraft(entry)`, `confirmTimelineEntry(id)`, `listTimeline(caseId)` and `reorderTimeline(caseId, orderedIds)`. Confirmation is explicit. `occurredAt` must be null for `unknown` and non-null for other precisions. Only `confirmed` entries feed conflicts and later exports. Any timeline change rolls `ready_to_export` or `exported` back to `in_progress`.
 
-- [ ] **Step 5: Run GREEN and Task gates**
+- [x] **Step 5: Run GREEN and Task gates**
 
 ```powershell
 pnpm --filter @youju/timeline test
@@ -1124,7 +1124,7 @@ git diff --check
 git status --short
 ```
 
-- [ ] **Step 6: Commit and stop**
+- [x] **Step 6: Commit and stop**
 
 ```powershell
 git add packages/timeline apps/web/package.json apps/web/src apps/web/tests tests/e2e/manual-timeline.spec.ts pnpm-lock.yaml docs/superpowers/plans/2026-07-31-youju-m2-no-ai-core-plan.md

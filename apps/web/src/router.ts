@@ -5,6 +5,7 @@ import CreateCaseView from './views/CreateCaseView.vue'
 import FactsView from './views/FactsView.vue'
 import HomeView from './views/HomeView.vue'
 import MaterialsView from './views/MaterialsView.vue'
+import TimelineView from './views/TimelineView.vue'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -31,6 +32,11 @@ const routes: RouteRecordRaw[] = [
     path: '/cases/:caseId/facts',
     name: 'case-facts',
     component: FactsView,
+  },
+  {
+    path: '/cases/:caseId/timeline',
+    name: 'case-timeline',
+    component: TimelineView,
   },
 ]
 

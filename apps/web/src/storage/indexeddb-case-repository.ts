@@ -7,6 +7,7 @@ import type {
   EvidenceFile,
   FactDraft,
   OperationJournalEntry,
+  TimelineEntry,
   UuidV4,
 } from '@youju/domain'
 import { buildManualConfirmedFact } from '@youju/domain'
@@ -308,6 +309,104 @@ export class IndexedDbCaseRepository implements CaseRepository {
       }
       await transaction.done
       return confirmed
+    } catch (error) {
+      throw toStorageError(error)
+    }
+  }
+
+  async putTimelineDraft(entry: TimelineEntry): Promise<void> {
+    try {
+      const transaction = this.database.transaction(['timelineEntries', 'cases'], 'readwrite')
+      await transaction.objectStore('timelineEntries').put(entry)
+      const caseStore = transaction.objectStore('cases')
+      const caseRecord = await caseStore.get(entry.caseId)
+      if (caseRecord !== undefined) {
+        await caseStore.put({
+          ...caseRecord,
+          revision: caseRecord.revision + 1,
+          lastWriterId: 'timeline-draft',
+        })
+      }
+      await transaction.done
+    } catch (error) {
+      throw toStorageError(error)
+    }
+  }
+
+  async confirmTimelineEntry(id: UuidV4): Promise<TimelineEntry> {
+    try {
+      const transaction = this.database.transaction(['timelineEntries', 'cases'], 'readwrite')
+      const store = transaction.objectStore('timelineEntries')
+      const entry = await store.get(id)
+      if (entry === undefined) {
+        throw new CaseRepositoryError('storage_unavailable', '未找到时间线条目')
+      }
+      const updated: TimelineEntry = { ...entry, status: 'confirmed' }
+      await store.put(updated)
+
+      const caseStore = transaction.objectStore('cases')
+      const caseRecord = await caseStore.get(entry.caseId)
+      if (caseRecord !== undefined) {
+        await caseStore.put({
+          ...caseRecord,
+          status: 'in_progress',
+          revision: caseRecord.revision + 1,
+          lastWriterId: 'formal-timeline',
+        })
+      }
+      await transaction.done
+      return updated
+    } catch (error) {
+      throw toStorageError(error)
+    }
+  }
+
+  async listTimeline(caseId: UuidV4): Promise<readonly TimelineEntry[]> {
+    try {
+      const transaction = this.database.transaction('timelineEntries', 'readonly')
+      const records = await transaction
+        .objectStore('timelineEntries')
+        .index('by_caseId')
+        .getAll(caseId)
+      await transaction.done
+      return records.sort((a, b) =>
+        a.sortOrder === b.sortOrder ? (a.id < b.id ? -1 : 1) : a.sortOrder - b.sortOrder,
+      )
+    } catch (error) {
+      throw toStorageError(error)
+    }
+  }
+
+  async reorderTimeline(
+    caseId: UuidV4,
+    orderedIds: readonly UuidV4[],
+  ): Promise<void> {
+    try {
+      const transaction = this.database.transaction(['timelineEntries', 'cases'], 'readwrite')
+      const store = transaction.objectStore('timelineEntries')
+      for (let index = 0; index < orderedIds.length; index += 1) {
+        const id = orderedIds[index]
+        if (id === undefined) {
+          throw new CaseRepositoryError('storage_unavailable', '时间线顺序无效')
+        }
+        const entry = await store.get(id)
+        if (entry === undefined || entry.caseId !== caseId) {
+          throw new CaseRepositoryError('storage_unavailable', '时间线条目不存在')
+        }
+        await store.put({ ...entry, sortOrder: index })
+      }
+
+      const caseStore = transaction.objectStore('cases')
+      const caseRecord = await caseStore.get(caseId)
+      if (caseRecord !== undefined) {
+        await caseStore.put({
+          ...caseRecord,
+          status: 'in_progress',
+          revision: caseRecord.revision + 1,
+          lastWriterId: 'timeline-reorder',
+        })
+      }
+      await transaction.done
     } catch (error) {
       throw toStorageError(error)
     }

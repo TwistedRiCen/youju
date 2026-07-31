@@ -93,6 +93,9 @@ importers:
       '@youju/test-support':
         specifier: workspace:*
         version: link:../../packages/test-support
+      '@youju/timeline':
+        specifier: workspace:*
+        version: link:../../packages/timeline
       idb:
         specifier: 8.0.3
         version: 8.0.3
@@ -198,6 +201,16 @@ importers:
       '@youju/rule-engine':
         specifier: workspace:*
         version: link:../rule-engine
+    devDependencies:
+      vitest:
+        specifier: ^4.0.0
+        version: 4.1.10(@types/node@24.13.3)(happy-dom@20.11.1)(vite@8.1.5(@types/node@24.13.3)(esbuild@0.28.1)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0))
+
+  packages/timeline:
+    dependencies:
+      '@youju/domain':
+        specifier: workspace:*
+        version: link:../domain
     devDependencies:
       vitest:
         specifier: ^4.0.0
