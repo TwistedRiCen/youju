@@ -30,6 +30,7 @@
     "@youju/test-support": "workspace:*",
     "eslint": "^9.0.0",
     "eslint-config-prettier": "^10.0.0",
+    "fflate": "0.8.3",
     "globals": "^16.0.0",
     "prettier": "^3.0.0",
     "tsx": "^4.0.0",

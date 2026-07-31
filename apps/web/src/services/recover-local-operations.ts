@@ -14,6 +14,12 @@ export async function recoverLocalOperations(
   const entries = await dependencies.repository.listOperations()
 
   for (const entry of entries) {
+    if (entry.operationType === 'package_export') {
+      await dependencies.blobStore.deleteTemporary(entry.operationId)
+      await dependencies.repository.deleteOperation(entry.operationId)
+      cleaned.push(entry.operationId)
+      continue
+    }
     if (entry.operationType !== 'evidence_import') {
       continue
     }

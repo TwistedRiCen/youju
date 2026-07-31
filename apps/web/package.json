@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@youju/ai-core": "workspace:*",
+    "@youju/document-export": "workspace:*",
     "@youju/domain": "workspace:*",
     "@youju/evidence-hash": "workspace:*",
     "@youju/evidence-store": "workspace:*",
