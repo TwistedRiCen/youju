@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto'
 import { readdir, readFile } from 'node:fs/promises'
 import { isDeepStrictEqual } from 'node:util'
 import { fileURLToPath } from 'node:url'
@@ -32,8 +33,16 @@ async function main(): Promise<void> {
         throw new Error('Rule findings mismatch')
       }
 
+      for (const binary of fixture.binaryEvidence) {
+        const bytes = await readFile(join(fixtureRoot, directoryName, binary.relativePath))
+        const actualSha256 = createHash('sha256').update(bytes).digest('hex')
+        if (bytes.length !== binary.size || actualSha256 !== binary.sha256) {
+          throw new Error(`Binary evidence mismatch: ${binary.relativePath}`)
+        }
+      }
+
       process.stdout.write(
-        `PASS ${fixture.manifest.id}: ${fixture.evidence.length} evidence, ${fixture.expected.confirmedFacts.length} confirmed facts, ${fixture.expected.timeline.length} timeline entries\n`,
+        `PASS ${fixture.manifest.id}: ${fixture.evidence.length} evidence, ${fixture.binaryEvidence.length} binary materials, ${fixture.expected.confirmedFacts.length} confirmed facts, ${fixture.expected.timeline.length} timeline entries\n`,
       )
     } catch {
       process.stderr.write(`FAIL ${directoryName}: fixture validation failed\n`)

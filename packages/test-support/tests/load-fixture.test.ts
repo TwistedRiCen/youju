@@ -21,12 +21,19 @@ describe('golden case fixture loader', () => {
       scenarioType: 'ecommerce_refund',
     })
     expect(fixture.evidence).toHaveLength(4)
+    expect(fixture.binaryEvidence).toHaveLength(4)
+    for (const binary of fixture.binaryEvidence) {
+      expect(binary.relativePath).toMatch(/^binary\/[0-9]{2}-[a-z0-9-]+[.](?:png|pdf)$/)
+      expect(binary.size).toBeGreaterThan(0)
+      expect(binary.sha256).toMatch(/^[0-9a-f]{64}$/)
+    }
     expect(fixture.expected.confirmedFacts).toHaveLength(6)
     expect(fixture.expected.timeline).toHaveLength(4)
     expect(goldenCase001Summary).toEqual({
       id: fixture.manifest.id,
       title: fixture.manifest.title,
       evidenceCount: fixture.evidence.length,
+      binaryCount: fixture.binaryEvidence.length,
       confirmedFactCount: fixture.expected.confirmedFacts.length,
       timelineCount: fixture.expected.timeline.length,
       ruleValidation: 'passed',
@@ -40,6 +47,19 @@ describe('golden case fixture loader', () => {
       isGoldenCaseManifest({
         ...fixture.manifest,
         fictional: false,
+      }),
+    ).toBe(false)
+  })
+
+  it('rejects binary evidence with unsupported media types', async () => {
+    const fixture = await loadGoldenCase(fixtureDirectory)
+
+    expect(
+      isGoldenCaseManifest({
+        ...fixture.manifest,
+        binaryEvidence: fixture.manifest.binaryEvidence.map((binary, index) =>
+          index === 0 ? { ...binary, mediaType: 'text/plain' } : binary,
+        ),
       }),
     ).toBe(false)
   })

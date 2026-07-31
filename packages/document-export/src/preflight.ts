@@ -16,6 +16,9 @@ function sameIdSet(a: readonly string[], b: readonly string[]): boolean {
 }
 
 function statementStale(snapshot: ExportSnapshot): boolean {
+  const ruleVersionMatches =
+    snapshot.findings.length === 0 ||
+    snapshot.statement.ruleVersion === snapshot.findings[0]?.ruleVersion
   return (
     !sameIdSet(
       snapshot.statement.confirmedFactIds,
@@ -25,7 +28,7 @@ function statementStale(snapshot: ExportSnapshot): boolean {
       snapshot.statement.confirmedTimelineEntryIds,
       snapshot.confirmedTimeline.map((entry) => entry.id),
     ) ||
-    snapshot.statement.ruleVersion !== snapshot.findings[0]?.ruleVersion
+    !ruleVersionMatches
   )
 }
 

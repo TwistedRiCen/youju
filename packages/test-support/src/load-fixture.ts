@@ -26,6 +26,7 @@ export interface GoldenCase {
   manifest: GoldenCaseManifest
   case: CaseEvent
   evidence: EvidenceFile[]
+  binaryEvidence: GoldenCaseManifest['binaryEvidence']
   expected: {
     confirmedFactFields: FactFieldName[]
     confirmedFacts: ConfirmedFact[]
@@ -108,6 +109,7 @@ export async function loadGoldenCase(path: string | URL): Promise<GoldenCase> {
     manifest,
     case: caseDocument.case,
     evidence: evidenceDocuments.map(({ evidence }) => evidence),
+    binaryEvidence: manifest.binaryEvidence,
     expected: {
       confirmedFactFields: expectedFacts.confirmedFactFields,
       confirmedFacts: expectedFacts.confirmedFacts,

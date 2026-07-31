@@ -6,6 +6,7 @@ import {
   confirmLatestStatement,
   generateStatementDraft,
   loadStatement,
+  updateStatementDraft,
 } from '../services/statement-service.js'
 
 const route = useRoute()
@@ -33,6 +34,11 @@ async function confirm(): Promise<void> {
   await refresh()
 }
 
+async function saveEdit(): Promise<void> {
+  await updateStatementDraft(caseId, content.value)
+  await refresh()
+}
+
 onMounted(async () => {
   try {
     await refresh()
@@ -50,9 +56,15 @@ onMounted(async () => {
     <template v-else>
       <p v-if="stale" class="stale">内容已过期，请重新确认</p>
       <p v-else-if="hasConfirmed" class="confirmed">陈述已确认</p>
-      <pre class="content">{{ content }}</pre>
+      <textarea
+        v-model="content"
+        class="content"
+        aria-label="事实陈述内容"
+        rows="14"
+      ></textarea>
       <div class="actions">
         <button type="button" @click="generate">生成事实陈述</button>
+        <button type="button" :disabled="content === ''" @click="saveEdit">保存修改</button>
         <button type="button" :disabled="content === ''" @click="confirm">确认陈述</button>
       </div>
     </template>
@@ -76,13 +88,14 @@ h1 {
 }
 
 .content {
-  white-space: pre-wrap;
+  width: 100%;
   padding: 1rem;
   border: 1px solid #d3d7ce;
   border-radius: 0.7rem;
   background: #fffdf8;
   color: #18332c;
   line-height: 1.7;
+  font: inherit;
 }
 
 .stale {

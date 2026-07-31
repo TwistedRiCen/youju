@@ -14,6 +14,9 @@ importers:
       '@eslint/js':
         specifier: ^9.0.0
         version: 9.39.5
+      '@pdf-lib/fontkit':
+        specifier: 1.1.1
+        version: 1.1.1
       '@playwright/test':
         specifier: ^1.0.0
         version: 1.62.0
@@ -26,6 +29,9 @@ importers:
       '@youju/ai-core':
         specifier: workspace:*
         version: link:packages/ai-core
+      '@youju/document-export':
+        specifier: workspace:*
+        version: link:packages/document-export
       '@youju/domain':
         specifier: workspace:*
         version: link:packages/domain
@@ -47,6 +53,9 @@ importers:
       globals:
         specifier: ^16.0.0
         version: 16.5.0
+      pdf-lib:
+        specifier: 1.17.1
+        version: 1.17.1
       prettier:
         specifier: ^3.0.0
         version: 3.9.6

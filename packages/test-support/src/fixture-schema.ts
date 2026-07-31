@@ -13,6 +13,9 @@ import { Type } from '@sinclair/typebox'
 import type { Static } from '@sinclair/typebox'
 import { Value } from '@sinclair/typebox/value'
 
+const UUID_V4_PATTERN =
+  '^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+
 export const GoldenCaseManifestSchema = Type.Object(
   {
     id: Type.String({ pattern: '^case-[0-9]{3}-[a-z0-9-]+$' }),
@@ -20,6 +23,21 @@ export const GoldenCaseManifestSchema = Type.Object(
     scenarioType: ScenarioTypeSchema,
     title: Type.String({ minLength: 1 }),
     schemaVersion: SchemaVersionSchema,
+    binaryEvidence: Type.Array(
+      Type.Object(
+        {
+          evidenceId: Type.String({ pattern: UUID_V4_PATTERN }),
+          relativePath: Type.String({
+            pattern: '^binary/[0-9]{2}-[a-z0-9-]+[.](?:png|pdf)$',
+          }),
+          mediaType: Type.Union([Type.Literal('image/png'), Type.Literal('application/pdf')]),
+          size: Type.Integer({ minimum: 1 }),
+          sha256: Type.String({ pattern: '^[0-9a-f]{64}$' }),
+        },
+        { additionalProperties: false },
+      ),
+      { minItems: 4, maxItems: 4 },
+    ),
   },
   { additionalProperties: false },
 )

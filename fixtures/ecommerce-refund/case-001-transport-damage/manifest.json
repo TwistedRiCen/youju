@@ -3,5 +3,35 @@
   "fictional": true,
   "scenarioType": "ecommerce_refund",
   "title": "运输破损退款纠纷（完全虚构）",
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "binaryEvidence": [
+    {
+      "evidenceId": "00000000-0000-4000-8000-000000000101",
+      "relativePath": "binary/01-order-record.png",
+      "mediaType": "image/png",
+      "size": 129,
+      "sha256": "f632b5cd21f0943eaff3919644051fe41c02982232c1c6dd03f5dccdeceac77d"
+    },
+    {
+      "evidenceId": "00000000-0000-4000-8000-000000000102",
+      "relativePath": "binary/02-payment-record.pdf",
+      "mediaType": "application/pdf",
+      "size": 63418,
+      "sha256": "2c8689303f6354d3fbdfdf707e376dd8bc9d2c5a8b62692695e5779b985d4b5d"
+    },
+    {
+      "evidenceId": "00000000-0000-4000-8000-000000000103",
+      "relativePath": "binary/03-product-issue.png",
+      "mediaType": "image/png",
+      "size": 130,
+      "sha256": "d73a26db0e2042835190d1c18bd14686f2c0260ca37a53057f4f1f85a513d25f"
+    },
+    {
+      "evidenceId": "00000000-0000-4000-8000-000000000104",
+      "relativePath": "binary/04-merchant-communication.pdf",
+      "mediaType": "application/pdf",
+      "size": 63011,
+      "sha256": "160b843063e40a5641b2240775c9fe4b091066d2e356f8e8eea205b2c2ca6d64"
+    }
+  ]
 }

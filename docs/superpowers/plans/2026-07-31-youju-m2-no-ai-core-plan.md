@@ -1661,7 +1661,7 @@ git commit -m "feat: verify local case deletion"
 - Consumes: the complete M2 user flow and document package.
 - Produces: reproducible fictional binary fixture set, boundary regression and full no-AI golden E2E.
 
-- [ ] **Step 1: Write failing fixture and boundary tests**
+- [x] **Step 1: Write failing fixture and boundary tests**
 
 Fixture validation asserts exact files, supported media types, non-zero sizes and fixed SHA-256 values recorded in the manifest. It rejects a missing file, hash mismatch, unsupported extension and `fictional: false`.
 
@@ -1672,7 +1672,7 @@ The boundary test scans imports and production build output to assert:
 - no `localStorage`, analytics SDK, remote font URL or IndexedDB Blob fallback appears in M2 sources;
 - package imports use public `@youju/*` entries.
 
-- [ ] **Step 2: Write the failing complete E2E**
+- [x] **Step 2: Write the failing complete E2E**
 
 In one test:
 
@@ -1691,7 +1691,7 @@ In one test:
 
 Run the same behavioral test for `chromium-desktop`, `chromium-mobile` and `webkit-mobile`. Assertions use visible labels and downloaded artifacts, not internal component state.
 
-- [ ] **Step 3: Run RED**
+- [x] **Step 3: Run RED**
 
 ```powershell
 pnpm exec vitest run packages/test-support/tests/load-fixture.test.ts tests/integration/m2-package-boundaries.test.ts
@@ -1700,7 +1700,7 @@ pnpm exec playwright test tests/e2e/no-ai-core.spec.ts
 
 Expected: FAIL because binary fixtures, manifest fields and complete workflow test are absent. Existing fixture tests must still start.
 
-- [ ] **Step 4: Implement reproducible fictional fixtures**
+- [x] **Step 4: Implement reproducible fictional fixtures**
 
 Connect the root-only generator to the existing export package with:
 
@@ -1718,7 +1718,7 @@ pnpm add -Dw @youju/document-export@workspace:*
 
 Run it once, record exact hashes in the manifest, commit the outputs, then rerun and assert byte-for-byte equality. Do not add real logos, names, phone numbers, addresses, orders or chats.
 
-- [ ] **Step 5: Implement validator, boundary check, and E2E helpers**
+- [x] **Step 5: Implement validator, boundary check, and E2E helpers**
 
 Extend the fixture schema with:
 
@@ -1740,7 +1740,7 @@ binaryEvidence: Type.Array(
 
 `validate-fixtures.ts` reads each binary file, checks actual size and SHA-256 and reports only case ID/counts. E2E helper reads fixture files from the test process and supplies buffers through Playwright `setInputFiles()`.
 
-- [ ] **Step 6: Run GREEN and complete regression**
+- [x] **Step 6: Run GREEN and complete regression**
 
 ```powershell
 pnpm --filter @youju/test-support test
@@ -1759,7 +1759,7 @@ git status --short
 
 Expected: all three browser projects pass and fixture validation reports four binary materials with exact digests.
 
-- [ ] **Step 7: Commit and stop**
+- [x] **Step 7: Commit and stop**
 
 ```powershell
 git add fixtures packages/test-support scripts tests package.json pnpm-lock.yaml docs/superpowers/plans/2026-07-31-youju-m2-no-ai-core-plan.md

@@ -166,6 +166,15 @@ describe('export preflight', () => {
     })
   })
 
+  it('is ready for a fully complete case with no findings', () => {
+    const snapshot = validSnapshot()
+
+    expect(validateExportSnapshot({ ...snapshot, findings: [] })).toEqual({
+      status: 'ready',
+      warnings: [],
+    })
+  })
+
   it('blocks a stale statement', () => {
     const snapshot = validSnapshot()
     const staleStatement = statement([

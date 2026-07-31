@@ -118,3 +118,20 @@ export async function confirmLatestStatement(caseId: UuidV4): Promise<ConfirmedS
   await repository.appendConfirmedStatement(statement)
   return statement
 }
+
+export async function updateStatementDraft(
+  caseId: UuidV4,
+  content: string,
+): Promise<void> {
+  const repository = await getCaseRepository()
+  const drafts = await repository.listStatementDrafts(caseId)
+  const latest = drafts.at(-1)
+  if (latest === undefined) {
+    throw new Error('no_statement_draft')
+  }
+  await repository.putStatementDraft({
+    ...latest,
+    content,
+    updatedAt: new Date().toISOString(),
+  })
+}

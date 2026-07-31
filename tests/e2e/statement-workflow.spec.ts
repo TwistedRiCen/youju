@@ -44,7 +44,7 @@ test('shows rule findings, confirms a statement, and invalidates it after fact r
   await page.getByRole('link', { name: '陈述' }).click()
   await expect(page.getByRole('heading', { name: '事实陈述' })).toBeVisible()
   await page.getByRole('button', { name: '生成事实陈述' }).click()
-  await expect(page.getByText('晴川生活示例店')).toBeVisible()
+  await expect(page.getByLabel('事实陈述内容')).toHaveValue(/晴川生活示例店/)
   await page.getByRole('button', { name: '确认陈述' }).click()
   await expect(page.getByText('陈述已确认')).toBeVisible()
 
