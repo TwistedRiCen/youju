@@ -2,9 +2,14 @@ import {
   AnalysisVersionSchema,
   CaseEventSchema,
   ConfirmedFactSchema,
+  ConfirmedStatementSchema,
   EvidenceFileSchema,
   FactCandidateSchema,
+  FactDraftSchema,
+  M2ErrorCodeSchema,
   MoneyAmountSchema,
+  OperationJournalEntrySchema,
+  StatementDraftSchema,
   TimelineEntrySchema,
 } from '../src/index.js'
 import type { SchemaVersion } from '../src/index.js'
@@ -44,11 +49,14 @@ const validConfirmedFact = {
   id: '00000000-0000-4000-8000-000000000011',
   caseId: '00000000-0000-4000-8000-000000000001',
   factType: 'payment',
+  fieldName: 'paid_amount',
   value: '89900',
   sourceRefs: [{ evidenceId: '00000000-0000-4000-8000-000000000020' }],
   confirmedAt: '2026-07-29T10:05:00.000Z',
   confirmationMethod: 'candidate_confirmed',
   derivedFromCandidateId: '00000000-0000-4000-8000-000000000010',
+  replacesFactId: null,
+  version: 1,
 }
 
 describe('domain schemas', () => {
@@ -247,5 +255,177 @@ describe('domain schemas', () => {
     expect(
       Value.Check(FactCandidateSchema, { ...validCandidate, complaintSuccessRate: '90%' }),
     ).toBe(false)
+  })
+
+  it('validates manual fact drafts with positive revisions and rejects unknown fields', () => {
+    const draft = {
+      id: '00000000-0000-4000-8000-000000000501',
+      caseId: validCase.id,
+      factType: 'payment',
+      fieldName: 'paid_amount',
+      value: '89900',
+      sourceRefs: [{ evidenceId: '00000000-0000-4000-8000-000000000020' }],
+      updatedAt: '2026-07-31T01:00:00.000Z',
+      revision: 1,
+    }
+
+    expect(Value.Check(FactDraftSchema, draft)).toBe(true)
+    expect(Value.Check(FactDraftSchema, { ...draft, revision: 0 })).toBe(false)
+    expect(Value.Check(FactDraftSchema, { ...draft, unexpectedField: true })).toBe(false)
+  })
+
+  it('rejects invalid payment draft values and mismatched fact type and field name pairs', () => {
+    const draft = {
+      id: '00000000-0000-4000-8000-000000000501',
+      caseId: validCase.id,
+      factType: 'payment',
+      fieldName: 'paid_amount',
+      value: '89900',
+      sourceRefs: [{ evidenceId: '00000000-0000-4000-8000-000000000020' }],
+      updatedAt: '2026-07-31T01:00:00.000Z',
+      revision: 1,
+    }
+
+    expect(Value.Check(FactDraftSchema, { ...draft, value: '899.123' })).toBe(false)
+    expect(
+      Value.Check(FactDraftSchema, {
+        ...draft,
+        factType: 'order',
+        fieldName: 'problem_description',
+      }),
+    ).toBe(false)
+  })
+
+  it('adds fieldName, replacement linkage, and version to confirmed facts', () => {
+    expect(Value.Check(ConfirmedFactSchema, validConfirmedFact)).toBe(true)
+    expect(
+      Value.Check(ConfirmedFactSchema, { ...validConfirmedFact, fieldName: 'merchant_name' }),
+    ).toBe(false)
+    expect(Value.Check(ConfirmedFactSchema, { ...validConfirmedFact, version: 0 })).toBe(false)
+    expect(
+      Value.Check(ConfirmedFactSchema, { ...validConfirmedFact, replacesFactId: 'not-a-uuid' }),
+    ).toBe(false)
+  })
+
+  it('validates statement drafts and confirmed statements with versioned references', () => {
+    const statementDraft = {
+      id: '00000000-0000-4000-8000-000000000701',
+      caseId: validCase.id,
+      content: '事实陈述草稿',
+      confirmedFactIds: ['00000000-0000-4000-8000-000000000601'],
+      confirmedTimelineEntryIds: ['00000000-0000-4000-8000-000000000040'],
+      ruleVersion: '1.0.0',
+      updatedAt: '2026-07-31T01:30:00.000Z',
+      revision: 1,
+    }
+    const confirmedStatement = {
+      id: '00000000-0000-4000-8000-000000000702',
+      caseId: validCase.id,
+      content: '已确认事实陈述',
+      confirmedFactIds: ['00000000-0000-4000-8000-000000000601'],
+      confirmedTimelineEntryIds: ['00000000-0000-4000-8000-000000000040'],
+      ruleVersion: '1.0.0',
+      confirmedAt: '2026-07-31T01:31:00.000Z',
+      version: 1,
+    }
+
+    expect(Value.Check(StatementDraftSchema, statementDraft)).toBe(true)
+    expect(Value.Check(StatementDraftSchema, { ...statementDraft, revision: 0 })).toBe(false)
+    expect(Value.Check(StatementDraftSchema, { ...statementDraft, content: '' })).toBe(false)
+
+    const draftWithoutFactIds = { ...statementDraft } as Record<string, unknown>
+    delete draftWithoutFactIds.confirmedFactIds
+    expect(Value.Check(StatementDraftSchema, draftWithoutFactIds)).toBe(false)
+
+    expect(Value.Check(ConfirmedStatementSchema, confirmedStatement)).toBe(true)
+    expect(Value.Check(ConfirmedStatementSchema, { ...confirmedStatement, version: 0 })).toBe(
+      false,
+    )
+
+    const statementWithoutRuleVersion = { ...confirmedStatement } as Record<string, unknown>
+    delete statementWithoutRuleVersion.ruleVersion
+    expect(Value.Check(ConfirmedStatementSchema, statementWithoutRuleVersion)).toBe(false)
+    expect(
+      Value.Check(ConfirmedStatementSchema, { ...confirmedStatement, unexpectedField: true }),
+    ).toBe(false)
+  })
+
+  it('accepts only discriminated operation journal variants and approved error codes', () => {
+    const importOperation = {
+      operationId: '00000000-0000-4000-8000-000000000801',
+      caseId: validCase.id,
+      evidenceId: '00000000-0000-4000-8000-000000000020',
+      operationType: 'evidence_import',
+      stage: 'committing',
+      temporaryStorageRef: 'opfs://tmp/import-801',
+      startedAt: '2026-07-31T02:00:00.000Z',
+      errorCode: null,
+    }
+    const deleteOperation = {
+      operationId: '00000000-0000-4000-8000-000000000802',
+      caseId: validCase.id,
+      evidenceId: '00000000-0000-4000-8000-000000000020',
+      storageRef: 'opfs://evidence/20',
+      operationType: 'evidence_delete',
+      stage: 'verifying',
+      startedAt: '2026-07-31T02:05:00.000Z',
+      errorCode: 'delete_verification_failed',
+    }
+    const caseDeleteOperation = {
+      operationId: '00000000-0000-4000-8000-000000000803',
+      caseId: validCase.id,
+      operationType: 'case_delete',
+      stage: 'deleting',
+      startedAt: '2026-07-31T02:06:00.000Z',
+      errorCode: null,
+    }
+    const exportOperation = {
+      operationId: '00000000-0000-4000-8000-000000000804',
+      caseId: validCase.id,
+      operationType: 'package_export',
+      stage: 'preparing',
+      temporaryStorageRef: 'opfs://tmp/export-804',
+      startedAt: '2026-07-31T02:07:00.000Z',
+      errorCode: null,
+    }
+
+    expect(Value.Check(OperationJournalEntrySchema, importOperation)).toBe(true)
+    expect(Value.Check(OperationJournalEntrySchema, deleteOperation)).toBe(true)
+    expect(Value.Check(OperationJournalEntrySchema, caseDeleteOperation)).toBe(true)
+    expect(Value.Check(OperationJournalEntrySchema, exportOperation)).toBe(true)
+
+    expect(
+      Value.Check(OperationJournalEntrySchema, { ...importOperation, stage: 'preparing' }),
+    ).toBe(false)
+    expect(
+      Value.Check(OperationJournalEntrySchema, { ...exportOperation, stage: 'deleting' }),
+    ).toBe(false)
+    expect(
+      Value.Check(OperationJournalEntrySchema, {
+        ...caseDeleteOperation,
+        operationType: 'case_restore',
+      }),
+    ).toBe(false)
+    expect(
+      Value.Check(OperationJournalEntrySchema, { ...exportOperation, errorCode: 'unknown_error' }),
+    ).toBe(false)
+  })
+
+  it('restricts M2 error codes to the approved stable codes', () => {
+    for (const code of [
+      'storage_not_supported',
+      'storage_quota_exceeded',
+      'file_type_mismatch',
+      'file_too_large',
+      'duplicate_evidence',
+      'hash_mismatch',
+      'concurrent_edit_conflict',
+      'export_validation_failed',
+      'delete_verification_failed',
+    ]) {
+      expect(Value.Check(M2ErrorCodeSchema, code)).toBe(true)
+    }
+
+    expect(Value.Check(M2ErrorCodeSchema, 'unknown_error')).toBe(false)
   })
 })

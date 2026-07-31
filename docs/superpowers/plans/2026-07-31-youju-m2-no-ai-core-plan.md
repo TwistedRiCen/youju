@@ -92,7 +92,7 @@
 - Consumes: M1 `CaseEvent`, `EvidenceFile`, `FactType`, `FactFieldName`, `SourceReference` and candidate provenance.
 - Produces: `FactDraftSchema`, versioned `ConfirmedFactSchema`, `StatementDraftSchema`, `ConfirmedStatementSchema`, `OperationJournalEntrySchema`, `M2ErrorCodeSchema`, formal fact functions and `deriveCaseStatus()`.
 
-- [ ] **Step 1: Create the implementation branch and verify the baseline**
+- [x] **Step 1: Create the implementation branch and verify the baseline**
 
 Run:
 
@@ -106,7 +106,7 @@ git status --short
 
 Expected: branch creation succeeds; Node is `v24.x`; pnpm is `10.34.0`; status has no output.
 
-- [ ] **Step 2: Write failing schema and lifecycle tests**
+- [x] **Step 2: Write failing schema and lifecycle tests**
 
 Add assertions that the following objects validate and reject unknown fields:
 
@@ -151,7 +151,7 @@ Also assert:
 - case status is `draft` without formal content, `in_progress` after confirmation, `ready_to_export` after successful current preflight and `exported` only while the successful export still matches current content.
 - M2 error codes accept only `storage_not_supported`, `storage_quota_exceeded`, `file_type_mismatch`, `file_too_large`, `duplicate_evidence`, `hash_mismatch`, `concurrent_edit_conflict`, `export_validation_failed` and `delete_verification_failed`.
 
-- [ ] **Step 3: Run RED**
+- [x] **Step 3: Run RED**
 
 Run:
 
@@ -161,7 +161,7 @@ pnpm exec vitest run packages/domain/tests/schemas.test.ts packages/domain/tests
 
 Expected: FAIL because `FactDraftSchema`, statement/operation schemas and formal fact lifecycle functions do not exist. This is valid RED because the M2 domain behavior is absent.
 
-- [ ] **Step 4: Implement the minimal contracts and pure functions**
+- [x] **Step 4: Implement the minimal contracts and pure functions**
 
 Use these public signatures:
 
@@ -229,7 +229,7 @@ export function deriveCaseStatus(input: {
 
 `selectCurrentConfirmedFacts()` excludes any fact whose ID is referenced by another fact's `replacesFactId`, preserves deterministic order by `fieldName` then `version` then ID, and never mutates input. Update the six golden facts with exact `fieldName` values, `replacesFactId: null` and `version: 1`.
 
-- [ ] **Step 5: Run GREEN and regression gates**
+- [x] **Step 5: Run GREEN and regression gates**
 
 Run:
 
@@ -246,7 +246,7 @@ git status --short
 
 Expected: all commands pass; status lists only Task 1 files and this plan checkbox update.
 
-- [ ] **Step 6: Commit and stop**
+- [x] **Step 6: Commit and stop**
 
 ```powershell
 git add packages/domain fixtures/ecommerce-refund/case-001-transport-damage/expected/facts.json docs/superpowers/plans/2026-07-31-youju-m2-no-ai-core-plan.md

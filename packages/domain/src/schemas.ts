@@ -87,15 +87,6 @@ export const ConfidenceLevelSchema = Type.Union([
 ])
 export const FactOriginSchema = Type.Union([Type.Literal('ai'), Type.Literal('rule')])
 
-const NonMonetaryFactTypeSchema = Type.Union([
-  Type.Literal('order'),
-  Type.Literal('merchant'),
-  Type.Literal('product'),
-  Type.Literal('delivery'),
-  Type.Literal('issue'),
-  Type.Literal('communication'),
-  Type.Literal('resolution'),
-])
 export const SourceReferenceSchema = Type.Object(
   {
     evidenceId: UuidV4Schema,
@@ -240,10 +231,56 @@ export const ConfirmationMethodSchema = Type.Union([
   Type.Literal('candidate_confirmed'),
   Type.Literal('candidate_edited'),
 ])
-const confirmedFactCommonProperties = {
+const paymentFactProperties = {
+  factType: Type.Literal('payment'),
+  fieldName: Type.Literal('paid_amount'),
+  value: Type.String({ pattern: FIXED_POINT_AMOUNT_PATTERN }),
+}
+const orderFactProperties = {
+  factType: Type.Literal('order'),
+  fieldName: Type.Union([
+    Type.Literal('purchase_time'),
+    Type.Literal('order_number'),
+    Type.Literal('platform_name'),
+  ]),
+  value: Type.String({ minLength: 1 }),
+}
+const merchantFactProperties = {
+  factType: Type.Literal('merchant'),
+  fieldName: Type.Literal('merchant_name'),
+  value: Type.String({ minLength: 1 }),
+}
+const productFactProperties = {
+  factType: Type.Literal('product'),
+  fieldName: Type.Literal('product_name'),
+  value: Type.String({ minLength: 1 }),
+}
+const deliveryFactProperties = {
+  factType: Type.Literal('delivery'),
+  fieldName: Type.Literal('received_time'),
+  value: Type.String({ minLength: 1 }),
+}
+const issueFactProperties = {
+  factType: Type.Literal('issue'),
+  fieldName: Type.Literal('problem_description'),
+  value: Type.String({ minLength: 1 }),
+}
+const communicationFactProperties = {
+  factType: Type.Literal('communication'),
+  fieldName: Type.Literal('merchant_response'),
+  value: Type.String({ minLength: 1 }),
+}
+const resolutionFactProperties = {
+  factType: Type.Literal('resolution'),
+  fieldName: Type.Literal('requested_resolution'),
+  value: Type.String({ minLength: 1 }),
+}
+const confirmedFactBaseProperties = {
   id: UuidV4Schema,
   caseId: UuidV4Schema,
   confirmedAt: UtcTimestampSchema,
+  replacesFactId: Type.Union([UuidV4Schema, Type.Null()]),
+  version: Type.Integer({ minimum: 1 }),
 }
 const manualConfirmationProperties = {
   confirmationMethod: Type.Literal('manual'),
@@ -258,30 +295,168 @@ const candidateConfirmationProperties = {
   derivedFromCandidateId: UuidV4Schema,
   sourceRefs: Type.Array(SourceReferenceSchema, { minItems: 1 }),
 }
-const paymentConfirmedFactProperties = {
-  factType: Type.Literal('payment'),
-  value: Type.String({ pattern: FIXED_POINT_AMOUNT_PATTERN }),
-}
-const nonMonetaryConfirmedFactProperties = {
-  factType: NonMonetaryFactTypeSchema,
-  value: Type.String({ minLength: 1 }),
-}
 
 function createConfirmedFactSchema<
   TConfirmation extends TProperties,
   TFactDescriptor extends TProperties,
 >(confirmation: TConfirmation, factDescriptor: TFactDescriptor) {
   return Type.Object(
-    { ...confirmedFactCommonProperties, ...confirmation, ...factDescriptor },
+    { ...confirmedFactBaseProperties, ...confirmation, ...factDescriptor },
     { additionalProperties: false },
   )
 }
 
 export const ConfirmedFactSchema = Type.Union([
-  createConfirmedFactSchema(manualConfirmationProperties, paymentConfirmedFactProperties),
-  createConfirmedFactSchema(manualConfirmationProperties, nonMonetaryConfirmedFactProperties),
-  createConfirmedFactSchema(candidateConfirmationProperties, paymentConfirmedFactProperties),
-  createConfirmedFactSchema(candidateConfirmationProperties, nonMonetaryConfirmedFactProperties),
+  createConfirmedFactSchema(manualConfirmationProperties, paymentFactProperties),
+  createConfirmedFactSchema(manualConfirmationProperties, orderFactProperties),
+  createConfirmedFactSchema(manualConfirmationProperties, merchantFactProperties),
+  createConfirmedFactSchema(manualConfirmationProperties, productFactProperties),
+  createConfirmedFactSchema(manualConfirmationProperties, deliveryFactProperties),
+  createConfirmedFactSchema(manualConfirmationProperties, issueFactProperties),
+  createConfirmedFactSchema(manualConfirmationProperties, communicationFactProperties),
+  createConfirmedFactSchema(manualConfirmationProperties, resolutionFactProperties),
+  createConfirmedFactSchema(candidateConfirmationProperties, paymentFactProperties),
+  createConfirmedFactSchema(candidateConfirmationProperties, orderFactProperties),
+  createConfirmedFactSchema(candidateConfirmationProperties, merchantFactProperties),
+  createConfirmedFactSchema(candidateConfirmationProperties, productFactProperties),
+  createConfirmedFactSchema(candidateConfirmationProperties, deliveryFactProperties),
+  createConfirmedFactSchema(candidateConfirmationProperties, issueFactProperties),
+  createConfirmedFactSchema(candidateConfirmationProperties, communicationFactProperties),
+  createConfirmedFactSchema(candidateConfirmationProperties, resolutionFactProperties),
+])
+
+const factDraftBaseProperties = {
+  id: UuidV4Schema,
+  caseId: UuidV4Schema,
+  sourceRefs: Type.Array(SourceReferenceSchema),
+  updatedAt: UtcTimestampSchema,
+  revision: Type.Integer({ minimum: 1 }),
+}
+
+function createFactDraftSchema<TFactDescriptor extends TProperties>(
+  factDescriptor: TFactDescriptor,
+) {
+  return Type.Object(
+    { ...factDraftBaseProperties, ...factDescriptor },
+    { additionalProperties: false },
+  )
+}
+
+export const FactDraftSchema = Type.Union([
+  createFactDraftSchema(paymentFactProperties),
+  createFactDraftSchema(orderFactProperties),
+  createFactDraftSchema(merchantFactProperties),
+  createFactDraftSchema(productFactProperties),
+  createFactDraftSchema(deliveryFactProperties),
+  createFactDraftSchema(issueFactProperties),
+  createFactDraftSchema(communicationFactProperties),
+  createFactDraftSchema(resolutionFactProperties),
+])
+
+export const StatementDraftSchema = Type.Object(
+  {
+    id: UuidV4Schema,
+    caseId: UuidV4Schema,
+    content: Type.String({ minLength: 1 }),
+    confirmedFactIds: Type.Array(UuidV4Schema),
+    confirmedTimelineEntryIds: Type.Array(UuidV4Schema),
+    ruleVersion: Type.String({ minLength: 1 }),
+    updatedAt: UtcTimestampSchema,
+    revision: Type.Integer({ minimum: 1 }),
+  },
+  { additionalProperties: false },
+)
+
+export const ConfirmedStatementSchema = Type.Object(
+  {
+    id: UuidV4Schema,
+    caseId: UuidV4Schema,
+    content: Type.String({ minLength: 1 }),
+    confirmedFactIds: Type.Array(UuidV4Schema),
+    confirmedTimelineEntryIds: Type.Array(UuidV4Schema),
+    ruleVersion: Type.String({ minLength: 1 }),
+    confirmedAt: UtcTimestampSchema,
+    version: Type.Integer({ minimum: 1 }),
+  },
+  { additionalProperties: false },
+)
+
+export const M2ErrorCodeSchema = Type.Union([
+  Type.Literal('storage_not_supported'),
+  Type.Literal('storage_quota_exceeded'),
+  Type.Literal('file_type_mismatch'),
+  Type.Literal('file_too_large'),
+  Type.Literal('duplicate_evidence'),
+  Type.Literal('hash_mismatch'),
+  Type.Literal('concurrent_edit_conflict'),
+  Type.Literal('export_validation_failed'),
+  Type.Literal('delete_verification_failed'),
+])
+
+export const ImportOperationStageSchema = Type.Union([
+  Type.Literal('validating'),
+  Type.Literal('hashing'),
+  Type.Literal('writing'),
+  Type.Literal('committing'),
+  Type.Literal('failed'),
+])
+export const DeleteOperationStageSchema = Type.Union([
+  Type.Literal('deleting'),
+  Type.Literal('verifying'),
+  Type.Literal('failed'),
+])
+export const ExportOperationStageSchema = Type.Union([
+  Type.Literal('preparing'),
+  Type.Literal('writing'),
+  Type.Literal('finalizing'),
+  Type.Literal('failed'),
+])
+
+const operationCommonProperties = {
+  operationId: UuidV4Schema,
+  caseId: UuidV4Schema,
+  startedAt: UtcTimestampSchema,
+  errorCode: Type.Union([M2ErrorCodeSchema, Type.Null()]),
+}
+
+export const OperationJournalEntrySchema = Type.Union([
+  Type.Object(
+    {
+      ...operationCommonProperties,
+      evidenceId: UuidV4Schema,
+      operationType: Type.Literal('evidence_import'),
+      stage: ImportOperationStageSchema,
+      temporaryStorageRef: Type.Union([Type.String(), Type.Null()]),
+    },
+    { additionalProperties: false },
+  ),
+  Type.Object(
+    {
+      ...operationCommonProperties,
+      evidenceId: UuidV4Schema,
+      storageRef: Type.String({ minLength: 1 }),
+      operationType: Type.Literal('evidence_delete'),
+      stage: DeleteOperationStageSchema,
+    },
+    { additionalProperties: false },
+  ),
+  Type.Object(
+    {
+      ...operationCommonProperties,
+      operationType: Type.Literal('case_delete'),
+      stage: DeleteOperationStageSchema,
+    },
+    { additionalProperties: false },
+  ),
+  Type.Object(
+    {
+      ...operationCommonProperties,
+      operationType: Type.Literal('package_export'),
+      stage: ExportOperationStageSchema,
+      temporaryStorageRef: Type.String({ minLength: 1 }),
+    },
+    { additionalProperties: false },
+  ),
 ])
 
 export const TimelineStatusSchema = Type.Union([Type.Literal('draft'), Type.Literal('confirmed')])
@@ -344,6 +519,14 @@ export type EvidenceFile = Static<typeof EvidenceFileSchema>
 export type FactCandidate = Static<typeof FactCandidateSchema>
 export type ConfirmationMethod = Static<typeof ConfirmationMethodSchema>
 export type ConfirmedFact = Static<typeof ConfirmedFactSchema>
+export type FactDraft = Static<typeof FactDraftSchema>
+export type StatementDraft = Static<typeof StatementDraftSchema>
+export type ConfirmedStatement = Static<typeof ConfirmedStatementSchema>
+export type M2ErrorCode = Static<typeof M2ErrorCodeSchema>
+export type ImportOperationStage = Static<typeof ImportOperationStageSchema>
+export type DeleteOperationStage = Static<typeof DeleteOperationStageSchema>
+export type ExportOperationStage = Static<typeof ExportOperationStageSchema>
+export type OperationJournalEntry = Static<typeof OperationJournalEntrySchema>
 export type TimelineStatus = Static<typeof TimelineStatusSchema>
 export type TimelineEntry = Static<typeof TimelineEntrySchema>
 export type AnalysisStatus = Static<typeof AnalysisStatusSchema>

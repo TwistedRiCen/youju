@@ -13,16 +13,20 @@
       "id": "00000000-0000-4000-8000-000000000201",
       "caseId": "00000000-0000-4000-8000-000000000001",
       "factType": "order",
+      "fieldName": "purchase_time",
       "value": "2026-07-01T12:16:00.000Z",
       "sourceRefs": [{ "evidenceId": "00000000-0000-4000-8000-000000000101" }],
       "confirmedAt": "2026-07-04T02:10:00.000Z",
       "confirmationMethod": "manual",
-      "derivedFromCandidateId": null
+      "derivedFromCandidateId": null,
+      "replacesFactId": null,
+      "version": 1
     },
     {
       "id": "00000000-0000-4000-8000-000000000202",
       "caseId": "00000000-0000-4000-8000-000000000001",
       "factType": "merchant",
+      "fieldName": "merchant_name",
       "value": "晴川生活示例店",
       "sourceRefs": [
         { "evidenceId": "00000000-0000-4000-8000-000000000101" },
@@ -30,47 +34,61 @@
       ],
       "confirmedAt": "2026-07-04T02:11:00.000Z",
       "confirmationMethod": "manual",
-      "derivedFromCandidateId": null
+      "derivedFromCandidateId": null,
+      "replacesFactId": null,
+      "version": 1
     },
     {
       "id": "00000000-0000-4000-8000-000000000203",
       "caseId": "00000000-0000-4000-8000-000000000001",
       "factType": "product",
+      "fieldName": "product_name",
       "value": "便携折叠桌（虚构商品）",
       "sourceRefs": [{ "evidenceId": "00000000-0000-4000-8000-000000000101" }],
       "confirmedAt": "2026-07-04T02:12:00.000Z",
       "confirmationMethod": "manual",
-      "derivedFromCandidateId": null
+      "derivedFromCandidateId": null,
+      "replacesFactId": null,
+      "version": 1
     },
     {
       "id": "00000000-0000-4000-8000-000000000204",
       "caseId": "00000000-0000-4000-8000-000000000001",
       "factType": "payment",
+      "fieldName": "paid_amount",
       "value": "89900",
       "sourceRefs": [{ "evidenceId": "00000000-0000-4000-8000-000000000102" }],
       "confirmedAt": "2026-07-04T02:13:00.000Z",
       "confirmationMethod": "manual",
-      "derivedFromCandidateId": null
+      "derivedFromCandidateId": null,
+      "replacesFactId": null,
+      "version": 1
     },
     {
       "id": "00000000-0000-4000-8000-000000000205",
       "caseId": "00000000-0000-4000-8000-000000000001",
       "factType": "issue",
+      "fieldName": "problem_description",
       "value": "包裹外箱凹陷，桌板边角开裂并有明显压痕",
       "sourceRefs": [{ "evidenceId": "00000000-0000-4000-8000-000000000103" }],
       "confirmedAt": "2026-07-04T02:14:00.000Z",
       "confirmationMethod": "manual",
-      "derivedFromCandidateId": null
+      "derivedFromCandidateId": null,
+      "replacesFactId": null,
+      "version": 1
     },
     {
       "id": "00000000-0000-4000-8000-000000000206",
       "caseId": "00000000-0000-4000-8000-000000000001",
       "factType": "resolution",
+      "fieldName": "requested_resolution",
       "value": "退货并退还已支付金额89900分",
       "sourceRefs": [{ "evidenceId": "00000000-0000-4000-8000-000000000104" }],
       "confirmedAt": "2026-07-04T02:15:00.000Z",
       "confirmationMethod": "manual",
-      "derivedFromCandidateId": null
+      "derivedFromCandidateId": null,
+      "replacesFactId": null,
+      "version": 1
     }
   ],
   "aiExtraction": {
