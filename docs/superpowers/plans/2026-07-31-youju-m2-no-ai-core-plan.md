@@ -882,7 +882,7 @@ git commit -m "feat: add verified evidence import"
 - Consumes: capability detection, `importEvidence()` and evidence repository methods.
 - Produces: real Materials workspace section, multi-file sequential import, category updates and visible digest/status feedback.
 
-- [ ] **Step 1: Write failing UI and browser tests**
+- [x] **Step 1: Write failing UI and browser tests**
 
 Assert every category from `EvidenceCategorySchema` appears with Simplified Chinese labels. Import two valid files and one MIME/signature mismatch; the two valid materials remain, the bad file shows `文件扩展名、类型与内容不一致`, and only that file is rejected. Change a category, reload and assert it persists. Assert displayed fields include original name, category, byte size, imported time and full SHA-256.
 
@@ -893,7 +893,7 @@ Simulate missing `navigator.storage.getDirectory` before app load and assert:
 - text says `当前浏览器不能可靠保存原始材料`;
 - no IndexedDB Blob record is created.
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 ```powershell
 pnpm exec vitest run apps/web/tests/materials.test.ts
@@ -902,7 +902,7 @@ pnpm exec playwright test tests/e2e/material-management.spec.ts --project=chromi
 
 Expected: FAIL because no Materials route or UI exists.
 
-- [ ] **Step 3: Implement the minimal materials flow**
+- [x] **Step 3: Implement the minimal materials flow**
 
 Add route `/cases/:caseId/materials` only with working import and list behavior. Process selected files sequentially so one failure cannot roll back earlier successful imports. Use repository:
 
@@ -916,7 +916,7 @@ updateEvidenceCategory(
 
 Use object URLs only for optional local preview and revoke them on component unmount or replacement. Do not parse PDF contents, upload files, add remote icons or create AI classification controls.
 
-- [ ] **Step 4: Run GREEN and Task gates**
+- [x] **Step 4: Run GREEN and Task gates**
 
 ```powershell
 pnpm --filter @youju/web test
@@ -929,7 +929,7 @@ git diff --check
 git status --short
 ```
 
-- [ ] **Step 5: Commit and stop**
+- [x] **Step 5: Commit and stop**
 
 ```powershell
 git add apps/web/src apps/web/tests tests/e2e/material-management.spec.ts docs/superpowers/plans/2026-07-31-youju-m2-no-ai-core-plan.md

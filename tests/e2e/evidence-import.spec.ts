@@ -33,7 +33,9 @@ const expectedHash = createHash('sha256').update(Buffer.from(pngByteValues)).dig
 
 test('imports evidence, deduplicates by hash, and recovers interrupted imports', async ({
   page,
+  browserName,
 }) => {
+  test.skip(browserName === 'webkit', '此 WebKit 构建不支持 OPFS')
   await page.goto('/')
 
   const payload = {

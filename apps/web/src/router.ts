@@ -3,6 +3,7 @@ import type { RouteRecordRaw } from 'vue-router'
 import CaseWorkspaceView from './views/CaseWorkspaceView.vue'
 import CreateCaseView from './views/CreateCaseView.vue'
 import HomeView from './views/HomeView.vue'
+import MaterialsView from './views/MaterialsView.vue'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -19,6 +20,11 @@ const routes: RouteRecordRaw[] = [
     path: '/cases/:caseId',
     name: 'case-workspace',
     component: CaseWorkspaceView,
+  },
+  {
+    path: '/cases/:caseId/materials',
+    name: 'case-materials',
+    component: MaterialsView,
   },
 ]
 

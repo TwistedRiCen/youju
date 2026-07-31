@@ -25,9 +25,15 @@ test('second tab is read-only while the first tab holds the write lock', async (
   await expect(secondPage.getByLabel('商家名称')).toBeDisabled()
 
   await page.close()
-  await secondPage.getByRole('button', { name: '获取编辑权' }).click()
-
-  await expect(secondPage.getByText('可编辑')).toBeVisible()
+  await expect
+    .poll(async () => {
+      const acquireButton = secondPage.getByRole('button', { name: '获取编辑权' })
+      if (await acquireButton.isVisible()) {
+        await acquireButton.click()
+      }
+      return secondPage.getByText('可编辑').isVisible()
+    })
+    .toBe(true)
   await expect(secondPage.getByLabel('商家名称')).toBeEnabled()
   await secondPage.close()
 })

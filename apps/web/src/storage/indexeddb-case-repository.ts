@@ -1,5 +1,12 @@
 import type { IDBPDatabase } from 'idb'
-import type { CaseEvent, EvidenceFile, FactDraft, OperationJournalEntry, UuidV4 } from '@youju/domain'
+import type {
+  CaseEvent,
+  EvidenceCategory,
+  EvidenceFile,
+  FactDraft,
+  OperationJournalEntry,
+  UuidV4,
+} from '@youju/domain'
 import { CaseRepositoryError } from './case-repository.js'
 import type {
   CaseAggregate,
@@ -217,6 +224,27 @@ export class IndexedDbCaseRepository implements CaseRepository {
       const transaction = this.database.transaction('evidenceMetadata', 'readwrite')
       await transaction.objectStore('evidenceMetadata').delete(evidenceId)
       await transaction.done
+    } catch (error) {
+      throw toStorageError(error)
+    }
+  }
+
+  async updateEvidenceCategory(
+    caseId: UuidV4,
+    evidenceId: UuidV4,
+    category: EvidenceCategory,
+  ): Promise<EvidenceFile> {
+    try {
+      const transaction = this.database.transaction('evidenceMetadata', 'readwrite')
+      const store = transaction.objectStore('evidenceMetadata')
+      const existing = await store.get(evidenceId)
+      if (existing === undefined || existing.caseId !== caseId) {
+        throw new CaseRepositoryError('storage_unavailable', '未找到材料')
+      }
+      const updated: EvidenceFile = { ...existing, category }
+      await store.put(updated)
+      await transaction.done
+      return updated
     } catch (error) {
       throw toStorageError(error)
     }

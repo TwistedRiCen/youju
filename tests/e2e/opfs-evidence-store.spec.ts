@@ -37,7 +37,11 @@ const chunks: readonly BrowserBytes[] = [
 ]
 const expectedBytes: BrowserBytes = new Uint8Array([1, 2, 3, 4, 5, 6])
 
-test('stages, commits, persists, and verifies deletion of OPFS blobs', async ({ page }) => {
+test('stages, commits, persists, and verifies deletion of OPFS blobs', async ({
+  page,
+  browserName,
+}) => {
+  test.skip(browserName === 'webkit', '此 WebKit 构建不支持 OPFS')
   await page.goto('/')
 
   const payload = {
@@ -118,7 +122,8 @@ test('stages, commits, persists, and verifies deletion of OPFS blobs', async ({ 
   })
 })
 
-test('deletes individual blobs and temporary files', async ({ page }) => {
+test('deletes individual blobs and temporary files', async ({ page, browserName }) => {
+  test.skip(browserName === 'webkit', '此 WebKit 构建不支持 OPFS')
   await page.goto('/')
 
   const payload = {

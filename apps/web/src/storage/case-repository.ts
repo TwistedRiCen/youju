@@ -1,5 +1,6 @@
 import type {
   CaseEvent,
+  EvidenceCategory,
   EvidenceFile,
   FactDraft,
   OperationJournalEntry,
@@ -63,6 +64,11 @@ export interface CaseRepository {
   findEvidenceByHash(caseId: UuidV4, sha256: string): Promise<EvidenceFile | null>
   addReadyEvidence(evidence: EvidenceFile, operationId: UuidV4): Promise<void>
   removeEvidence(evidenceId: UuidV4): Promise<void>
+  updateEvidenceCategory(
+    caseId: UuidV4,
+    evidenceId: UuidV4,
+    category: EvidenceCategory,
+  ): Promise<EvidenceFile>
   putOperation(entry: OperationJournalEntry): Promise<void>
   listOperations(): Promise<readonly OperationJournalEntry[]>
   deleteOperation(operationId: UuidV4): Promise<void>

@@ -212,6 +212,10 @@ onUnmounted(() => {
     <section v-else class="overview">
       <h1>{{ caseTitle }}</h1>
       <p class="save-status">{{ statusText }}</p>
+      <nav class="workspace-nav" aria-label="事件工作台分区">
+        <span class="nav-current">概览</span>
+        <a :href="`/cases/${caseId}/materials`">材料</a>
+      </nav>
       <p v-if="writeMode === 'writer'" class="write-mode">可编辑</p>
       <div v-else class="read-only">
         <p>另一标签页正在编辑，本页只读</p>
@@ -268,6 +272,24 @@ h1 {
 .save-status {
   margin: 0 0 1.25rem;
   color: #527067;
+  font-weight: 700;
+}
+
+.workspace-nav {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #d3d7ce;
+}
+
+.workspace-nav a {
+  color: #31564c;
+  font-weight: 700;
+}
+
+.nav-current {
+  color: #173f35;
   font-weight: 700;
 }
 

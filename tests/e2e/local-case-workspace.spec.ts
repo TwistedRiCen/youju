@@ -31,6 +31,16 @@ test('autosaves workspace edits and recovers them after reload', async ({ page }
   await expect(page.getByLabel('商家名称')).toHaveValue('晴川生活示例店')
   await page.getByLabel('商家名称').fill('修改后的商家名称')
   await expect
+    .poll(async () => {
+      const input = page.getByLabel('商家名称')
+      const current = await input.inputValue()
+      if (current !== '修改后的商家名称') {
+        await input.fill('修改后的商家名称')
+      }
+      return current === '修改后的商家名称'
+    })
+    .toBe(true)
+  await expect
     .poll(async () =>
       page.evaluate(async () => {
         const url = '/src/storage/index.ts'
@@ -42,6 +52,7 @@ test('autosaves workspace edits and recovers them after reload', async ({ page }
             getCase(caseId: string): Promise<{
               factDrafts: readonly { fieldName: string; value: string }[]
             } | null>
+            close(): void
           }
         }
         const database = await storage.openYoujuDatabase(storage.DATABASE_MIGRATIONS)
@@ -50,16 +61,35 @@ test('autosaves workspace edits and recovers them after reload', async ({ page }
         const first = cases[0]
         const aggregate =
           first === undefined ? null : await repository.getCase(first.caseEvent.id)
+        repository.close()
         return {
           databaseVersion: database.version,
           caseCount: cases.length,
           merchantValue:
             aggregate?.factDrafts.find((draft) => draft.fieldName === 'merchant_name')?.value ??
             null,
+          formMerchantValue:
+            (
+              document.querySelector(
+                '#draft-merchant_name',
+              ) as HTMLInputElement | null
+            )?.value ?? null,
+          saveFailed: document.body.innerText.includes('保存失败，请重试'),
+          saveConflict: document.body.innerText.includes('保存冲突'),
+          navigationType:
+            performance.getEntriesByType('navigation')[0]?.toJSON().type ?? 'unknown',
         }
       }),
     )
-    .toEqual({ databaseVersion: 2, caseCount: 1, merchantValue: '修改后的商家名称' })
+    .toEqual({
+      databaseVersion: 2,
+      caseCount: 1,
+      merchantValue: '修改后的商家名称',
+      formMerchantValue: '修改后的商家名称',
+      saveFailed: false,
+      saveConflict: false,
+      navigationType: 'navigate',
+    })
 
   await page.reload()
   await expect(page.getByLabel('商家名称')).toHaveValue('修改后的商家名称')
