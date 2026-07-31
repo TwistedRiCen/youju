@@ -1,6 +1,8 @@
 import {
+  buildManualConfirmedFact,
   confirmManualFact,
   replaceConfirmedFact,
+  requiresEvidenceSource,
   selectCurrentConfirmedFacts,
 } from '../src/index.js'
 import type { ConfirmedFact, FactDraft } from '../src/index.js'
@@ -181,5 +183,50 @@ describe('manual fact confirmation lifecycle', () => {
     selectCurrentConfirmedFacts(facts)
 
     expect(facts).toEqual(before)
+  })
+})
+
+describe('required evidence source policy', () => {
+  it('requires evidence sources for transactional fields', () => {
+    expect(requiresEvidenceSource('purchase_time')).toBe(true)
+    expect(requiresEvidenceSource('merchant_name')).toBe(true)
+    expect(requiresEvidenceSource('product_name')).toBe(true)
+    expect(requiresEvidenceSource('paid_amount')).toBe(true)
+    expect(requiresEvidenceSource('order_number')).toBe(true)
+    expect(requiresEvidenceSource('platform_name')).toBe(true)
+    expect(requiresEvidenceSource('received_time')).toBe(true)
+    expect(requiresEvidenceSource('merchant_response')).toBe(true)
+  })
+
+  it('allows problem description and requested resolution without evidence', () => {
+    expect(requiresEvidenceSource('problem_description')).toBe(false)
+    expect(requiresEvidenceSource('requested_resolution')).toBe(false)
+  })
+})
+
+describe('manual confirmed fact builder', () => {
+  it('builds a replacement with explicit sources, linkage and version', () => {
+    const confirmed = buildManualConfirmedFact({
+      draft: paymentDraft(),
+      id: '00000000-0000-4000-8000-000000000602',
+      confirmedAt: '2026-07-31T02:00:00.000Z',
+      sourceRefs: [{ evidenceId: '00000000-0000-4000-8000-000000000020' }],
+      replacesFactId: '00000000-0000-4000-8000-000000000601',
+      version: 3,
+    })
+
+    expect(confirmed).toMatchObject({
+      id: '00000000-0000-4000-8000-000000000602',
+      caseId,
+      factType: 'payment',
+      fieldName: 'paid_amount',
+      value: '89900',
+      sourceRefs: [{ evidenceId: '00000000-0000-4000-8000-000000000020' }],
+      confirmedAt: '2026-07-31T02:00:00.000Z',
+      confirmationMethod: 'manual',
+      derivedFromCandidateId: null,
+      replacesFactId: '00000000-0000-4000-8000-000000000601',
+      version: 3,
+    })
   })
 })

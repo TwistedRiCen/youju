@@ -1,12 +1,15 @@
 import type { IDBPDatabase } from 'idb'
 import type {
   CaseEvent,
+  ConfirmFactCommand,
+  ConfirmedFact,
   EvidenceCategory,
   EvidenceFile,
   FactDraft,
   OperationJournalEntry,
   UuidV4,
 } from '@youju/domain'
+import { buildManualConfirmedFact } from '@youju/domain'
 import { CaseRepositoryError } from './case-repository.js'
 import type {
   CaseAggregate,
@@ -224,6 +227,87 @@ export class IndexedDbCaseRepository implements CaseRepository {
       const transaction = this.database.transaction('evidenceMetadata', 'readwrite')
       await transaction.objectStore('evidenceMetadata').delete(evidenceId)
       await transaction.done
+    } catch (error) {
+      throw toStorageError(error)
+    }
+  }
+
+  async listConfirmedFacts(caseId: UuidV4): Promise<readonly ConfirmedFact[]> {
+    try {
+      const transaction = this.database.transaction('confirmedFacts', 'readonly')
+      const records = await transaction
+        .objectStore('confirmedFacts')
+        .index('by_caseId')
+        .getAll(caseId)
+      await transaction.done
+      return records.sort((a, b) =>
+        a.confirmedAt === b.confirmedAt
+          ? a.id < b.id
+            ? -1
+            : 1
+          : a.confirmedAt < b.confirmedAt
+            ? -1
+            : 1,
+      )
+    } catch (error) {
+      throw toStorageError(error)
+    }
+  }
+
+  async confirmFact(command: ConfirmFactCommand): Promise<ConfirmedFact> {
+    try {
+      const transaction = this.database.transaction(
+        ['factDrafts', 'confirmedFacts', 'cases', 'evidenceMetadata'],
+        'readwrite',
+      )
+      const draft = await transaction.objectStore('factDrafts').get(command.draftId)
+      if (draft === undefined) {
+        throw new CaseRepositoryError('storage_unavailable', '未找到事实草稿')
+      }
+      const caseId = draft.caseId
+
+      const evidenceStore = transaction.objectStore('evidenceMetadata')
+      for (const source of command.sourceRefs) {
+        const evidence = await evidenceStore.get(source.evidenceId)
+        if (evidence === undefined || evidence.caseId !== caseId) {
+          throw new CaseRepositoryError('storage_unavailable', '来源材料不属于当前事件')
+        }
+      }
+
+      let version = 1
+      if (command.replacesFactId !== null) {
+        const current = await transaction
+          .objectStore('confirmedFacts')
+          .get(command.replacesFactId)
+        if (current === undefined || current.caseId !== caseId) {
+          throw new CaseRepositoryError('storage_unavailable', '被替换的正式事实不存在')
+        }
+        version = current.version + 1
+      }
+
+      const confirmed = buildManualConfirmedFact({
+        draft,
+        id: command.confirmedFactId,
+        confirmedAt: command.confirmedAt,
+        sourceRefs: command.sourceRefs,
+        replacesFactId: command.replacesFactId,
+        version,
+      })
+      await transaction.objectStore('confirmedFacts').put(confirmed)
+
+      const caseStore = transaction.objectStore('cases')
+      const caseRecord = await caseStore.get(caseId)
+      if (caseRecord !== undefined) {
+        await caseStore.put({
+          ...caseRecord,
+          status: 'in_progress',
+          updatedAt: command.confirmedAt,
+          revision: caseRecord.revision + 1,
+          lastWriterId: 'formal-confirmation',
+        })
+      }
+      await transaction.done
+      return confirmed
     } catch (error) {
       throw toStorageError(error)
     }

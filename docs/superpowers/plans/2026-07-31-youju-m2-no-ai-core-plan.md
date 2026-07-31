@@ -961,7 +961,7 @@ git commit -m "feat: add material management flow"
 - Consumes: M2 formal fact functions, ready evidence and repository drafts.
 - Produces: source requirement policy, persisted confirmations, replacements and current formal fact view.
 
-- [ ] **Step 1: Write failing policy and UI tests**
+- [x] **Step 1: Write failing policy and UI tests**
 
 Add:
 
@@ -974,7 +974,7 @@ expect(requiresEvidenceSource('requested_resolution')).toBe(false)
 
 The component test confirms a transaction fact may be manually confirmed without evidence so the structured OPFS-degraded flow remains usable, but it shows `正式导出前必须关联材料`; problem description and requested resolution do not show that required-source warning. The E2E test confirms six facts, edits merchant name, reconfirms it, and asserts the old version remains in IndexedDB but only version 2 appears as current. Task 12 must block export until required-source warnings are resolved.
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 ```powershell
 pnpm exec vitest run packages/domain/tests/formal-facts.test.ts apps/web/tests/facts.test.ts
@@ -983,7 +983,7 @@ pnpm exec playwright test tests/e2e/manual-facts.spec.ts --project=chromium-desk
 
 Expected: FAIL because source policy, confirmed fact repository methods and Facts UI are absent.
 
-- [ ] **Step 3: Implement fact persistence and UI**
+- [x] **Step 3: Implement fact persistence and UI**
 
 Expose:
 
@@ -1001,7 +1001,7 @@ export interface ConfirmFactCommand {
 
 Repository methods `listConfirmedFacts(caseId)` and `confirmFact(command)` run in one transaction and preserve history. Validate every supplied source belongs to the same case and exists in `evidenceMetadata`; an empty source array is permitted for manual confirmation and is enforced later by export preflight according to `requiresEvidenceSource()`. Confirmation is always an explicit button; autosave applies to drafts only. The first confirmation moves the case to `in_progress`; any later formal-content change also rolls `ready_to_export` or `exported` back to `in_progress`. Do not construct `FactCandidate` objects in M2.
 
-- [ ] **Step 4: Run GREEN and Task gates**
+- [x] **Step 4: Run GREEN and Task gates**
 
 ```powershell
 pnpm --filter @youju/domain test
@@ -1015,7 +1015,7 @@ git diff --check
 git status --short
 ```
 
-- [ ] **Step 5: Commit and stop**
+- [x] **Step 5: Commit and stop**
 
 ```powershell
 git add packages/domain apps/web/src apps/web/tests tests/e2e/manual-facts.spec.ts docs/superpowers/plans/2026-07-31-youju-m2-no-ai-core-plan.md

@@ -1,4 +1,11 @@
-import type { ConfirmedFact, FactDraft, UuidV4, UtcTimestamp } from './schemas.js'
+import type {
+  ConfirmedFact,
+  FactDraft,
+  FactFieldName,
+  SourceReference,
+  UuidV4,
+  UtcTimestamp,
+} from './schemas.js'
 
 export interface ConfirmManualFactInput {
   readonly draft: FactDraft
@@ -17,13 +24,14 @@ function confirmedFactFromDraft(
   draft: FactDraft,
   id: UuidV4,
   confirmedAt: UtcTimestamp,
+  sourceRefs: readonly SourceReference[],
   replacesFactId: UuidV4 | null,
   version: number,
 ): ConfirmedFact {
   const base = {
     id,
     caseId: draft.caseId,
-    sourceRefs: [...draft.sourceRefs],
+    sourceRefs: [...sourceRefs],
     confirmedAt,
     confirmationMethod: 'manual' as const,
     derivedFromCandidateId: null,
@@ -67,7 +75,14 @@ function confirmedFactFromDraft(
 }
 
 export function confirmManualFact(input: ConfirmManualFactInput): ConfirmedFact {
-  return confirmedFactFromDraft(input.draft, input.id, input.confirmedAt, null, 1)
+  return confirmedFactFromDraft(
+    input.draft,
+    input.id,
+    input.confirmedAt,
+    input.draft.sourceRefs,
+    null,
+    1,
+  )
 }
 
 export function replaceConfirmedFact(input: ReplaceConfirmedFactInput): ConfirmedFact {
@@ -75,9 +90,49 @@ export function replaceConfirmedFact(input: ReplaceConfirmedFactInput): Confirme
     input.draft,
     input.id,
     input.confirmedAt,
+    input.draft.sourceRefs,
     input.current.id,
     input.current.version + 1,
   )
+}
+
+export interface BuildManualConfirmedFactInput {
+  readonly draft: FactDraft
+  readonly id: UuidV4
+  readonly confirmedAt: UtcTimestamp
+  readonly sourceRefs: readonly SourceReference[]
+  readonly replacesFactId: UuidV4 | null
+  readonly version: number
+}
+
+export function buildManualConfirmedFact(
+  input: BuildManualConfirmedFactInput,
+): ConfirmedFact {
+  return confirmedFactFromDraft(
+    input.draft,
+    input.id,
+    input.confirmedAt,
+    input.sourceRefs,
+    input.replacesFactId,
+    input.version,
+  )
+}
+
+export interface ConfirmFactCommand {
+  readonly draftId: UuidV4
+  readonly confirmedFactId: UuidV4
+  readonly confirmedAt: UtcTimestamp
+  readonly sourceRefs: readonly SourceReference[]
+  readonly replacesFactId: UuidV4 | null
+}
+
+const STATEMENT_ONLY_FIELDS: ReadonlySet<FactFieldName> = new Set([
+  'problem_description',
+  'requested_resolution',
+])
+
+export function requiresEvidenceSource(fieldName: FactFieldName): boolean {
+  return !STATEMENT_ONLY_FIELDS.has(fieldName)
 }
 
 export function selectCurrentConfirmedFacts(facts: readonly ConfirmedFact[]): ConfirmedFact[] {

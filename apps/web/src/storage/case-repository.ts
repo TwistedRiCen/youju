@@ -1,8 +1,10 @@
 import type {
   CaseEvent,
+  ConfirmFactCommand,
   EvidenceCategory,
   EvidenceFile,
   FactDraft,
+  ConfirmedFact,
   OperationJournalEntry,
   UuidV4,
   UtcTimestamp,
@@ -64,6 +66,8 @@ export interface CaseRepository {
   findEvidenceByHash(caseId: UuidV4, sha256: string): Promise<EvidenceFile | null>
   addReadyEvidence(evidence: EvidenceFile, operationId: UuidV4): Promise<void>
   removeEvidence(evidenceId: UuidV4): Promise<void>
+  listConfirmedFacts(caseId: UuidV4): Promise<readonly ConfirmedFact[]>
+  confirmFact(command: ConfirmFactCommand): Promise<ConfirmedFact>
   updateEvidenceCategory(
     caseId: UuidV4,
     evidenceId: UuidV4,

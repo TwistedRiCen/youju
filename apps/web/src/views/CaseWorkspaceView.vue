@@ -215,6 +215,7 @@ onUnmounted(() => {
       <nav class="workspace-nav" aria-label="事件工作台分区">
         <span class="nav-current">概览</span>
         <a :href="`/cases/${caseId}/materials`">材料</a>
+        <a :href="`/cases/${caseId}/facts`">事实</a>
       </nav>
       <p v-if="writeMode === 'writer'" class="write-mode">可编辑</p>
       <div v-else class="read-only">
