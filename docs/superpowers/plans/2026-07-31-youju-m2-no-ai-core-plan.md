@@ -654,7 +654,7 @@ git commit -m "feat: add streaming evidence hashing"
 - Consumes: UUID v4 case, evidence and operation IDs plus byte streams.
 - Produces: `EvidenceBlobStore` and `OpfsEvidenceBlobStore` with staging, commit, read, enumerate and verified deletion.
 
-- [ ] **Step 1: Write failing path and real-browser storage tests**
+- [x] **Step 1: Write failing path and real-browser storage tests**
 
 The path test asserts exact internal paths:
 
@@ -668,7 +668,7 @@ expect(() => evidenceStoragePath('../case', evidenceId)).toThrow('invalid_uuid')
 
 The Playwright test stages three chunks, reads the staged file, commits it, verifies byte equality, closes and recreates the store, verifies persistence, deletes the case and asserts both formal and temporary paths are absent.
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 ```powershell
 pnpm exec vitest run packages/evidence-store/tests/opfs-paths.test.ts
@@ -677,7 +677,7 @@ pnpm exec playwright test tests/e2e/opfs-evidence-store.spec.ts --project=chromi
 
 Expected: FAIL because the package and browser implementation do not exist.
 
-- [ ] **Step 3: Implement the package**
+- [x] **Step 3: Implement the package**
 
 Create `package.json` first with package name `@youju/evidence-store`, public export `./src/index.ts` and standard package scripts. Add its domain dependency and connect the Web consumer:
 
@@ -707,7 +707,7 @@ export interface EvidenceBlobStore {
 
 Obtain the root only through `navigator.storage.getDirectory()`. Write chunks through `createWritable()`, close before verification, copy staged content to the final UUID-only path without loading the whole file, and delete the temporary file only after the final size matches. Convert `NotAllowedError` and `QuotaExceededError` to stable low-sensitivity codes. Do not expose `FileSystemHandle` from the public interface.
 
-- [ ] **Step 4: Run GREEN and Task gates**
+- [x] **Step 4: Run GREEN and Task gates**
 
 ```powershell
 pnpm --filter @youju/evidence-store test
@@ -720,7 +720,7 @@ git diff --check
 git status --short
 ```
 
-- [ ] **Step 5: Commit and stop**
+- [x] **Step 5: Commit and stop**
 
 ```powershell
 git add packages/evidence-store apps/web/package.json tests/e2e/opfs-evidence-store.spec.ts pnpm-lock.yaml docs/superpowers/plans/2026-07-31-youju-m2-no-ai-core-plan.md
