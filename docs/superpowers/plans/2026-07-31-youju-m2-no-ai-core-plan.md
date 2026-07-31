@@ -402,7 +402,7 @@ git commit -m "feat: add IndexedDB case repository"
 - Consumes: `CaseRepository` and `FactDraft`.
 - Produces: routes `/cases/new` and `/cases/:caseId`, six-field creation flow, autosave state and refresh recovery.
 
-- [ ] **Step 1: Write failing component and browser tests**
+- [x] **Step 1: Write failing component and browser tests**
 
 The component test asserts the creation form has exactly these fields: title, purchase time, merchant name, product name, paid amount and requested resolution. It contains the local-data risk statement and no account, telephone, password or AI control.
 
@@ -423,7 +423,7 @@ await page.reload()
 await expect(page.getByDisplayValue('晴川生活示例店')).toBeVisible()
 ```
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 ```powershell
 pnpm exec vitest run apps/web/tests/create-case.test.ts apps/web/tests/autosave.test.ts
@@ -432,7 +432,7 @@ pnpm exec playwright test tests/e2e/local-case-workspace.spec.ts --project=chrom
 
 Expected: FAIL because the routes, forms and services do not exist; existing M1 tests still start successfully.
 
-- [ ] **Step 3: Implement minimal creation and autosave**
+- [x] **Step 3: Implement minimal creation and autosave**
 
 Use:
 
@@ -449,7 +449,7 @@ export interface AutosaveController<T> {
 
 Create the `CaseEvent` and six `FactDraft` records in one IndexedDB transaction. Convert `899.00` to `89900` without floating-point arithmetic. Use a 400 ms debounce, flush on route leave and `visibilitychange`, and preserve unsaved form values if persistence fails. Workspace navigation initially exposes only Overview; later Tasks add real sections, so do not add disabled placeholder controls.
 
-- [ ] **Step 4: Run GREEN and Task gates**
+- [x] **Step 4: Run GREEN and Task gates**
 
 ```powershell
 pnpm --filter @youju/web test
@@ -462,7 +462,7 @@ git diff --check
 git status --short
 ```
 
-- [ ] **Step 5: Commit and stop**
+- [x] **Step 5: Commit and stop**
 
 ```powershell
 git add apps/web/src apps/web/tests tests/e2e/local-case-workspace.spec.ts docs/superpowers/plans/2026-07-31-youju-m2-no-ai-core-plan.md

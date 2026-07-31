@@ -18,7 +18,12 @@
 
     <section class="milestone" aria-labelledby="milestone-title">
       <h2 id="milestone-title">当前版本</h2>
-      <p>M1正在建立可验证的产品基础；事件创建与材料导入将在M2开放。</p>
+      <p>本地事件创建已开放；材料导入、事实确认与导出将在 M2 后续版本开放。</p>
+    </section>
+
+    <section class="start" aria-labelledby="start-title">
+      <h2 id="start-title">开始整理</h2>
+      <a class="start-link" href="/cases/new">创建本地事件</a>
     </section>
   </main>
 </template>
@@ -105,6 +110,20 @@ ul {
   margin-bottom: 0;
   color: #527067;
   line-height: 1.6;
+}
+
+.start {
+  margin-top: 1.5rem;
+}
+
+.start-link {
+  display: inline-block;
+  padding: 0.85rem 1.25rem;
+  border-radius: 0.7rem;
+  background: #173f35;
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
 }
 
 @media (min-width: 40rem) {
