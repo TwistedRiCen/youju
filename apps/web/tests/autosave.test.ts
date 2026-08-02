@@ -29,6 +29,17 @@ describe('autosave controller', () => {
     await controller.dispose()
   })
 
+  it('reports a pending write as saving before the debounce completes', async () => {
+    const persist = vi.fn().mockResolvedValue(undefined)
+    const controller = createAutosave({ persist })
+
+    controller.schedule('pending')
+
+    expect(controller.status.value).toBe('saving')
+
+    await controller.dispose()
+  })
+
   it('exposes saving and saved status around a persisted write', async () => {
     let resolvePersist: (() => void) | undefined
     const persist = vi.fn(

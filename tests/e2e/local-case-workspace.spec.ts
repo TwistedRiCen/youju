@@ -28,68 +28,36 @@ test('autosaves workspace edits and recovers them after reload', async ({ page }
   await page.getByLabel('期望处理结果').fill('退货并退还已支付金额')
   await page.getByRole('button', { name: '创建事件' }).click()
 
-  await expect(page.getByLabel('商家名称')).toHaveValue('晴川生活示例店')
-  await page.getByLabel('商家名称').fill('修改后的商家名称')
-  await expect
-    .poll(async () => {
-      const input = page.getByLabel('商家名称')
-      const current = await input.inputValue()
-      if (current !== '修改后的商家名称') {
-        await input.fill('修改后的商家名称')
-      }
-      return current === '修改后的商家名称'
-    })
-    .toBe(true)
-  await expect
-    .poll(async () =>
-      page.evaluate(async () => {
-        const url = '/src/storage/index.ts'
-        const storage = (await import(url)) as {
-          openYoujuDatabase: (migrations: readonly unknown[]) => Promise<{ version: number }>
-          DATABASE_MIGRATIONS: readonly unknown[]
-          IndexedDbCaseRepository: new (database: unknown) => {
-            listCases(): Promise<readonly { caseEvent: { id: string } }[]>
-            getCase(caseId: string): Promise<{
-              factDrafts: readonly { fieldName: string; value: string }[]
-            } | null>
-            close(): void
-          }
+  const merchantInput = page.getByLabel('商家名称')
+  await expect(merchantInput).toHaveValue('晴川生活示例店')
+  await expect(page.locator('.save-status')).toHaveText('已保存到此设备')
+  const saveCompleted = page.evaluate(() => {
+    const status = document.querySelector('.save-status')
+    if (!(status instanceof HTMLElement)) {
+      throw new Error('save_status_not_found')
+    }
+    return new Promise<void>((resolve, reject) => {
+      let sawSaving = status.textContent === '正在保存…'
+      const timeout = window.setTimeout(() => {
+        observer.disconnect()
+        reject(new Error('save_status_transition_timeout'))
+      }, 5000)
+      const observer = new MutationObserver(() => {
+        if (status.textContent === '正在保存…') {
+          sawSaving = true
         }
-        const database = await storage.openYoujuDatabase(storage.DATABASE_MIGRATIONS)
-        const repository = new storage.IndexedDbCaseRepository(database)
-        const cases = await repository.listCases()
-        const first = cases[0]
-        const aggregate =
-          first === undefined ? null : await repository.getCase(first.caseEvent.id)
-        repository.close()
-        return {
-          databaseVersion: database.version,
-          caseCount: cases.length,
-          merchantValue:
-            aggregate?.factDrafts.find((draft) => draft.fieldName === 'merchant_name')?.value ??
-            null,
-          formMerchantValue:
-            (
-              document.querySelector(
-                '#draft-merchant_name',
-              ) as HTMLInputElement | null
-            )?.value ?? null,
-          saveFailed: document.body.innerText.includes('保存失败，请重试'),
-          saveConflict: document.body.innerText.includes('保存冲突'),
-          navigationType:
-            performance.getEntriesByType('navigation')[0]?.toJSON().type ?? 'unknown',
+        if (sawSaving && status.textContent === '已保存到此设备') {
+          observer.disconnect()
+          window.clearTimeout(timeout)
+          resolve()
         }
-      }),
-    )
-    .toMatchObject({
-      databaseVersion: 2,
-      caseCount: 1,
-      merchantValue: '修改后的商家名称',
-      formMerchantValue: '修改后的商家名称',
-      saveFailed: false,
-      saveConflict: false,
-      navigationType: 'navigate',
+      })
+      observer.observe(status, { childList: true, characterData: true, subtree: true })
     })
+  })
+  await merchantInput.fill('修改后的商家名称')
+  await expect(merchantInput).toHaveValue('修改后的商家名称')
+  await saveCompleted
 
   await page.reload()
   await expect(page.getByLabel('商家名称')).toHaveValue('修改后的商家名称')

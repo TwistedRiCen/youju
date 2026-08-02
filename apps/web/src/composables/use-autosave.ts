@@ -68,6 +68,7 @@ export function createAutosave<T>(options: AutosaveOptions<T>): AutosaveControll
         return
       }
       pendingValue = value
+      status.value = 'saving'
       if (timer !== null) {
         clearTimeout(timer)
       }
