@@ -3,8 +3,10 @@ import { onMounted, reactive, ref, shallowRef } from 'vue'
 import { useRoute } from 'vue-router'
 import type {
   ConfirmedFact,
+  EvidenceFile,
   FactDraft,
   FactFieldName,
+  SourceReference,
   UuidV4,
 } from '@youju/domain'
 import { selectCurrentConfirmedFacts } from '@youju/domain'
@@ -17,6 +19,7 @@ import {
   loadFacts,
   saveFactDrafts,
 } from '../services/fact-service.js'
+import { listCaseEvidence } from '../services/evidence-service.js'
 
 interface RequiredFactRow {
   readonly fieldName: FactFieldName
@@ -58,6 +61,8 @@ const draftsByField = reactive<Record<string, FactDraft | undefined>>({})
 const createdDraftIds = reactive<Record<string, string>>({})
 const values = reactive<Record<string, string>>({})
 const currentFacts = ref<readonly ConfirmedFact[]>([])
+const evidence = shallowRef<readonly EvidenceFile[]>([])
+const selectedSourceIdsByField = reactive<Record<string, string[]>>({})
 
 let expectedRevision = 0
 let autosave: AutosaveController<readonly FactDraft[]> | null = null
@@ -82,12 +87,21 @@ function toPersistedValue(fieldName: FactFieldName, raw: string): string | null 
   return raw
 }
 
-function createDraft(row: RequiredFactRow, value: string, now: string): FactDraft {
+function sourceRefsFor(fieldName: FactFieldName): SourceReference[] {
+  return (selectedSourceIdsByField[fieldName] ?? []).map((evidenceId) => ({ evidenceId }))
+}
+
+function createDraft(
+  row: RequiredFactRow,
+  value: string,
+  now: string,
+  sourceRefs: readonly SourceReference[],
+): FactDraft {
   const base = {
     id: crypto.randomUUID(),
     caseId,
     value,
-    sourceRefs: [],
+    sourceRefs: [...sourceRefs],
     updatedAt: now,
     revision: 1,
   }
@@ -109,12 +123,17 @@ function createDraft(row: RequiredFactRow, value: string, now: string): FactDraf
   }
 }
 
-function toPlainDraft(draft: FactDraft, value: string, now: string): FactDraft {
+function toPlainDraft(
+  draft: FactDraft,
+  value: string,
+  now: string,
+  sourceRefs: readonly SourceReference[],
+): FactDraft {
   const base = {
     id: draft.id,
     caseId: draft.caseId,
     value,
-    sourceRefs: draft.sourceRefs.map((source) => ({ evidenceId: source.evidenceId })),
+    sourceRefs: sourceRefs.map((source) => ({ evidenceId: source.evidenceId })),
     updatedAt: now,
     revision: draft.revision,
   }
@@ -151,10 +170,11 @@ function buildDraftsForSave(): readonly FactDraft[] | null {
       return null
     }
     const existing = draftsByField[row.fieldName]
+    const sourceRefs = sourceRefsFor(row.fieldName)
     if (existing !== undefined) {
-      savedDrafts.push(toPlainDraft(existing, value, now))
+      savedDrafts.push(toPlainDraft(existing, value, now, sourceRefs))
     } else {
-      const created = createDraft(row, value, now)
+      const created = createDraft(row, value, now, sourceRefs)
       createdDraftIds[row.fieldName] = created.id
       savedDrafts.push(created)
     }
@@ -177,14 +197,35 @@ function draftIdFor(fieldName: FactFieldName): string | null {
   return draftsByField[fieldName]?.id ?? createdDraftIds[fieldName] ?? null
 }
 
-async function refreshSnapshot(): Promise<void> {
-  const snapshot = await loadFacts(caseId)
+function applySnapshot(snapshot: Awaited<ReturnType<typeof loadFacts>>): void {
   drafts.value = snapshot.drafts
   for (const draft of snapshot.drafts) {
     draftsByField[draft.fieldName] = draft
   }
   expectedRevision = snapshot.revision
   currentFacts.value = selectCurrentConfirmedFacts(snapshot.currentFacts)
+  for (const row of REQUIRED_FACTS) {
+    const current = currentFacts.value.find((fact) => fact.fieldName === row.fieldName)
+    const draft = draftsByField[row.fieldName]
+    const sourceRefs = current?.sourceRefs ?? draft?.sourceRefs ?? []
+    selectedSourceIdsByField[row.fieldName] = sourceRefs.map((source) => source.evidenceId)
+  }
+}
+
+async function refreshSnapshot(): Promise<void> {
+  const snapshot = await loadFacts(caseId)
+  applySnapshot(snapshot)
+}
+
+function onSourceIdsChange(fieldName: FactFieldName, sourceIds: readonly string[]): void {
+  selectedSourceIdsByField[fieldName] = [...sourceIds]
+  if (autosave === null) {
+    return
+  }
+  const saved = buildDraftsForSave()
+  if (saved !== null) {
+    autosave.schedule(saved)
+  }
 }
 
 async function confirmRow(row: RequiredFactRow): Promise<void> {
@@ -202,7 +243,7 @@ async function confirmRow(row: RequiredFactRow): Promise<void> {
     draftId,
     confirmedFactId: crypto.randomUUID(),
     confirmedAt: new Date().toISOString(),
-    sourceRefs: [],
+    sourceRefs: sourceRefsFor(row.fieldName),
     replacesFactId: current?.id ?? null,
   })
   await refreshSnapshot()
@@ -210,17 +251,16 @@ async function confirmRow(row: RequiredFactRow): Promise<void> {
 
 onMounted(async () => {
   try {
-    const snapshot = await loadFacts(caseId)
-    drafts.value = snapshot.drafts
-    for (const draft of snapshot.drafts) {
-      draftsByField[draft.fieldName] = draft
-    }
+    const [snapshot, caseEvidence] = await Promise.all([
+      loadFacts(caseId),
+      listCaseEvidence(caseId),
+    ])
+    applySnapshot(snapshot)
+    evidence.value = caseEvidence
     for (const row of REQUIRED_FACTS) {
       const draft = draftsByField[row.fieldName]
       values[row.fieldName] = draft === undefined ? '' : toDisplayValue(draft)
     }
-    currentFacts.value = selectCurrentConfirmedFacts(snapshot.currentFacts)
-    expectedRevision = snapshot.revision
     autosave = createAutosave({
       persist: async (saved) => {
         expectedRevision = await saveFactDrafts(caseId, expectedRevision, saved)
@@ -248,7 +288,10 @@ onMounted(async () => {
         :input-type="row.inputType"
         :input-mode="row.inputMode"
         :disabled="false"
+        :evidence="evidence"
+        :selected-source-ids="selectedSourceIdsByField[row.fieldName] ?? []"
         @update-value="onValueChange(row.fieldName, $event)"
+        @update-source-ids="onSourceIdsChange(row.fieldName, $event)"
         @confirm="confirmRow(row)"
       />
       <section class="confirmed" aria-label="当前正式事实">

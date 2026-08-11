@@ -88,6 +88,18 @@ test('completes the full no-AI golden workflow', async ({ page, browserName }) =
   await page
     .getByRole('textbox', { name: '问题描述' })
     .fill('包裹外箱凹陷，桌板边角开裂并有明显压痕')
+  for (const selection of [
+    { fieldName: 'purchase_time', sourceIndex: 0 },
+    { fieldName: 'merchant_name', sourceIndex: 0 },
+    { fieldName: 'product_name', sourceIndex: 2 },
+    { fieldName: 'paid_amount', sourceIndex: 1 },
+  ]) {
+    const source = binaryFiles[selection.sourceIndex]
+    if (source !== undefined) {
+      const editor = page.locator(`#fact-${selection.fieldName}`).locator('..')
+      await editor.getByRole('checkbox', { name: source.name }).check()
+    }
+  }
   for (const label of [
     '购买时间',
     '商家名称',
@@ -98,67 +110,6 @@ test('completes the full no-AI golden workflow', async ({ page, browserName }) =
   ]) {
     await page.getByRole('button', { name: `确认事实：${label}` }).click()
   }
-  await page.evaluate(async () => {
-    const storageUrl = '/src/storage/index.ts'
-    const storage = (await import(storageUrl)) as {
-      openYoujuDatabase: (migrations: readonly unknown[]) => Promise<unknown>
-      DATABASE_MIGRATIONS: readonly unknown[]
-      IndexedDbCaseRepository: new (database: unknown) => {
-        listCases(): Promise<readonly { caseEvent: { id: string } }[]>
-        getCase(caseId: string): Promise<{
-          factDrafts: readonly { id: string; fieldName: string }[]
-        } | null>
-        listEvidence(caseId: string): Promise<readonly { id: string }[]>
-        listConfirmedFacts(caseId: string): Promise<
-          readonly { id: string; fieldName: string; replacesFactId: string | null }[]
-        >
-        confirmFact(command: Record<string, unknown>): Promise<unknown>
-        close(): void
-      }
-    }
-    const domainUrl = '/node_modules/@youju/domain/src/index.ts'
-    const domain = (await import(domainUrl)) as {
-      selectCurrentConfirmedFacts: (
-        facts: readonly { id: string; fieldName: string }[],
-      ) => readonly { id: string; fieldName: string }[]
-    }
-    const database = await storage.openYoujuDatabase(storage.DATABASE_MIGRATIONS)
-    const repository = new storage.IndexedDbCaseRepository(database)
-    const cases = await repository.listCases()
-    const first = cases[0]
-    if (first !== undefined) {
-      const caseId = first.caseEvent.id
-      const aggregate = await repository.getCase(caseId)
-      const drafts = aggregate?.factDrafts ?? []
-      const sourceRefs = (await repository.listEvidence(caseId)).map((evidence) => ({
-        evidenceId: evidence.id,
-      }))
-      const required = new Set([
-        'purchase_time',
-        'merchant_name',
-        'product_name',
-        'paid_amount',
-      ])
-      for (const fact of domain.selectCurrentConfirmedFacts(
-        await repository.listConfirmedFacts(caseId),
-      )) {
-        if (!required.has(fact.fieldName)) {
-          continue
-        }
-        const draft = drafts.find((item) => item.fieldName === fact.fieldName)
-        if (draft !== undefined) {
-          await repository.confirmFact({
-            draftId: draft.id,
-            confirmedFactId: crypto.randomUUID(),
-            confirmedAt: new Date().toISOString(),
-            sourceRefs,
-            replacesFactId: fact.id,
-          })
-        }
-      }
-    }
-    repository.close()
-  })
   await page.getByRole('link', { name: '返回事件工作台' }).click()
 
   await page.getByRole('link', { name: '时间线' }).click()
