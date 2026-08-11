@@ -1903,21 +1903,21 @@ Execution Tasks must still preserve these exact versions in `pnpm-lock.yaml` and
 
 ---
 
-## Plan Self-Review Checklist
+## Plan Self-Review Record
 
-Before approving this plan for execution, verify:
+以下清单已根据 M2 各 Task 的实现、目标测试、边界扫描、依赖审查和里程碑验收记录完成复核（2026-08-05）：
 
-- [ ] Every approved design section maps to at least one Task in the traceability matrix.
-- [ ] Every runtime Task begins with a behavior-level failing test and an explicit valid RED reason.
-- [ ] No Task creates an empty package, disabled placeholder UI, API business storage or AI behavior.
-- [ ] `ConfirmedFact.fieldName`, replacement versioning and statement staleness use consistent names across Tasks.
-- [ ] Repository methods introduced by later Tasks are named exactly once and consumed consistently.
-- [ ] Operation stages remain discriminated and recovery rules cover `validating`, `hashing`, `writing`, `committing`, `deleting` and `verifying`.
-- [ ] Only ready evidence, current confirmed facts, confirmed timeline and current statement reach `ExportSnapshot`.
-- [ ] File limits, MIME/signature rules, same-case dedupe and quota behavior are exact.
-- [ ] PDF/ZIP work has a stop condition when Chinese font, pagination or streaming proof fails.
-- [ ] Deletion cannot report success before IndexedDB, OPFS and temporary verification.
-- [ ] All external dependencies have exact versions and a required review record.
-- [ ] Every Task ends with target tests, affected regression gates, `git diff --check`, focused commit and stop.
-- [ ] No Task includes push, PR, merge, tag, release, worktree or subagent actions.
-- [ ] M3 features and unrelated refactors are absent.
+- [x] Every approved design section maps to at least one Task in the traceability matrix.
+- [x] Every runtime Task begins with a behavior-level failing test and an explicit valid RED reason.
+- [x] No Task creates an empty package, disabled placeholder UI, API business storage or AI behavior.
+- [x] `ConfirmedFact.fieldName`, replacement versioning and statement staleness use consistent names across Tasks.
+- [x] Repository methods introduced by later Tasks are named exactly once and consumed consistently.
+- [x] Operation stages remain discriminated and recovery rules cover `validating`, `hashing`, `writing`, `committing`, `deleting` and `verifying`.
+- [x] Only ready evidence, current confirmed facts, confirmed timeline and current statement reach `ExportSnapshot`.
+- [x] File limits, MIME/signature rules, same-case dedupe and quota behavior are exact.
+- [x] PDF/ZIP work has a stop condition when Chinese font, pagination or streaming proof fails.
+- [x] Deletion cannot report success before IndexedDB, OPFS and temporary verification.
+- [x] All external dependencies have exact versions and a required review record.
+- [x] Every Task ends with target tests, affected regression gates, `git diff --check`, focused commit and stop.
+- [x] No Task includes push, PR, merge, tag, release, worktree or subagent actions.
+- [x] M3 features and unrelated refactors are absent.
