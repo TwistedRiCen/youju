@@ -246,6 +246,8 @@ export class IndexedDbCaseRepository implements CaseRepository {
           'statementDrafts',
           'confirmedStatements',
           'evidenceMetadata',
+          'analysisVersions',
+          'aiCandidates',
         ],
         'readwrite',
       )
@@ -257,6 +259,8 @@ export class IndexedDbCaseRepository implements CaseRepository {
         'statementDrafts',
         'confirmedStatements',
         'evidenceMetadata',
+        'analysisVersions',
+        'aiCandidates',
       ] as const) {
         let cursor = await transaction
           .objectStore(storeName)

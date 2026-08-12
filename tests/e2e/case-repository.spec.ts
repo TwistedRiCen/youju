@@ -242,6 +242,8 @@ test('creates, loads, updates, and replaces drafts with revision checks', async 
     draftRevision: 3,
     afterReplaceDraftCount: 2,
     storeNames: [
+      'aiCandidates',
+      'analysisVersions',
       'cases',
       'confirmedFacts',
       'confirmedStatements',
@@ -327,7 +329,7 @@ test('migrates a legacy version 1 database and preserves its case', async ({ pag
     }
   }, caseId)
 
-  expect(result).toEqual({ title: '运输破损退款纠纷', draftCount: 1, version: 2 })
+  expect(result).toEqual({ title: '运输破损退款纠纷', draftCount: 1, version: 3 })
 })
 
 test('aborts a failing migration and keeps version 1 data readable', async ({ page }) => {
@@ -415,7 +417,7 @@ test('refuses a newer unknown database version without deleting it', async ({ pa
   await page.goto('/')
   await page.evaluate(async () => {
     await new Promise<void>((resolve, reject) => {
-      const request = indexedDB.open('youju-local', 3)
+      const request = indexedDB.open('youju-local', 4)
       request.onupgradeneeded = () => {
         request.result.createObjectStore('futureStore', { keyPath: 'id' })
       }
@@ -453,7 +455,7 @@ test('refuses a newer unknown database version without deleting it', async ({ pa
     return { refusedCode, version }
   })
 
-  expect(refusal).toEqual({ refusedCode: 'storage_not_supported', version: 3 })
+  expect(refusal).toEqual({ refusedCode: 'storage_not_supported', version: 4 })
 })
 
 test('reports a low-sensitivity error when an upgrade is blocked', async ({ page }) => {
@@ -525,5 +527,5 @@ test('reports a low-sensitivity error when an upgrade is blocked', async ({ page
     }
   }, caseId)
 
-  expect(recovered).toEqual({ title: '运输破损退款纠纷', version: 2 })
+  expect(recovered).toEqual({ title: '运输破损退款纠纷', version: 3 })
 })

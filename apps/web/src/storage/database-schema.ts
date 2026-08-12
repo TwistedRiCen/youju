@@ -9,9 +9,11 @@ import type {
   ConfirmedStatement,
   TimelineEntry,
 } from '@youju/domain'
+import type { AiCandidate } from '@youju/ai-core'
+import type { AnalysisVersion } from '@youju/domain'
 
 export const YOUJU_DATABASE_NAME = 'youju-local'
-export const YOUJU_DATABASE_VERSION = 2
+export const YOUJU_DATABASE_VERSION = 3
 
 export type PersistedCaseEvent = CaseEvent & {
   readonly revision: number
@@ -31,6 +33,12 @@ export interface YouJuDatabaseSchema extends DBSchema {
     value: OperationJournalEntry
     indexes: { by_caseId: string }
   }
+  analysisVersions: { key: string; value: AnalysisVersion; indexes: { by_caseId: string } }
+  aiCandidates: {
+    key: string
+    value: AiCandidate
+    indexes: { by_caseId: string; by_analysisVersionId: string }
+  }
 }
 
 export type DatabaseMigration = (database: IDBDatabase, transaction: IDBTransaction) => void
@@ -45,6 +53,30 @@ const V2_CHILD_STORES = [
   'evidenceMetadata',
   'operationJournal',
 ] as const
+function migrateLegacyProvenance(
+  transaction: IDBTransaction,
+  storeName: 'evidenceMetadata' | 'timelineEntries' | 'statementDrafts' | 'confirmedStatements',
+): void {
+  const request = transaction.objectStore(storeName).openCursor()
+  request.onsuccess = () => {
+    const cursor = request.result
+    if (cursor === null) {
+      return
+    }
+
+    const record = cursor.value as Record<string, unknown>
+    const updated = { ...record }
+    if (storeName === 'evidenceMetadata') {
+      updated.categoryOrigin ??= 'manual'
+      updated.categoryCandidateId ??= null
+    } else {
+      updated.contentOrigin ??= 'manual'
+      updated.derivedFromCandidateId ??= null
+    }
+    cursor.update(updated)
+    cursor.continue()
+  }
+}
 
 export const DATABASE_MIGRATIONS: readonly DatabaseMigration[] = [
   (database) => {
@@ -61,6 +93,25 @@ export const DATABASE_MIGRATIONS: readonly DatabaseMigration[] = [
     const childStores: readonly string[] = [DRAFT_STORE, ...V2_CHILD_STORES]
     for (const storeName of childStores) {
       transaction.objectStore(storeName).createIndex('by_caseId', 'caseId')
+    }
+  },
+  (database, transaction) => {
+    database.createObjectStore('analysisVersions', { keyPath: 'id' }).createIndex(
+      'by_caseId',
+      'caseId',
+    )
+    database.createObjectStore('aiCandidates', { keyPath: 'id' }).createIndex('by_caseId', 'caseId')
+    transaction
+      .objectStore('aiCandidates')
+      .createIndex('by_analysisVersionId', 'analysisVersionId')
+
+    for (const storeName of [
+      'evidenceMetadata',
+      'timelineEntries',
+      'statementDrafts',
+      'confirmedStatements',
+    ] as const) {
+      migrateLegacyProvenance(transaction, storeName)
     }
   },
 ]

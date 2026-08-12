@@ -516,7 +516,7 @@ git commit -m "feat: validate and review AI candidates"
 - Consumes: Task 1 formal provenance and analysis versions; Task 3 `AiCandidate`.
 - Produces: IndexedDB v3 stores, `AiRepository`, atomic stage publication, startup cancellation and backward-compatible M2 record migration.
 
-- [ ] **Step 1: Write failing real-browser storage tests**
+- [x] **Step 1: Write failing real-browser storage tests**
 
 Create a v2 database containing M2 evidence, timeline and statement records, open with v3 migrations, and assert:
 
@@ -528,7 +528,7 @@ expect(migratedStatement).toMatchObject({ contentOrigin: 'manual', derivedFromCa
 
 Assert `analysisVersions` and `aiCandidates` use `by_caseId` and `by_analysisVersionId` indexes; candidate publication commits version completion and all candidates in one transaction; injected failure leaves no candidates and the version failed; startup converts only `running` to `cancelled`; API keys, raw model output and derived bytes cannot be stored through the typed repository.
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 ```powershell
 pnpm exec playwright test tests/e2e/ai-repository.spec.ts --project=chromium-desktop
@@ -536,7 +536,7 @@ pnpm exec playwright test tests/e2e/ai-repository.spec.ts --project=chromium-des
 
 Expected: FAIL because v3 stores, migration and AI Repository do not exist. Vite and Playwright must start successfully, making this a valid behavior RED.
 
-- [ ] **Step 3: Implement v3 migration and repository**
+- [x] **Step 3: Implement v3 migration and repository**
 
 Use these interfaces:
 
@@ -560,7 +560,7 @@ export interface AiRepository {
 
 Migrations update existing records in the upgrade transaction and never wipe a database on parse or migration failure. `CaseRepository.deleteAllCaseRecords()` includes both AI stores so event deletion remains one IndexedDB transaction.
 
-- [ ] **Step 4: Run GREEN and storage regression**
+- [x] **Step 4: Run GREEN and storage regression**
 
 ```powershell
 pnpm exec playwright test tests/e2e/ai-repository.spec.ts tests/e2e/case-repository.spec.ts --project=chromium-desktop
@@ -573,7 +573,7 @@ git status --short
 
 Expected: migration and atomicity tests pass; existing M2 repository flows remain green.
 
-- [ ] **Step 5: Commit and stop**
+- [x] **Step 5: Commit and stop**
 
 ```powershell
 git add apps/web/src/storage tests/e2e/ai-repository.spec.ts tests/e2e/case-repository.spec.ts docs/superpowers/plans/2026-08-12-youju-m3-byok-ai-plan.md
