@@ -1,7 +1,7 @@
 # 有据 M3 BYOK AI 设计规格
 
 - 日期：2026-08-12
-- 状态：待用户书面评审
+- 状态：已批准设计（结构修复边界于 2026-08-12 补充确认）
 - 适用范围：V0.1 网购商品问题且商家拒绝退款或未妥善处理
 - 上游规格：`2026-07-29-youju-v0.1-design.md`
 - 前置里程碑：M2 No-AI Core 已完成并合入 `main`
@@ -192,13 +192,13 @@ API 不保存任何事件、材料、候选、API Key、请求或响应，不创
 interface AiProviderAdapter {
   testConnection(request: ConnectionTestRequest): Promise<ConnectionTestResult>
   executeTask(request: AiTaskRequest): Promise<AiTaskResult>
-  repairOutput(request: RepairOutputRequest): Promise<AiTaskResult>
 }
 ```
 
 - OpenAI 适配器使用 `/v1/responses`，显式设置 `store: false`，不使用 conversation、previous response、后台模式、托管文件或工具。
 - Chat Completions 适配器使用受控 `/v1/chat/completions` 路径，不使用 Provider 私有扩展。
 - 请求为单轮、非持久会话；M3 不依赖 Provider 侧对话状态。
+- 首次模型输出无法解析或不符合 Schema 时，`executeTask()` 可以在同一次 Fastify 请求内部执行一次结构修复；原始输出不返回浏览器，也不开放独立修复接口。
 - Provider 支持流式响应时，服务端可以流式读取并执行输出字节上限，但只向浏览器返回完整且标准化的最终结果；不支持流式时使用非流式调用。`streaming` 不作为任务可用性的必要条件。
 - 适配器只返回标准化结构化结果、低敏用量和 Provider 请求 ID 的不可逆指纹；不把原始响应透传给前端。
 
@@ -309,11 +309,11 @@ M3 扩展现有分析版本，记录：
 - `providerPreset`、`protocol`、`baseUrlFingerprint`、`modelName`；
 - `promptVersion`、`schemaVersion`、`securityPolicyVersion`；
 - 输入清单摘要、批次数、完成批次数；
-- `running / repairing / completed / failed / cancelled`；
+- `running / completed / failed / cancelled`，以及是否执行过一次服务端内部结构修复；
 - `startedAt`、`completedAt`、低敏错误码；
 - Provider 返回的输入、输出和总 Token 用量（可用时）。
 
-`preparing / awaiting_consent` 属于浏览器内存中的任务准备状态，不写入 IndexedDB。用户授权后才创建状态为 `running` 的分析版本；同一任务的一次结构修复属于同一个分析版本。顺序一键分析的分类、事实和时间线分别创建分析版本。历史版本不可覆盖。
+`preparing / awaiting_consent` 属于浏览器内存中的任务准备状态，不写入 IndexedDB。用户授权后才创建状态为 `running` 的分析版本；服务端内部结构修复不产生浏览器端中间状态，响应只记录 `repairAttempted` 和合并后的低敏用量。顺序一键分析的分类、事实和时间线分别创建分析版本。历史版本不可覆盖。
 
 ### 6.3 候选记录
 
@@ -457,7 +457,7 @@ pending ----------------------> confirmed
 - 服务端不保存任务状态，不建立队列。
 - 页面刷新、关闭、断开或用户取消后，前端发出取消信号并清除派生内存。
 - 任务取消或超时后不发布当前阶段部分候选。
-- 应用启动时把遗留的 `running / repairing` 分析版本确定性标记为 `cancelled`，不尝试恢复网络调用；授权前状态从不持久化。
+- 应用启动时把遗留的 `running` 分析版本确定性标记为 `cancelled`，不尝试恢复网络调用；授权前状态从不持久化。
 
 ### 8.4 分批
 
@@ -473,7 +473,6 @@ pending ----------------------> confirmed
 
 - `POST /ai/connection-test`
 - `POST /ai/tasks/:taskType`
-- `POST /ai/tasks/:taskType/repair`
 
 所有入口都是同步无状态请求。API 不提供任务查询、轮询、历史、文件上传、Provider 配置保存或模型代理通用端点。
 
@@ -566,15 +565,16 @@ DNS 的全部 A/AAAA 结果都必须是允许的公网地址。连接测试和�
 
 ### 11.3 一次结构修复
 
-首次输出解析或 Schema 校验失败时，允许同一分析版本执行一次修复请求：
+首次输出解析或 Schema 校验失败时，Fastify 可以在同一次任务请求内部执行一次修复调用：
 
 - 只发送原模型输出、目标 Schema、任务类型和修复指令；
 - 不增加材料、页码、正式事实或其他业务内容；
 - 不改变 Provider、模型、协议或授权范围；
+- 原模型输出和修复提示只存在于 Fastify 当前调用栈，不返回浏览器、不写入日志或持久化；
 - 修复结果重新经过完整 Schema、来源和冲突校验；
-- 再次失败后终止任务并记录 `repair_failed`。
+- 再次失败后终止任务并记录 `repair_failed`；响应只包含稳定错误码，不包含两次原始输出。
 
-结构修复不是网络重试。认证、限流、余额、超时、连接和内容拒绝错误不自动重试。
+浏览器无独立修复路由，也不持有原模型输出。结构修复不是网络重试；认证、限流、余额、超时、连接和内容拒绝错误不自动重试。
 
 ### 11.4 批次失败
 
@@ -837,7 +837,7 @@ M3 只有在以下条件全部满足后完成：
 | 未确认内容不进入正式输出 | 候选 Repository、审核状态、M2 正式写入门槛            |
 | AI 失败后手工继续        | 无状态任务、稳定错误码、M2 页面和导出不依赖 AI        |
 | 用户可以取消             | Abort 传播、无部分发布、遗留运行态标记取消            |
-| Schema 修复一次          | 同分析版本、原授权范围、一次修复后终止                |
+| Schema 修复一次          | 同一 Fastify 请求内部、原授权范围、原始输出不回浏览器 |
 | API 不保存业务数据       | 无数据库、队列、缓存、请求重放或后台任务              |
 | AI 不生成法律结论        | 任务 Schema、提示词边界、无工具、候选审核             |
 | 国内网络环境可用         | 百炼、DeepSeek、SiliconFlow 预设与按能力开放          |
