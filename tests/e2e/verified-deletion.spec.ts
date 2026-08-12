@@ -120,6 +120,10 @@ test('blocks referenced material deletion and verifies whole-case deletion', asy
         listOperations(): Promise<readonly unknown[]>
         close(): void
       }
+      IndexedDbAiRepository: new (database: unknown) => {
+        listAnalyses(caseId: string): Promise<readonly unknown[]>
+        listCandidates(caseId: string): Promise<readonly unknown[]>
+      }
     }
     const evidenceUrl = '/node_modules/@youju/evidence-store/src/index.ts'
     const evidenceModule = (await import(evidenceUrl)) as {
@@ -130,17 +134,27 @@ test('blocks referenced material deletion and verifies whole-case deletion', asy
     }
     const database = await storage.openYoujuDatabase(storage.DATABASE_MIGRATIONS)
     const repository = new storage.IndexedDbCaseRepository(database)
+    const aiRepository = new storage.IndexedDbAiRepository(database)
     const blobStore = new evidenceModule.OpfsEvidenceBlobStore()
     const cases = await repository.listCases()
     const operations = await repository.listOperations()
     const tempExists = await blobStore.exists('temporary/00000000-0000-4000-8000-000000000000')
-    repository.close()
-    return {
+    const result = {
       caseCount: cases.length,
       operationCount: operations.length,
       tempExists,
+      analysisCount: (await aiRepository.listAnalyses('00000000-0000-4000-8000-000000000001')).length,
+      candidateCount: (await aiRepository.listCandidates('00000000-0000-4000-8000-000000000001')).length,
     }
+    repository.close()
+    return result
   })
 
-  expect(result).toEqual({ caseCount: 0, operationCount: 0, tempExists: false })
+  expect(result).toEqual({
+    caseCount: 0,
+    operationCount: 0,
+    tempExists: false,
+    analysisCount: 0,
+    candidateCount: 0,
+  })
 })

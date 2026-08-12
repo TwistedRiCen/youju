@@ -11,7 +11,9 @@ import type {
   StatementDraft,
   TimelineEntry,
   UuidV4,
+  AnalysisVersion,
 } from '@youju/domain'
+import type { AiCandidate } from '@youju/ai-core'
 import { buildManualConfirmedFact } from '@youju/domain'
 import { CaseRepositoryError } from './case-repository.js'
 import type {
@@ -194,6 +196,36 @@ export class IndexedDbCaseRepository implements CaseRepository {
     }
   }
 
+  async listAnalyses(caseId: UuidV4): Promise<readonly AnalysisVersion[]> {
+    try {
+      const transaction = this.database.transaction('analysisVersions', 'readonly')
+      const records = await transaction.objectStore('analysisVersions').index('by_caseId').getAll(caseId)
+      await transaction.done
+      return records.sort((left, right) =>
+        left.startedAt === right.startedAt
+          ? left.id < right.id ? -1 : left.id === right.id ? 0 : 1
+          : left.startedAt < right.startedAt ? -1 : 1,
+      )
+    } catch (error) {
+      throw toStorageError(error)
+    }
+  }
+
+  async listCandidates(caseId: UuidV4): Promise<readonly AiCandidate[]> {
+    try {
+      const transaction = this.database.transaction('aiCandidates', 'readonly')
+      const records = await transaction.objectStore('aiCandidates').index('by_caseId').getAll(caseId)
+      await transaction.done
+      return records.sort((left, right) =>
+        left.createdAt === right.createdAt
+          ? left.id < right.id ? -1 : left.id === right.id ? 0 : 1
+          : left.createdAt < right.createdAt ? -1 : 1,
+      )
+    } catch (error) {
+      throw toStorageError(error)
+    }
+  }
+
   async findEvidenceByHash(caseId: UuidV4, sha256: string): Promise<EvidenceFile | null> {
     try {
       const transaction = this.database.transaction('evidenceMetadata', 'readonly')
@@ -361,7 +393,11 @@ export class IndexedDbCaseRepository implements CaseRepository {
   async putTimelineDraft(entry: TimelineEntry): Promise<void> {
     try {
       const transaction = this.database.transaction(['timelineEntries', 'cases'], 'readwrite')
-      await transaction.objectStore('timelineEntries').put(entry)
+      await transaction.objectStore('timelineEntries').put({
+        ...entry,
+        contentOrigin: 'manual',
+        derivedFromCandidateId: null,
+      })
       const caseStore = transaction.objectStore('cases')
       const caseRecord = await caseStore.get(entry.caseId)
       if (caseRecord !== undefined) {
@@ -459,7 +495,11 @@ export class IndexedDbCaseRepository implements CaseRepository {
   async putStatementDraft(draft: StatementDraft): Promise<void> {
     try {
       const transaction = this.database.transaction('statementDrafts', 'readwrite')
-      await transaction.objectStore('statementDrafts').put(draft)
+      await transaction.objectStore('statementDrafts').put({
+        ...draft,
+        contentOrigin: 'manual',
+        derivedFromCandidateId: null,
+      })
       await transaction.done
     } catch (error) {
       throw toStorageError(error)

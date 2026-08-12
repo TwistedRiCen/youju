@@ -11,7 +11,9 @@ import type {
   TimelineEntry,
   UuidV4,
   UtcTimestamp,
-} from '@youju/domain'
+  } from '@youju/domain'
+import type { AiCandidate } from '@youju/ai-core'
+import type { AnalysisVersion } from '@youju/domain'
 
 export interface StoredCase {
   readonly caseEvent: CaseEvent
@@ -71,6 +73,8 @@ export interface CaseRepository {
   removeEvidence(evidenceId: UuidV4): Promise<void>
   /** Deletes the case, M2 records, and any persisted M3 AI records. */
   deleteAllCaseRecords(caseId: UuidV4): Promise<void>
+  listAnalyses(caseId: UuidV4): Promise<readonly AnalysisVersion[]>
+  listCandidates(caseId: UuidV4): Promise<readonly AiCandidate[]>
   listConfirmedFacts(caseId: UuidV4): Promise<readonly ConfirmedFact[]>
   confirmFact(command: ConfirmFactCommand): Promise<ConfirmedFact>
   putTimelineDraft(entry: TimelineEntry): Promise<void>

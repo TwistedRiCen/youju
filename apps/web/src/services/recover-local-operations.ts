@@ -35,13 +35,15 @@ export async function recoverLocalOperations(
       continue
     }
     if (entry.operationType === 'case_delete') {
-      await resumeCaseDeletion(
+      const result = await resumeCaseDeletion(
         entry.operationId,
         entry.caseId,
         entry.startedAt,
         dependencies,
       )
-      cleaned.push(entry.operationId)
+      if (result.status === 'deleted') {
+        cleaned.push(entry.operationId)
+      }
       continue
     }
     if (entry.operationType === 'package_export') {

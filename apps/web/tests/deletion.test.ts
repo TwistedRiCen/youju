@@ -86,6 +86,9 @@ class FakeRepository {
   drafts: FactDraft[] = []
   statements: ConfirmedStatement[] = []
   statementDrafts: StatementDraft[] = []
+  analyses: { readonly id: string }[] = []
+  aiCandidates: { readonly id: string }[] = []
+  leaveAiRecords = false
   caseEvent: CaseEvent | null = null
 
   async listOperations(): Promise<readonly OperationJournalEntry[]> {
@@ -119,6 +122,12 @@ class FakeRepository {
   async listConfirmedStatements(): Promise<readonly ConfirmedStatement[]> {
     return [...this.statements]
   }
+  async listAnalyses(): Promise<readonly { readonly id: string }[]> {
+    return [...this.analyses]
+  }
+  async listCandidates(): Promise<readonly { readonly id: string }[]> {
+    return [...this.aiCandidates]
+  }
   async removeEvidence(evidenceId: string): Promise<void> {
     this.calls.removeEvidence(evidenceId)
     this.evidence = this.evidence.filter((item) => item.id !== evidenceId)
@@ -132,6 +141,10 @@ class FakeRepository {
     this.statements = []
     this.statementDrafts = []
     this.caseEvent = null
+    if (!this.leaveAiRecords) {
+      this.analyses = []
+      this.aiCandidates = []
+    }
   }
   async getCase(): Promise<null> {
     return null
@@ -311,5 +324,32 @@ describe('verified whole-case deletion', () => {
     expect(repository.operations).toEqual([])
     expect(repository.calls.deleteAllCaseRecords).toHaveBeenCalled()
     expect(blobStore.blobs.size).toBe(0)
+  })
+
+  it('reports remaining AI records during deletion verification', async () => {
+    const repository = new FakeRepository()
+    repository.analyses = [{ id: '00000000-0000-4000-8000-000000000201' }]
+    repository.leaveAiRecords = true
+    const dependencies = {
+      repository: repository as unknown as CaseRepository,
+      blobStore: new FakeBlobStore() as unknown as EvidenceBlobStore,
+    }
+
+    const result = await deleteCasePermanently(
+      {
+        caseId,
+        operationId: '00000000-0000-4000-8000-000000000902',
+        expectedTitle: '运输破损退款纠纷',
+        enteredTitle: '运输破损退款纠纷',
+        startedAt: '2026-07-31T13:00:00.000Z',
+      },
+      dependencies,
+    )
+
+    expect(result).toEqual({
+      status: 'failed',
+      code: 'delete_verification_failed',
+      remaining: ['indexeddb'],
+    })
   })
 })

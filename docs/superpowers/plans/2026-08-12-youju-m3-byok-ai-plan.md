@@ -605,13 +605,13 @@ git commit -m "feat: persist M3 analyses and candidates"
 - Consumes: Task 4 repository and Task 3 review eligibility.
 - Produces: atomic review commands that update candidate plus formal record, analysis deletion reference blocking, event deletion and recovery including AI records.
 
-- [ ] **Step 1: Write failing service and browser tests**
+- [x] **Step 1: Write failing service and browser tests**
 
 Assert no formal store changes when a candidate is merely published, rejected, conflicted or invalid. For each candidate type, assert confirmation changes candidate review status and formal data in the same IndexedDB transaction. Inject an error between the two writes and assert both roll back.
 
 Assert manual reclassification clears `categoryCandidateId`; manual independent statement editing clears candidate provenance; candidate editing uses `candidate_edited`. Assert deleting an analysis referenced by current category, confirmed fact, timeline, statement draft or confirmed statement throws `analysis_is_referenced`. Assert event deletion removes both AI stores and reports failure if either remains.
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 ```powershell
 pnpm exec vitest run apps/web/tests/ai-review-service.test.ts apps/web/tests/deletion.test.ts
@@ -620,7 +620,7 @@ pnpm exec playwright test tests/e2e/ai-repository.spec.ts tests/e2e/verified-del
 
 Expected: FAIL because atomic candidate-to-formal commands and AI deletion checks do not exist. This is valid RED for missing formal-data isolation.
 
-- [ ] **Step 3: Implement transactional review commands**
+- [x] **Step 3: Implement transactional review commands**
 
 Expose only typed commands:
 
@@ -664,7 +664,7 @@ export interface AiReviewService {
 
 Batch confirmation validates the complete set before opening a write transaction. Any ineligible item rejects the entire batch. Statement confirmation creates only `StatementDraft`; the existing explicit final statement confirmation remains required.
 
-- [ ] **Step 4: Run GREEN and deletion gates**
+- [x] **Step 4: Run GREEN and deletion gates**
 
 ```powershell
 pnpm exec vitest run apps/web/tests/ai-review-service.test.ts apps/web/tests/deletion.test.ts
@@ -677,7 +677,7 @@ git status --short
 
 Expected: formal data remains unchanged before explicit confirmation; rollback, reference blocking and verified deletion pass.
 
-- [ ] **Step 5: Commit and stop**
+- [x] **Step 5: Commit and stop**
 
 ```powershell
 git add apps/web tests/e2e/ai-repository.spec.ts tests/e2e/verified-deletion.spec.ts docs/superpowers/plans/2026-08-12-youju-m3-byok-ai-plan.md

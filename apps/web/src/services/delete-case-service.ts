@@ -38,6 +38,8 @@ async function verifyDeletion(
   const timeline = await repository.listTimeline(caseId)
   const statementDrafts = await repository.listStatementDrafts(caseId)
   const statements = await repository.listConfirmedStatements(caseId)
+  const aiRecords = await repository.listAnalyses(caseId)
+  const aiCandidates = await repository.listCandidates(caseId)
   const operations = (await repository.listOperations()).filter(
     (entry) => entry.operationId !== operationId,
   )
@@ -47,7 +49,7 @@ async function verifyDeletion(
     facts.length > 0 ||
     timeline.length > 0 ||
     statementDrafts.length > 0 ||
-    statements.length > 0
+    statements.length > 0 || aiRecords.length > 0 || aiCandidates.length > 0
   ) {
     remaining.push('indexeddb')
   }

@@ -132,6 +132,8 @@ export async function updateStatementDraft(
   await repository.putStatementDraft({
     ...latest,
     content,
+    contentOrigin: 'manual',
+    derivedFromCandidateId: null,
     updatedAt: new Date().toISOString(),
   })
 }

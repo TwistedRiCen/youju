@@ -1,6 +1,7 @@
 import type { UuidV4 } from '@youju/domain'
 import type { EvidenceBlobStore } from '@youju/evidence-store'
 import type { CaseRepository } from '../storage/index.js'
+import type { AiAnalysisReference, AiRepository } from '../storage/index.js'
 
 export interface EvidenceReference {
   readonly type: 'confirmed_fact' | 'timeline_entry'
@@ -24,6 +25,24 @@ export async function findEvidenceReferences(
     }
   }
   return references
+}
+
+export async function findAnalysisReferences(
+  analysisId: UuidV4,
+  repository: AiRepository,
+): Promise<readonly AiAnalysisReference[]> {
+  return repository.listAnalysisReferences(analysisId)
+}
+
+export class AnalysisReferencedError extends Error {
+  readonly code = 'analysis_is_referenced' as const
+  readonly references: readonly AiAnalysisReference[]
+
+  constructor(references: readonly AiAnalysisReference[]) {
+    super('该分析版本仍被正式记录引用，不能删除')
+    this.name = 'AnalysisReferencedError'
+    this.references = references
+  }
 }
 
 export class EvidenceReferencedError extends Error {

@@ -18,6 +18,7 @@ interface BrowserAnalysis {
 }
 
 interface BrowserAiRepository {
+  getCandidate(id: string): Promise<unknown | null>
   createAnalysis(version: unknown): Promise<void>
   updateAnalysis(version: unknown): Promise<void>
   publishCompletedAnalysis(version: unknown, candidates: readonly unknown[]): Promise<void>
@@ -25,6 +26,8 @@ interface BrowserAiRepository {
   listAnalyses(caseId: string): Promise<readonly BrowserAnalysis[]>
   listCandidates(caseId: string): Promise<readonly unknown[]>
   putCandidate(candidate: unknown): Promise<void>
+  confirmCandidate(command: unknown, ruleVersion: string): Promise<void>
+  confirmCandidates(commands: readonly unknown[], ruleVersion: string): Promise<void>
   cancelInterruptedAnalyses(cancelledAt: string): Promise<number>
   deleteAnalysis(id: string): Promise<void>
   deleteAllAiRecords(caseId: string): Promise<void>
@@ -32,6 +35,8 @@ interface BrowserAiRepository {
 
 interface BrowserCaseRepository {
   deleteAllCaseRecords(caseId: string): Promise<void>
+  updateEvidenceCategory(caseId: string, evidenceId: string, category: string): Promise<unknown>
+  putStatementDraft(draft: unknown): Promise<void>
 }
 
 interface BrowserStorageModule {
@@ -40,6 +45,7 @@ interface BrowserStorageModule {
   IndexedDbAiRepository: new (
     database: BrowserDatabase,
     failureInjector?: (candidate: unknown, index: number) => void,
+    confirmationFailureInjector?: (step: 'candidate' | 'formal') => void,
   ) => BrowserAiRepository
   IndexedDbCaseRepository: new (database: BrowserDatabase) => BrowserCaseRepository
 }
@@ -234,6 +240,7 @@ test('publishes candidates atomically and deletes AI records with a case', async
     async (payload) => {
       const host = window as unknown as BrowserWindow
       const repository = host.__youjuAiRepo as BrowserAiRepository
+      const caseRepository = host.__youjuCaseRepo as BrowserCaseRepository
       await repository.createAnalysis(payload.analysis)
       await repository.publishCompletedAnalysis(payload.completedAnalysis, [payload.candidate])
       const published = {
@@ -241,7 +248,6 @@ test('publishes candidates atomically and deletes AI records with a case', async
         candidates: await repository.listCandidates(payload.analysis.caseId),
       }
 
-      const caseRepository = host.__youjuCaseRepo as BrowserCaseRepository
       await caseRepository.deleteAllCaseRecords(payload.analysis.caseId)
       return {
         published,
@@ -369,4 +375,288 @@ test('cancels only interrupted analyses and rejects sensitive records', async ({
   expect(result.rawOutputCode).toBe('invalid_ai_record')
   expect(result.derivedBytesCode).toBe('invalid_ai_record')
   expect(result.candidates).toEqual([])
+})
+
+test('confirms every candidate type with formal provenance in one transaction', async ({ page }) => {
+  await openRepositories(page)
+
+  const result = await page.evaluate(
+    async (payload) => {
+      const host = window as unknown as BrowserWindow
+      const repository = host.__youjuAiRepo as BrowserAiRepository
+      const caseRepository = host.__youjuCaseRepo as BrowserCaseRepository
+      const database = host.__youjuDatabase as BrowserDatabase
+      await database.put('evidenceMetadata', {
+        id: payload.evidenceId,
+        caseId: payload.caseId,
+        originalName: 'order.png',
+        mediaType: 'image/png',
+        size: 1,
+        sha256: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+        importedAt: '2026-08-12T01:00:00.000Z',
+        sourceCreatedAt: null,
+        category: 'other',
+        categoryOrigin: 'manual',
+        categoryCandidateId: null,
+        storageRef: 'cases/example/evidence/order',
+        isOriginalPreserved: true,
+        metadata: {},
+      })
+      const classification = {
+        ...payload.candidate,
+        id: '00000000-0000-4000-8000-000000000311',
+        candidateType: 'classification',
+        evidenceId: payload.evidenceId,
+        category: 'order_record',
+        value: '订单截图',
+        normalizedValue: 'order_record',
+      }
+      const timeline = {
+        ...payload.candidate,
+        id: '00000000-0000-4000-8000-000000000312',
+        candidateType: 'timeline',
+        occurredAt: '2026-08-12T01:00:00.000Z',
+        timePrecision: 'minute',
+        summary: '收到破损商品',
+        detail: null,
+      }
+      const statement = {
+        ...payload.candidate,
+        id: '00000000-0000-4000-8000-000000000313',
+        candidateType: 'statement',
+        text: '商家拒绝退款',
+        confirmedFactIds: [],
+        confirmedTimelineEntryIds: [],
+      }
+      await repository.createAnalysis(payload.analysis)
+      await repository.publishCompletedAnalysis(payload.completedAnalysis, [
+        payload.candidate,
+        classification,
+        timeline,
+        statement,
+      ])
+
+      await repository.confirmCandidate(
+        {
+          type: 'fact',
+          candidateId: payload.candidate.id,
+          editedValue: '90000',
+          confirmedFactId: '00000000-0000-4000-8000-000000000501',
+          replacesFactId: null,
+          reviewedAt: '2026-08-12T02:00:00.000Z',
+        },
+        'm3-rule-v1',
+      )
+      await repository.confirmCandidate(
+        {
+          type: 'classification',
+          candidateId: classification.id,
+          editedCategory: 'other',
+          reviewedAt: '2026-08-12T02:01:00.000Z',
+        },
+        'm3-rule-v1',
+      )
+      await repository.confirmCandidate(
+        {
+          type: 'timeline',
+          candidateId: timeline.id,
+          edited: { summary: '手工确认收到破损商品' },
+          timelineEntryId: '00000000-0000-4000-8000-000000000601',
+          reviewedAt: '2026-08-12T02:02:00.000Z',
+        },
+        'm3-rule-v1',
+      )
+      await repository.confirmCandidate(
+        {
+          type: 'statement',
+          candidateId: statement.id,
+          editedText: '手工确认商家拒绝退款',
+          statementDraftId: '00000000-0000-4000-8000-000000000701',
+          reviewedAt: '2026-08-12T02:03:00.000Z',
+        },
+        'm3-rule-v1',
+      )
+
+      const confirmedEvidence = await database.get('evidenceMetadata', payload.evidenceId)
+      const confirmedStatement = await database.get(
+        'statementDrafts',
+        '00000000-0000-4000-8000-000000000701',
+      )
+      await caseRepository.updateEvidenceCategory(payload.caseId, payload.evidenceId, 'order_record')
+      const currentStatement = await database.get(
+        'statementDrafts',
+        '00000000-0000-4000-8000-000000000701',
+      )
+      if (currentStatement !== undefined) {
+        await caseRepository.putStatementDraft({
+          ...currentStatement,
+          content: '手工独立编辑陈述',
+        })
+      }
+
+      return {
+        fact: await database.get('confirmedFacts', '00000000-0000-4000-8000-000000000501'),
+        evidence: confirmedEvidence,
+        timeline: await database.get('timelineEntries', '00000000-0000-4000-8000-000000000601'),
+        statement: confirmedStatement,
+        candidates: await Promise.all([
+          repository.getCandidate(payload.candidate.id),
+          repository.getCandidate(classification.id),
+          repository.getCandidate(timeline.id),
+          repository.getCandidate(statement.id),
+        ]),
+        manuallyUpdatedEvidence: await database.get('evidenceMetadata', payload.evidenceId),
+        manuallyUpdatedStatement: await database.get(
+          'statementDrafts',
+          '00000000-0000-4000-8000-000000000701',
+        ),
+      }
+    },
+    { analysis, completedAnalysis, candidate, caseId, evidenceId },
+  )
+
+  expect(result.fact).toMatchObject({
+    confirmationMethod: 'candidate_edited',
+    derivedFromCandidateId: candidateId,
+  })
+  expect(result.evidence).toMatchObject({
+    category: 'other',
+    categoryOrigin: 'candidate_edited',
+    categoryCandidateId: '00000000-0000-4000-8000-000000000311',
+  })
+  expect(result.timeline).toMatchObject({
+    contentOrigin: 'candidate_edited',
+    derivedFromCandidateId: '00000000-0000-4000-8000-000000000312',
+    status: 'confirmed',
+  })
+  expect(result.statement).toMatchObject({
+    contentOrigin: 'candidate_edited',
+    derivedFromCandidateId: '00000000-0000-4000-8000-000000000313',
+  })
+  expect(result.candidates).toEqual([
+    expect.objectContaining({ reviewStatus: 'edited_and_confirmed' }),
+    expect.objectContaining({ reviewStatus: 'edited_and_confirmed' }),
+    expect.objectContaining({ reviewStatus: 'edited_and_confirmed' }),
+    expect.objectContaining({ reviewStatus: 'edited_and_confirmed' }),
+  ])
+  expect(result.manuallyUpdatedEvidence).toMatchObject({
+    category: 'order_record',
+    categoryOrigin: 'manual',
+    categoryCandidateId: null,
+  })
+  expect(result.manuallyUpdatedStatement).toMatchObject({
+    content: '手工独立编辑陈述',
+    contentOrigin: 'manual',
+    derivedFromCandidateId: null,
+  })
+})
+
+test('rolls back both candidate and formal record when confirmation fails', async ({ page }) => {
+  await openRepositories(page)
+
+  const result = await page.evaluate(
+    async (payload) => {
+      const host = window as unknown as BrowserWindow
+      const storage = host.__youjuStorage as BrowserStorageModule
+      const database = host.__youjuDatabase as BrowserDatabase
+      const repository = new storage.IndexedDbAiRepository(
+        database,
+        undefined,
+        (step) => {
+          if (step === 'formal') {
+            throw new Error('injected_confirmation_failure')
+          }
+        },
+      )
+      await database.put('evidenceMetadata', {
+        id: payload.evidenceId,
+        caseId: payload.caseId,
+        originalName: 'order.png',
+        mediaType: 'image/png',
+        size: 1,
+        sha256: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+        importedAt: '2026-08-12T01:00:00.000Z',
+        sourceCreatedAt: null,
+        category: 'other',
+        categoryOrigin: 'manual',
+        categoryCandidateId: null,
+        storageRef: 'cases/example/evidence/order',
+        isOriginalPreserved: true,
+        metadata: {},
+      })
+      await repository.createAnalysis(payload.analysis)
+      await repository.publishCompletedAnalysis(payload.completedAnalysis, [payload.candidate])
+
+      let errorCode: string | undefined
+      try {
+        await repository.confirmCandidate(
+          {
+            type: 'fact',
+            candidateId: payload.candidate.id,
+            confirmedFactId: '00000000-0000-4000-8000-000000000501',
+            replacesFactId: null,
+            reviewedAt: '2026-08-12T02:00:00.000Z',
+          },
+          'm3-rule-v1',
+        )
+      } catch (error) {
+        errorCode = (error as { code?: unknown }).code as string | undefined
+      }
+      return {
+        errorCode,
+        candidate: await repository.getCandidate(payload.candidate.id),
+        fact: await database.get('confirmedFacts', '00000000-0000-4000-8000-000000000501'),
+      }
+    },
+    { analysis, completedAnalysis, candidate, caseId, evidenceId },
+  )
+
+  expect(result.errorCode).toBe('storage_unavailable')
+  expect(result.candidate).toMatchObject({ reviewStatus: 'pending' })
+  expect(result.fact).toBeUndefined()
+})
+
+test('blocks deleting an analysis referenced by formal records', async ({ page }) => {
+  await openRepositories(page)
+
+  const result = await page.evaluate(
+    async (payload) => {
+      const host = window as unknown as BrowserWindow
+      const repository = host.__youjuAiRepo as BrowserAiRepository
+      const database = host.__youjuDatabase as BrowserDatabase
+      await repository.createAnalysis(payload.analysis)
+      await repository.putCandidate(payload.candidate)
+      await database.put('confirmedFacts', {
+        id: '00000000-0000-4000-8000-000000000501',
+        caseId: payload.caseId,
+        factType: 'payment',
+        fieldName: 'paid_amount',
+        value: '89900',
+        sourceRefs: [{ evidenceId: payload.evidenceId }],
+        confirmedAt: '2026-08-12T02:00:00.000Z',
+        confirmationMethod: 'candidate_confirmed',
+        derivedFromCandidateId: payload.candidate.id,
+        replacesFactId: null,
+        version: 1,
+      })
+      let code: string | undefined
+      try {
+        await repository.deleteAnalysis(payload.analysis.id)
+      } catch (error) {
+        code = (error as { code?: unknown }).code as string | undefined
+      }
+      return {
+        code,
+        analysis: await repository.getAnalysis(payload.analysis.id),
+        candidates: await repository.listCandidates(payload.caseId),
+      }
+    },
+    { analysis, candidate, caseId, evidenceId },
+  )
+
+  expect(result).toMatchObject({
+    code: 'analysis_is_referenced',
+    analysis: { id: analysisId },
+  })
+  expect(result.candidates).toHaveLength(1)
 })
