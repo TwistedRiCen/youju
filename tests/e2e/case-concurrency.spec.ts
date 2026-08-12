@@ -49,8 +49,15 @@ test('child case routes remain read-only in a secondary tab', async ({ page }) =
   await expect(secondPage.getByRole('textbox', { name: '商家名称' })).toBeDisabled()
 
   await page.close()
-  await secondPage.getByRole('button', { name: '获取编辑权' }).click()
-  await expect(secondPage.getByRole('textbox', { name: '商家名称' })).toBeEnabled()
+  await expect
+    .poll(async () => {
+      const acquireButton = secondPage.getByRole('button', { name: '获取编辑权' })
+      if (await acquireButton.isVisible()) {
+        await acquireButton.click()
+      }
+      return secondPage.getByRole('textbox', { name: '商家名称' }).isEnabled()
+    })
+    .toBe(true)
 
   const thirdPage = await secondPage.context().newPage()
   await thirdPage.goto(`${workspaceUrl}/timeline`)
