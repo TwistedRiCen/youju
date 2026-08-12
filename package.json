@@ -13,6 +13,7 @@
     "lint": "eslint .",
     "typecheck": "tsc -p tsconfig.json --noEmit && pnpm -r --if-present typecheck",
     "test": "vitest run",
+    "test:ai-contract": "vitest run packages/ai-core/tests",
     "check:forbidden-content": "tsx scripts/check-forbidden-content.ts",
     "validate:fixtures": "tsx scripts/validate-fixtures.ts",
     "build": "pnpm -r --if-present build",

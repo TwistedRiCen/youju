@@ -408,7 +408,7 @@ git commit -m "feat: define M3 AI task contracts"
 - Consumes: Task 2 wire outputs and local `InputManifest`; Task 1 review statuses and formal types.
 - Produces: localized persisted candidates, atomic candidate set, deterministic conflicts, review transitions and batch-confirm eligibility.
 
-- [ ] **Step 1: Write failing validation and review tests**
+- [x] **Step 1: Write failing validation and review tests**
 
 Cover unknown/duplicate `sourceToken`, page mismatch, zero/negative/out-of-bounds region, absent required source, unknown field, duplicate normalized values and conflicting normalized values. Assert no output is returned if any item in a stage fails.
 
@@ -429,7 +429,7 @@ expect(() => transitionReview(rejected, { type: 'confirm', reviewedAt })).toThro
 
 Assert `high` alone is insufficient: source completeness, valid Schema, no candidate conflict and no conflict with current formal data are all required.
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 ```powershell
 pnpm exec vitest run packages/ai-core/tests/output-validation.test.ts packages/ai-core/tests/review.test.ts
@@ -437,7 +437,7 @@ pnpm exec vitest run packages/ai-core/tests/output-validation.test.ts packages/a
 
 Expected: FAIL because localization, conflict and review functions are absent. This is valid RED for missing deterministic candidate safety behavior.
 
-- [ ] **Step 3: Implement candidate conversion and review state machine**
+- [x] **Step 3: Implement candidate conversion and review state machine**
 
 Use these public APIs:
 
@@ -467,7 +467,7 @@ export function canBatchConfirm(candidate: AiCandidate, context: ReviewContext):
 
 Localization first validates the entire wire result, then resolves every `sourceToken` through the immutable manifest. Any unknown token or invalid page/region rejects the whole stage; callers never receive partial candidates. Sanitize text as plain text and preserve URLs/Markdown only as inert characters.
 
-- [ ] **Step 4: Add the contract test script and run GREEN**
+- [x] **Step 4: Add the contract test script and run GREEN**
 
 Add root script:
 
@@ -487,7 +487,7 @@ git status --short
 
 Expected: all tests pass and the root command performs no network access.
 
-- [ ] **Step 5: Commit and stop**
+- [x] **Step 5: Commit and stop**
 
 ```powershell
 git add packages/ai-core package.json docs/superpowers/plans/2026-08-12-youju-m3-byok-ai-plan.md

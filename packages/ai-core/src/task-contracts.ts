@@ -37,7 +37,24 @@ export type BuildTimelineWireOutput = BuildTimelineResult
 export type DraftStatementWireOutput = DraftStatementResult
 export type AiTaskOutput = Static<typeof AiTaskOutputSchema>
 
-export function isAiTaskOutput(taskType: unknown, value: unknown): value is AiTaskOutput {
+export function isAiTaskOutput(
+  taskType: 'classify_evidence',
+  value: unknown,
+): value is ClassifyEvidenceWireOutput
+export function isAiTaskOutput(
+  taskType: 'extract_facts',
+  value: unknown,
+): value is ExtractFactsWireOutput
+export function isAiTaskOutput(
+  taskType: 'build_timeline',
+  value: unknown,
+): value is BuildTimelineWireOutput
+export function isAiTaskOutput(
+  taskType: 'draft_statement',
+  value: unknown,
+): value is DraftStatementWireOutput
+export function isAiTaskOutput(taskType: AiTaskType, value: unknown): value is AiTaskOutput
+export function isAiTaskOutput(taskType: AiTaskType, value: unknown): value is AiTaskOutput {
   switch (taskType) {
     case 'classify_evidence':
       return Value.Check(ClassifyEvidenceWireOutputSchema, value)
