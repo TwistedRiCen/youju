@@ -1,3 +1,5 @@
 export * from './derived-media.js'
 export * from './pdf-page-renderer.js'
 export * from './input-manifest-builder.js'
+export * from './ai-session.js'
+export * from './consent-scope.js'

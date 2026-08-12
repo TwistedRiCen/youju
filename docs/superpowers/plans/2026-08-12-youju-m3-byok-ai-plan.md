@@ -821,13 +821,13 @@ git commit -m "feat: derive bounded AI input pages"
 - Consumes: Task 2 Provider and manifest contracts.
 - Produces: module-scoped in-memory session, capability binding, strict/session convenience authorization and deterministic invalidation.
 
-- [ ] **Step 1: Write failing session and privacy tests**
+- [x] **Step 1: Write failing session and privacy tests**
 
 Assert default consent is `strict`, `setSession()` retains API key only in module memory, `disableAi()` clears all module-held references, and a full reload leaves no session. Scan IndexedDB, OPFS, localStorage, sessionStorage, cookies, Cache Storage, history state, document HTML and serialized test snapshots for the sentinel key; all must be absent.
 
 Assert convenience consent is bound locally to case ID, Provider, protocol, normalized Base URL fingerprint, model, selected evidence IDs/pages, text field names, security policy version and maximum approved derived bytes. Task-scoped `sourceToken` values are deliberately excluded because they are regenerated for each call. Removing scope is allowed; adding a page/text field, switching event/model/Provider, increasing bytes, capability retest, refresh or disabling AI requires full consent again.
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 ```powershell
 pnpm exec vitest run apps/web/tests/ai-session.test.ts
@@ -836,7 +836,7 @@ pnpm exec playwright test tests/e2e/ai-session-privacy.spec.ts --project=chromiu
 
 Expected: FAIL because session and consent scope modules do not exist. This is valid RED for absent key lifecycle and authorization behavior.
 
-- [ ] **Step 3: Implement memory-only state and consent checks**
+- [x] **Step 3: Implement memory-only state and consent checks**
 
 Use these interfaces:
 
@@ -861,7 +861,7 @@ export function requiresFullConsent(next: ConsentScope): boolean
 
 Do not expose a serializer, persistence adapter or debug dump. Capability snapshots invalidate when Provider, protocol, normalized Base URL fingerprint or model changes.
 
-- [ ] **Step 4: Run GREEN and privacy gates**
+- [x] **Step 4: Run GREEN and privacy gates**
 
 ```powershell
 pnpm exec vitest run apps/web/tests/ai-session.test.ts
@@ -875,7 +875,7 @@ git status --short
 
 Expected: sentinel API key is absent from all persistent and rendered locations before and after reload.
 
-- [ ] **Step 5: Commit and stop**
+- [x] **Step 5: Commit and stop**
 
 ```powershell
 git add apps/web/src/ai apps/web/tests/ai-session.test.ts tests/e2e/ai-session-privacy.spec.ts docs/superpowers/plans/2026-08-12-youju-m3-byok-ai-plan.md
