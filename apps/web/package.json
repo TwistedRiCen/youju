@@ -21,6 +21,7 @@
     "@youju/test-support": "workspace:*",
     "@youju/timeline": "workspace:*",
     "idb": "8.0.3",
+    "pdfjs-dist": "6.2.108",
     "vue": "^3.0.0",
     "vue-router": "^4.0.0"
   },

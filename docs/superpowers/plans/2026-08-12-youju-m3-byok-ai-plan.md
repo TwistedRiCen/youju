@@ -706,7 +706,7 @@ git commit -m "feat: confirm AI candidates transactionally"
 - Consumes: M2 `EvidenceBlobStore.read()`, evidence metadata and Task 2 manifest limits.
 - Produces: bounded in-memory WebP pages, deterministic hashes, immutable local `InputManifest` and explicit cleanup.
 
-- [ ] **Step 1: Write failing derivation tests**
+- [x] **Step 1: Write failing derivation tests**
 
 Use generated fictional image/PDF bytes and assert:
 
@@ -718,7 +718,7 @@ Use generated fictional image/PDF bytes and assert:
 - cleanup revokes every Object URL and releases byte references after success, failure and abort;
 - manifest order is evidence selection order then ascending page; each item receives a fresh random task-scoped token.
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 ```powershell
 pnpm exec vitest run apps/web/tests/derived-media.test.ts
@@ -727,7 +727,7 @@ pnpm exec playwright test tests/e2e/ai-derived-media.spec.ts --project=chromium-
 
 Expected: FAIL because browser derivation and PDF rendering modules do not exist. Browser startup and fixture generation must succeed, making this valid behavior RED.
 
-- [ ] **Step 3: Add and document PDF.js dependency**
+- [x] **Step 3: Add and document PDF.js dependency**
 
 ```powershell
 pnpm --filter @youju/web add pdfjs-dist@6.2.108
@@ -743,7 +743,7 @@ Record in `docs/development/m3-dependencies.md`:
 - worker is bundled locally by Vite; no CDN, remote font, CMap or standard-font fetch;
 - API options disable auto-fetch, range fetch, streaming, JavaScript and network-loaded assets for local Blob input.
 
-- [ ] **Step 4: Implement in-memory derivation**
+- [x] **Step 4: Implement in-memory derivation**
 
 Use these signatures:
 
@@ -781,7 +781,7 @@ export function releaseDerivedMedia(media: readonly DerivedMedia[]): void
 
 `releaseDerivedMedia()` revokes `previewUrl`, zero-fills each mutable byte buffer and drops module-held references; callers also discard their arrays in `finally`. Never write derived bytes through `EvidenceBlobStore`, IndexedDB, Cache Storage or download APIs. PDF.js receives only an in-memory `Uint8Array`; no URL callback or credential option is exposed.
 
-- [ ] **Step 5: Run GREEN and browser gates**
+- [x] **Step 5: Run GREEN and browser gates**
 
 ```powershell
 pnpm exec vitest run apps/web/tests/derived-media.test.ts
@@ -796,7 +796,7 @@ git status --short
 
 Expected: derivation passes in Chromium and WebKit; no network request leaves the browser test except local app assets.
 
-- [ ] **Step 6: Commit and stop**
+- [x] **Step 6: Commit and stop**
 
 ```powershell
 git add apps/web pnpm-lock.yaml docs/development/m3-dependencies.md tests/e2e/ai-derived-media.spec.ts docs/superpowers/plans/2026-08-12-youju-m3-byok-ai-plan.md
