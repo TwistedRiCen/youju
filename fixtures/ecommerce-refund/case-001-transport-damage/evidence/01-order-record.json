@@ -10,6 +10,8 @@
     "importedAt": "2026-07-04T02:01:00.000Z",
     "sourceCreatedAt": "2026-07-01T12:16:00.000Z",
     "category": "order_record",
+    "categoryOrigin": "manual",
+    "categoryCandidateId": null,
     "storageRef": "fixture://case-001-transport-damage/order-record",
     "isOriginalPreserved": true,
     "metadata": {

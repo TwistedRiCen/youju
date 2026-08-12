@@ -10,6 +10,8 @@
     "importedAt": "2026-07-04T02:02:00.000Z",
     "sourceCreatedAt": "2026-07-01T12:16:00.000Z",
     "category": "payment_record",
+    "categoryOrigin": "manual",
+    "categoryCandidateId": null,
     "storageRef": "fixture://case-001-transport-damage/payment-record",
     "isOriginalPreserved": true,
     "metadata": {

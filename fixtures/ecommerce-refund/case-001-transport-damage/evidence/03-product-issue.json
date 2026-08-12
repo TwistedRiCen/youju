@@ -10,6 +10,8 @@
     "importedAt": "2026-07-04T02:03:00.000Z",
     "sourceCreatedAt": "2026-07-03T06:35:00.000Z",
     "category": "product_issue_photo",
+    "categoryOrigin": "manual",
+    "categoryCandidateId": null,
     "storageRef": "fixture://case-001-transport-damage/product-issue",
     "isOriginalPreserved": true,
     "metadata": {

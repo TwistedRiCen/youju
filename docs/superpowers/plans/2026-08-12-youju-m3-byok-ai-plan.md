@@ -151,7 +151,7 @@ Expected: exit code 0，证明已批准 M3 设计提交在当前历史中。不�
 - Consumes: M2 `EvidenceFile`, `FactCandidate`, `ConfirmedFact`, `TimelineEntry`, `StatementDraft`, `ConfirmedStatement`, `AnalysisVersion`.
 - Produces: `AiConfidenceLevel`, `FormalContentOrigin`, expanded formal provenance, persisted analysis lifecycle, and candidate-derived fact/statement builders.
 
-- [ ] **Step 1: Create the implementation branch and verify baseline**
+- [x] **Step 1: Create the implementation branch and verify baseline**
 
 ```powershell
 git switch -c codex/m3-byok-ai
@@ -164,7 +164,7 @@ git status --short
 
 Expected: branch creation and ancestry check succeed; Node is `v24.x`; pnpm is `10.34.0`; domain baseline passes; status has no output.
 
-- [ ] **Step 2: Write failing domain tests**
+- [x] **Step 2: Write failing domain tests**
 
 Add exact schema and lifecycle assertions for:
 
@@ -215,7 +215,7 @@ expect(confirmStatement({ draft: candidateDraft, id, confirmedAt, version: 1 }))
 })
 ```
 
-- [ ] **Step 3: Run RED**
+- [x] **Step 3: Run RED**
 
 ```powershell
 pnpm exec vitest run packages/domain/tests/schemas.test.ts packages/domain/tests/formal-facts.test.ts packages/domain/tests/statements.test.ts
@@ -223,7 +223,7 @@ pnpm exec vitest run packages/domain/tests/schemas.test.ts packages/domain/tests
 
 Expected: FAIL because M3 analysis statuses, formal provenance fields and candidate-derived builders do not exist. This is valid RED for absent M3 domain behavior.
 
-- [ ] **Step 4: Implement minimal domain contracts**
+- [x] **Step 4: Implement minimal domain contracts**
 
 Use these public types and signatures:
 
@@ -248,7 +248,7 @@ export function buildCandidateConfirmedFact(input: BuildCandidateConfirmedFactIn
 
 Extend `EvidenceFile` with `categoryOrigin` and nullable `categoryCandidateId`; extend `TimelineEntry`, `StatementDraft` and `ConfirmedStatement` with `contentOrigin` and nullable `derivedFromCandidateId`. Update every current M2 constructor, fixture and typed test object in the Task file list to emit `manual + null`, so the canonical domain type never has an optional provenance gap. Manual category updates clear the candidate ID; candidate builders copy the candidate ID and never accept a missing source for candidate-derived facts.
 
-- [ ] **Step 5: Run GREEN and domain gates**
+- [x] **Step 5: Run GREEN and domain gates**
 
 ```powershell
 pnpm --filter @youju/domain test
@@ -263,7 +263,7 @@ git status --short
 
 Expected: all commands pass; status contains only Task 1 files and its checkbox update.
 
-- [ ] **Step 6: Commit and stop**
+- [x] **Step 6: Commit and stop**
 
 ```powershell
 git add packages/domain apps/web/src/services/evidence-import-service.ts apps/web/src/services/statement-service.ts apps/web/src/storage/indexeddb-case-repository.ts apps/web/src/views/TimelineView.vue apps/web/tests packages/document-export/tests fixtures/ecommerce-refund/case-001-transport-damage docs/superpowers/plans/2026-08-12-youju-m3-byok-ai-plan.md

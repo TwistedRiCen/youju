@@ -10,6 +10,8 @@
     "importedAt": "2026-07-04T02:04:00.000Z",
     "sourceCreatedAt": "2026-07-03T08:00:00.000Z",
     "category": "merchant_communication",
+    "categoryOrigin": "manual",
+    "categoryCandidateId": null,
     "storageRef": "fixture://case-001-transport-damage/merchant-communication",
     "isOriginalPreserved": true,
     "metadata": {

@@ -1,4 +1,5 @@
 import {
+  AiConfidenceLevelSchema,
   AnalysisVersionSchema,
   CaseEventSchema,
   ConfirmedFactSchema,
@@ -75,6 +76,8 @@ describe('domain schemas', () => {
       importedAt: '2026-07-29T10:01:00.000Z',
       sourceCreatedAt: null,
       category: 'order_record',
+      categoryOrigin: 'manual',
+      categoryCandidateId: null,
       storageRef: 'local://evidence/20',
       isOriginalPreserved: true,
       metadata: {},
@@ -90,17 +93,80 @@ describe('domain schemas', () => {
       Value.Check(AnalysisVersionSchema, {
         id: '00000000-0000-4000-8000-000000000030',
         caseId: '00000000-0000-4000-8000-000000000001',
-        providerType: 'openai_compatible',
+        taskType: 'extract_facts',
+        providerPreset: 'openai',
+        protocol: 'responses',
         baseUrlFingerprint: 'sha256:example-fingerprint',
         modelName: 'test-model',
         promptVersion: '1.0.0',
-        schemaVersion: 1,
+        outputSchemaVersion: 1,
+        inputManifestDigest: 'a'.repeat(64),
+        inputItemCount: 2,
+        inputPageCount: 3,
+        inputDerivedBytes: 4096,
+        batchCount: 1,
+        completedBatchCount: 0,
+        securityPolicyVersion: 'm3-v1',
+        repairAttempted: false,
+        providerRequestIdFingerprint: null,
+        usage: null,
         startedAt: '2026-07-29T10:02:00.000Z',
         completedAt: null,
         status: 'running',
         errorCode: null,
       }),
     ).toBe(true)
+    expect(
+      Value.Check(AnalysisVersionSchema, {
+        id: '00000000-0000-4000-8000-000000000030',
+        caseId: '00000000-0000-4000-8000-000000000001',
+        taskType: 'extract_facts',
+        providerPreset: 'openai',
+        protocol: 'responses',
+        baseUrlFingerprint: 'sha256:example-fingerprint',
+        modelName: 'test-model',
+        promptVersion: '1.0.0',
+        outputSchemaVersion: 1,
+        inputManifestDigest: 'a'.repeat(64),
+        inputItemCount: 0,
+        inputPageCount: 0,
+        inputDerivedBytes: 0,
+        batchCount: 1,
+        completedBatchCount: 0,
+        securityPolicyVersion: 'm3-v1',
+        repairAttempted: false,
+        providerRequestIdFingerprint: null,
+        usage: null,
+        startedAt: '2026-07-29T10:02:00.000Z',
+        completedAt: null,
+        status: 'pending',
+        errorCode: null,
+      }),
+    ).toBe(false)
+  })
+
+  it('keeps AI confidence levels distinct from deterministic rule confidence', () => {
+    expect(Value.Check(AiConfidenceLevelSchema, 'needs_confirmation')).toBe(true)
+    expect(Value.Check(AiConfidenceLevelSchema, 'medium')).toBe(false)
+    expect(
+      Value.Check(FactCandidateSchema, { ...validCandidate, confidenceLevel: 'needs_confirmation' }),
+    ).toBe(true)
+    expect(
+      Value.Check(FactCandidateSchema, {
+        ...validCandidate,
+        origin: 'rule',
+        confidenceLevel: 'medium',
+        analysisVersionId: null,
+      }),
+    ).toBe(true)
+    expect(
+      Value.Check(FactCandidateSchema, {
+        ...validCandidate,
+        origin: 'rule',
+        confidenceLevel: 'needs_confirmation',
+        analysisVersionId: null,
+      }),
+    ).toBe(false)
   })
 
   it('rejects unsupported scenarios, invalid UUIDs, non-UTC times, and invalid schema versions', () => {
@@ -195,6 +261,8 @@ describe('domain schemas', () => {
       summary: '商家拒绝退款',
       detail: null,
       sourceRefs: [],
+      contentOrigin: 'manual',
+      derivedFromCandidateId: null,
       status: 'draft',
       sortOrder: 1,
     }
@@ -314,6 +382,8 @@ describe('domain schemas', () => {
       content: '事实陈述草稿',
       confirmedFactIds: ['00000000-0000-4000-8000-000000000601'],
       confirmedTimelineEntryIds: ['00000000-0000-4000-8000-000000000040'],
+      contentOrigin: 'manual',
+      derivedFromCandidateId: null,
       ruleVersion: '1.0.0',
       updatedAt: '2026-07-31T01:30:00.000Z',
       revision: 1,
@@ -324,6 +394,8 @@ describe('domain schemas', () => {
       content: '已确认事实陈述',
       confirmedFactIds: ['00000000-0000-4000-8000-000000000601'],
       confirmedTimelineEntryIds: ['00000000-0000-4000-8000-000000000040'],
+      contentOrigin: 'manual',
+      derivedFromCandidateId: null,
       ruleVersion: '1.0.0',
       confirmedAt: '2026-07-31T01:31:00.000Z',
       version: 1,

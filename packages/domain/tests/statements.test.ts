@@ -7,6 +7,7 @@ import {
 import type {
   CaseEvent,
   ConfirmedFact,
+  StatementDraft,
   TimelineEntry,
 } from '../src/index.js'
 
@@ -74,6 +75,8 @@ const confirmedTimeline: readonly TimelineEntry[] = [
     summary: '下单',
     detail: null,
     sourceRefs: [],
+    contentOrigin: 'manual',
+    derivedFromCandidateId: null,
     status: 'confirmed',
     sortOrder: 0,
   },
@@ -102,6 +105,8 @@ describe('deterministic statement draft', () => {
     expect(draft.confirmedFactIds).toEqual(confirmedFacts.map(({ id }) => id))
     expect(draft.confirmedTimelineEntryIds).toEqual(confirmedTimeline.map(({ id }) => id))
     expect(draft.ruleVersion).toBe('1.0.0')
+    expect(draft.contentOrigin).toBe('manual')
+    expect(draft.derivedFromCandidateId).toBeNull()
     expect(draft.id).toMatch(
       /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/,
     )
@@ -135,6 +140,33 @@ describe('statement confirmation and currency', () => {
       version: 1,
     })
     expect(confirmed.confirmedFactIds).toEqual(confirmedFacts.map(({ id }) => id))
+    expect(confirmed.contentOrigin).toBe('manual')
+    expect(confirmed.derivedFromCandidateId).toBeNull()
+  })
+
+  it('preserves candidate provenance when confirming an AI-derived statement draft', () => {
+    const draft: StatementDraft = {
+      id: '00000000-0000-4000-8000-000000000802',
+      caseId,
+      content: 'AI 璁剧疆鐨勭敤鎴峰€欓€夋枃鏈?',
+      confirmedFactIds: [confirmedFacts[0]!.id],
+      confirmedTimelineEntryIds: [confirmedTimeline[0]!.id],
+      contentOrigin: 'candidate_edited',
+      derivedFromCandidateId: '00000000-0000-4000-8000-000000000810',
+      ruleVersion: '1.0.0',
+      updatedAt: '2026-07-31T09:25:00.000Z',
+      revision: 8,
+    }
+
+    const confirmed = confirmStatement({
+      draft,
+      id: '00000000-0000-4000-8000-000000000803',
+      confirmedAt: '2026-07-31T09:30:00.000Z',
+      version: 2,
+    })
+
+    expect(confirmed.contentOrigin).toBe('candidate_edited')
+    expect(confirmed.derivedFromCandidateId).toBe('00000000-0000-4000-8000-000000000810')
   })
 
   it('is current only when fact ids, timeline ids and rule version match the snapshot', () => {

@@ -163,6 +163,8 @@ export async function importEvidence(
       importedAt: command.importedAt,
       sourceCreatedAt: null,
       category: command.category,
+      categoryOrigin: 'manual',
+      categoryCandidateId: null,
       storageRef,
       isOriginalPreserved: true,
       metadata: {},

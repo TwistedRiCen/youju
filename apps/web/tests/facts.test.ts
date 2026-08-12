@@ -12,6 +12,8 @@ const evidenceItem: EvidenceFile = {
   importedAt: '2026-07-31T07:00:00.000Z',
   sourceCreatedAt: null,
   category: 'order_record',
+  categoryOrigin: 'manual',
+  categoryCandidateId: null,
   storageRef: 'cases/00000000-0000-4000-8000-000000000001/evidence/00000000-0000-4000-8000-000000000101',
   isOriginalPreserved: true,
   metadata: {},

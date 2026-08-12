@@ -19,6 +19,8 @@ function entry(
     summary,
     detail: null,
     sourceRefs: [],
+    contentOrigin: 'manual',
+    derivedFromCandidateId: null,
     status,
     sortOrder,
   }

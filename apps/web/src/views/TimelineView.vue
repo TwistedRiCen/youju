@@ -87,6 +87,8 @@ async function addEntry(): Promise<void> {
     summary,
     detail: null,
     sourceRefs: sources.map((evidenceId) => ({ evidenceId })),
+    contentOrigin: 'manual',
+    derivedFromCandidateId: null,
     status: 'draft',
     sortOrder: nextOrder,
   }

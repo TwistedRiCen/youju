@@ -97,6 +97,8 @@ describe('evidence import orchestration', () => {
       importedAt: '2026-07-31T06:00:00.000Z',
       sourceCreatedAt: null,
       category: 'product_issue_photo',
+      categoryOrigin: 'manual',
+      categoryCandidateId: null,
       storageRef: `cases/${caseId}/evidence/${evidenceId}`,
       isOriginalPreserved: true,
       metadata: {},

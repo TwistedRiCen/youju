@@ -85,7 +85,18 @@ export const ConfidenceLevelSchema = Type.Union([
   Type.Literal('low'),
   Type.Literal('unknown'),
 ])
+export const AiConfidenceLevelSchema = Type.Union([
+  Type.Literal('high'),
+  Type.Literal('needs_confirmation'),
+  Type.Literal('conflicted'),
+  Type.Literal('unknown'),
+])
 export const FactOriginSchema = Type.Union([Type.Literal('ai'), Type.Literal('rule')])
+export const FormalContentOriginSchema = Type.Union([
+  Type.Literal('manual'),
+  Type.Literal('candidate_confirmed'),
+  Type.Literal('candidate_edited'),
+])
 
 export const SourceReferenceSchema = Type.Object(
   {
@@ -120,6 +131,8 @@ export const EvidenceFileSchema = Type.Object(
     importedAt: UtcTimestampSchema,
     sourceCreatedAt: Type.Union([UtcTimestampSchema, Type.Null()]),
     category: EvidenceCategorySchema,
+    categoryOrigin: FormalContentOriginSchema,
+    categoryCandidateId: Type.Union([UuidV4Schema, Type.Null()]),
     storageRef: Type.String({ minLength: 1 }),
     isOriginalPreserved: Type.Boolean(),
     metadata: Type.Record(Type.String(), Type.Unknown()),
@@ -127,12 +140,19 @@ export const EvidenceFileSchema = Type.Object(
   { additionalProperties: false },
 )
 
-const candidateCommonProperties = {
+const candidateIdentityProperties = {
   id: UuidV4Schema,
   caseId: UuidV4Schema,
-  confidenceLevel: ConfidenceLevelSchema,
   reviewStatus: ReviewStatusSchema,
   createdAt: UtcTimestampSchema,
+}
+const aiCandidateCommonProperties = {
+  ...candidateIdentityProperties,
+  confidenceLevel: AiConfidenceLevelSchema,
+}
+const ruleCandidateCommonProperties = {
+  ...candidateIdentityProperties,
+  confidenceLevel: ConfidenceLevelSchema,
 }
 const aiCandidateProvenanceProperties = {
   origin: Type.Literal('ai'),
@@ -197,33 +217,33 @@ const resolutionCandidateProperties = {
   normalizedValue: Type.String({ minLength: 1 }),
 }
 
-function createCandidateSchema<
-  TProvenance extends TProperties,
-  TFactDescriptor extends TProperties,
->(provenance: TProvenance, factDescriptor: TFactDescriptor) {
+function createCandidateSchema<TProvenance extends TProperties, TFactDescriptor extends TProperties>(
+  provenance: TProvenance,
+  factDescriptor: TFactDescriptor,
+) {
   return Type.Object(
-    { ...candidateCommonProperties, ...provenance, ...factDescriptor },
+    { ...provenance, ...factDescriptor },
     { additionalProperties: false },
   )
 }
 
 export const FactCandidateSchema = Type.Union([
-  createCandidateSchema(aiCandidateProvenanceProperties, paymentCandidateProperties),
-  createCandidateSchema(aiCandidateProvenanceProperties, orderCandidateProperties),
-  createCandidateSchema(aiCandidateProvenanceProperties, merchantCandidateProperties),
-  createCandidateSchema(aiCandidateProvenanceProperties, productCandidateProperties),
-  createCandidateSchema(aiCandidateProvenanceProperties, deliveryCandidateProperties),
-  createCandidateSchema(aiCandidateProvenanceProperties, issueCandidateProperties),
-  createCandidateSchema(aiCandidateProvenanceProperties, communicationCandidateProperties),
-  createCandidateSchema(aiCandidateProvenanceProperties, resolutionCandidateProperties),
-  createCandidateSchema(ruleCandidateProvenanceProperties, paymentCandidateProperties),
-  createCandidateSchema(ruleCandidateProvenanceProperties, orderCandidateProperties),
-  createCandidateSchema(ruleCandidateProvenanceProperties, merchantCandidateProperties),
-  createCandidateSchema(ruleCandidateProvenanceProperties, productCandidateProperties),
-  createCandidateSchema(ruleCandidateProvenanceProperties, deliveryCandidateProperties),
-  createCandidateSchema(ruleCandidateProvenanceProperties, issueCandidateProperties),
-  createCandidateSchema(ruleCandidateProvenanceProperties, communicationCandidateProperties),
-  createCandidateSchema(ruleCandidateProvenanceProperties, resolutionCandidateProperties),
+  createCandidateSchema({ ...aiCandidateCommonProperties, ...aiCandidateProvenanceProperties }, paymentCandidateProperties),
+  createCandidateSchema({ ...aiCandidateCommonProperties, ...aiCandidateProvenanceProperties }, orderCandidateProperties),
+  createCandidateSchema({ ...aiCandidateCommonProperties, ...aiCandidateProvenanceProperties }, merchantCandidateProperties),
+  createCandidateSchema({ ...aiCandidateCommonProperties, ...aiCandidateProvenanceProperties }, productCandidateProperties),
+  createCandidateSchema({ ...aiCandidateCommonProperties, ...aiCandidateProvenanceProperties }, deliveryCandidateProperties),
+  createCandidateSchema({ ...aiCandidateCommonProperties, ...aiCandidateProvenanceProperties }, issueCandidateProperties),
+  createCandidateSchema({ ...aiCandidateCommonProperties, ...aiCandidateProvenanceProperties }, communicationCandidateProperties),
+  createCandidateSchema({ ...aiCandidateCommonProperties, ...aiCandidateProvenanceProperties }, resolutionCandidateProperties),
+  createCandidateSchema({ ...ruleCandidateCommonProperties, ...ruleCandidateProvenanceProperties }, paymentCandidateProperties),
+  createCandidateSchema({ ...ruleCandidateCommonProperties, ...ruleCandidateProvenanceProperties }, orderCandidateProperties),
+  createCandidateSchema({ ...ruleCandidateCommonProperties, ...ruleCandidateProvenanceProperties }, merchantCandidateProperties),
+  createCandidateSchema({ ...ruleCandidateCommonProperties, ...ruleCandidateProvenanceProperties }, productCandidateProperties),
+  createCandidateSchema({ ...ruleCandidateCommonProperties, ...ruleCandidateProvenanceProperties }, deliveryCandidateProperties),
+  createCandidateSchema({ ...ruleCandidateCommonProperties, ...ruleCandidateProvenanceProperties }, issueCandidateProperties),
+  createCandidateSchema({ ...ruleCandidateCommonProperties, ...ruleCandidateProvenanceProperties }, communicationCandidateProperties),
+  createCandidateSchema({ ...ruleCandidateCommonProperties, ...ruleCandidateProvenanceProperties }, resolutionCandidateProperties),
 ])
 
 export const ConfirmationMethodSchema = Type.Union([
@@ -360,6 +380,8 @@ export const StatementDraftSchema = Type.Object(
     content: Type.String({ minLength: 1 }),
     confirmedFactIds: Type.Array(UuidV4Schema),
     confirmedTimelineEntryIds: Type.Array(UuidV4Schema),
+    contentOrigin: FormalContentOriginSchema,
+    derivedFromCandidateId: Type.Union([UuidV4Schema, Type.Null()]),
     ruleVersion: Type.String({ minLength: 1 }),
     updatedAt: UtcTimestampSchema,
     revision: Type.Integer({ minimum: 1 }),
@@ -374,6 +396,8 @@ export const ConfirmedStatementSchema = Type.Object(
     content: Type.String({ minLength: 1 }),
     confirmedFactIds: Type.Array(UuidV4Schema),
     confirmedTimelineEntryIds: Type.Array(UuidV4Schema),
+    contentOrigin: FormalContentOriginSchema,
+    derivedFromCandidateId: Type.Union([UuidV4Schema, Type.Null()]),
     ruleVersion: Type.String({ minLength: 1 }),
     confirmedAt: UtcTimestampSchema,
     version: Type.Integer({ minimum: 1 }),
@@ -469,6 +493,8 @@ export const TimelineEntrySchema = Type.Object(
     summary: Type.String({ minLength: 1 }),
     detail: Type.Union([Type.String(), Type.Null()]),
     sourceRefs: Type.Array(SourceReferenceSchema),
+    contentOrigin: FormalContentOriginSchema,
+    derivedFromCandidateId: Type.Union([UuidV4Schema, Type.Null()]),
     status: TimelineStatusSchema,
     sortOrder: Type.Integer({ minimum: 0 }),
   },
@@ -476,21 +502,60 @@ export const TimelineEntrySchema = Type.Object(
 )
 
 export const AnalysisStatusSchema = Type.Union([
-  Type.Literal('pending'),
   Type.Literal('running'),
   Type.Literal('completed'),
   Type.Literal('failed'),
   Type.Literal('cancelled'),
 ])
+export const AnalysisTaskTypeSchema = Type.Union([
+  Type.Literal('classify_evidence'),
+  Type.Literal('extract_facts'),
+  Type.Literal('build_timeline'),
+  Type.Literal('draft_statement'),
+])
+export const AnalysisProviderPresetSchema = Type.Union([
+  Type.Literal('openai'),
+  Type.Literal('aliyun_bailian'),
+  Type.Literal('deepseek'),
+  Type.Literal('siliconflow'),
+  Type.Literal('custom'),
+])
+export const AnalysisProtocolSchema = Type.Union([
+  Type.Literal('responses'),
+  Type.Literal('chat_completions'),
+])
+export const AnalysisUsageSchema = Type.Union([
+  Type.Null(),
+  Type.Object(
+    {
+      inputTokens: Type.Optional(Type.Integer({ minimum: 0 })),
+      outputTokens: Type.Optional(Type.Integer({ minimum: 0 })),
+      totalTokens: Type.Optional(Type.Integer({ minimum: 0 })),
+    },
+    { additionalProperties: false },
+  ),
+])
 export const AnalysisVersionSchema = Type.Object(
   {
     id: UuidV4Schema,
     caseId: UuidV4Schema,
-    providerType: Type.Literal('openai_compatible'),
+    taskType: AnalysisTaskTypeSchema,
+    providerPreset: AnalysisProviderPresetSchema,
+    protocol: AnalysisProtocolSchema,
     baseUrlFingerprint: Type.String({ minLength: 1 }),
     modelName: Type.String({ minLength: 1 }),
     promptVersion: Type.String({ minLength: 1 }),
-    schemaVersion: SchemaVersionSchema,
+    outputSchemaVersion: SchemaVersionSchema,
+    inputManifestDigest: Type.String({ pattern: SHA256_PATTERN }),
+    inputItemCount: Type.Integer({ minimum: 0 }),
+    inputPageCount: Type.Integer({ minimum: 0 }),
+    inputDerivedBytes: Type.Integer({ minimum: 0 }),
+    batchCount: Type.Integer({ minimum: 1 }),
+    completedBatchCount: Type.Integer({ minimum: 0 }),
+    securityPolicyVersion: Type.String({ minLength: 1 }),
+    repairAttempted: Type.Boolean(),
+    providerRequestIdFingerprint: Type.Union([Type.String({ minLength: 1 }), Type.Null()]),
+    usage: AnalysisUsageSchema,
     startedAt: UtcTimestampSchema,
     completedAt: Type.Union([UtcTimestampSchema, Type.Null()]),
     status: AnalysisStatusSchema,
@@ -512,7 +577,9 @@ export type EvidenceMediaType = Static<typeof EvidenceMediaTypeSchema>
 export type FactType = Static<typeof FactTypeSchema>
 export type FactFieldName = Static<typeof FactFieldNameSchema>
 export type ConfidenceLevel = Static<typeof ConfidenceLevelSchema>
+export type AiConfidenceLevel = Static<typeof AiConfidenceLevelSchema>
 export type FactOrigin = Static<typeof FactOriginSchema>
+export type FormalContentOrigin = Static<typeof FormalContentOriginSchema>
 export type SourceReference = Static<typeof SourceReferenceSchema>
 export type CaseEvent = Static<typeof CaseEventSchema>
 export type EvidenceFile = Static<typeof EvidenceFileSchema>
@@ -530,4 +597,8 @@ export type OperationJournalEntry = Static<typeof OperationJournalEntrySchema>
 export type TimelineStatus = Static<typeof TimelineStatusSchema>
 export type TimelineEntry = Static<typeof TimelineEntrySchema>
 export type AnalysisStatus = Static<typeof AnalysisStatusSchema>
+export type AnalysisTaskType = Static<typeof AnalysisTaskTypeSchema>
+export type AnalysisProviderPreset = Static<typeof AnalysisProviderPresetSchema>
+export type AnalysisProtocol = Static<typeof AnalysisProtocolSchema>
+export type AnalysisUsage = Static<typeof AnalysisUsageSchema>
 export type AnalysisVersion = Static<typeof AnalysisVersionSchema>

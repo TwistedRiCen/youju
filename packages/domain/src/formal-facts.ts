@@ -1,5 +1,6 @@
 import type {
   ConfirmedFact,
+  FactCandidate,
   FactDraft,
   FactFieldName,
   SourceReference,
@@ -116,6 +117,95 @@ export function buildManualConfirmedFact(
     input.replacesFactId,
     input.version,
   )
+}
+
+export interface BuildCandidateConfirmedFactInput {
+  readonly candidate: FactCandidate
+  readonly editedValue?: string
+  readonly id: UuidV4
+  readonly confirmedAt: UtcTimestamp
+  readonly replacesFactId: UuidV4 | null
+  readonly version: number
+}
+
+export function buildCandidateConfirmedFact(
+  input: BuildCandidateConfirmedFactInput,
+): ConfirmedFact {
+  if (input.candidate.origin !== 'ai') {
+    throw new Error('candidate_confirmation_requires_ai_candidate')
+  }
+
+  const base = {
+    id: input.id,
+    caseId: input.candidate.caseId,
+    sourceRefs: [...input.candidate.sourceRefs],
+    confirmedAt: input.confirmedAt,
+    confirmationMethod: input.editedValue === undefined
+      ? ('candidate_confirmed' as const)
+      : ('candidate_edited' as const),
+    derivedFromCandidateId: input.candidate.id,
+    replacesFactId: input.replacesFactId,
+    version: input.version,
+  }
+
+  switch (input.candidate.factType) {
+    case 'payment':
+      return {
+        ...base,
+        factType: 'payment',
+        fieldName: 'paid_amount',
+        value: input.editedValue ?? input.candidate.normalizedValue,
+      }
+    case 'order':
+      return {
+        ...base,
+        factType: 'order',
+        fieldName: input.candidate.fieldName,
+        value: input.editedValue ?? input.candidate.value,
+      }
+    case 'merchant':
+      return {
+        ...base,
+        factType: 'merchant',
+        fieldName: 'merchant_name',
+        value: input.editedValue ?? input.candidate.value,
+      }
+    case 'product':
+      return {
+        ...base,
+        factType: 'product',
+        fieldName: 'product_name',
+        value: input.editedValue ?? input.candidate.value,
+      }
+    case 'delivery':
+      return {
+        ...base,
+        factType: 'delivery',
+        fieldName: 'received_time',
+        value: input.editedValue ?? input.candidate.value,
+      }
+    case 'issue':
+      return {
+        ...base,
+        factType: 'issue',
+        fieldName: 'problem_description',
+        value: input.editedValue ?? input.candidate.value,
+      }
+    case 'communication':
+      return {
+        ...base,
+        factType: 'communication',
+        fieldName: 'merchant_response',
+        value: input.editedValue ?? input.candidate.value,
+      }
+    case 'resolution':
+      return {
+        ...base,
+        factType: 'resolution',
+        fieldName: 'requested_resolution',
+        value: input.editedValue ?? input.candidate.value,
+      }
+  }
 }
 
 export interface ConfirmFactCommand {

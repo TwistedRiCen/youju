@@ -516,7 +516,12 @@ export class IndexedDbCaseRepository implements CaseRepository {
       if (existing === undefined || existing.caseId !== caseId) {
         throw new CaseRepositoryError('storage_unavailable', '未找到材料')
       }
-      const updated: EvidenceFile = { ...existing, category }
+      const updated: EvidenceFile = {
+        ...existing,
+        category,
+        categoryOrigin: 'manual',
+        categoryCandidateId: null,
+      }
       await store.put(updated)
       await transaction.done
       return updated

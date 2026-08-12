@@ -30,6 +30,8 @@ describe('timeline time conversions', () => {
       summary: '收到商品',
       detail: null,
       sourceRefs: [],
+      contentOrigin: 'manual',
+      derivedFromCandidateId: null,
       status: 'draft',
       sortOrder: 0,
     }

@@ -12,6 +12,8 @@
         { "evidenceId": "00000000-0000-4000-8000-000000000101" },
         { "evidenceId": "00000000-0000-4000-8000-000000000102" }
       ],
+      "contentOrigin": "manual",
+      "derivedFromCandidateId": null,
       "status": "confirmed",
       "sortOrder": 1
     },
@@ -23,6 +25,8 @@
       "summary": "用户收货并发现运输破损",
       "detail": "包裹外箱凹陷，桌板边角开裂并有明显压痕",
       "sourceRefs": [{ "evidenceId": "00000000-0000-4000-8000-000000000103" }],
+      "contentOrigin": "manual",
+      "derivedFromCandidateId": null,
       "status": "confirmed",
       "sortOrder": 2
     },
@@ -34,6 +38,8 @@
       "summary": "用户请求退货退款",
       "detail": "用户向晴川生活示例店提出退货并退还已支付金额",
       "sourceRefs": [{ "evidenceId": "00000000-0000-4000-8000-000000000104" }],
+      "contentOrigin": "manual",
+      "derivedFromCandidateId": null,
       "status": "confirmed",
       "sortOrder": 3
     },
@@ -45,6 +51,8 @@
       "summary": "商家拒绝退货退款",
       "detail": "商家称破损由用户使用造成，因此拒绝退货退款",
       "sourceRefs": [{ "evidenceId": "00000000-0000-4000-8000-000000000104" }],
+      "contentOrigin": "manual",
+      "derivedFromCandidateId": null,
       "status": "confirmed",
       "sortOrder": 4
     }

@@ -30,6 +30,8 @@ function evidenceFile(): EvidenceFile {
     importedAt: '2026-07-31T12:00:00.000Z',
     sourceCreatedAt: null,
     category: 'order_record',
+    categoryOrigin: 'manual',
+    categoryCandidateId: null,
     storageRef,
     isOriginalPreserved: true,
     metadata: {},
@@ -61,6 +63,8 @@ function timelineEntry(id: string, referencesEvidence: boolean): TimelineEntry {
     summary: '下单',
     detail: null,
     sourceRefs: referencesEvidence ? [{ evidenceId }] : [],
+    contentOrigin: 'manual',
+    derivedFromCandidateId: null,
     status: 'confirmed',
     sortOrder: 0,
   }
