@@ -902,17 +902,17 @@ git commit -m "feat: keep BYOK settings session-only"
 - Consumes: Task 2 Provider preset and protocol metadata.
 - Produces: normalized allowed target, full DNS result validation and fixed-address HTTPS transport with original-host TLS verification.
 
-- [ ] **Step 1: Write failing URL and address policy tests**
+- [x] **Step 1: Write failing URL and address policy tests**
 
 Accept `https://example.com/v1` and normalize the operation to `https://example.com/v1/chat/completions`. Reject HTTP, non-443 ports, username/password, query, fragment, IP literals, backslashes, encoded dot segments, control characters, Unicode hostname ambiguity after `domainToASCII()`, and a Base URL ending in an operation path.
 
 Test all IPv4/IPv6 disallowed groups including loopback, private, link-local, CGNAT, documentation, benchmark, multicast, unspecified, reserved, broadcast and IPv4-mapped IPv6. A DNS answer set with one public and one private result must fail entirely.
 
-- [ ] **Step 2: Write failing pinned HTTPS integration tests**
+- [x] **Step 2: Write failing pinned HTTPS integration tests**
 
 With injected resolver and connector doubles, assert connection uses the exact validated address; TLS `servername` and hostname verification use the original ASCII hostname; resolver is called again for every request; 3xx is never followed; proxy environment variables are ignored; and user headers/cookies cannot enter the transport.
 
-- [ ] **Step 3: Run RED**
+- [x] **Step 3: Run RED**
 
 ```powershell
 pnpm exec vitest run apps/api/tests/target-policy.test.ts apps/api/tests/address-policy.test.ts apps/api/tests/pinned-https-client.test.ts
@@ -920,7 +920,7 @@ pnpm exec vitest run apps/api/tests/target-policy.test.ts apps/api/tests/address
 
 Expected: FAIL because target and fixed-address transport modules do not exist. This is valid RED for absent SSRF and DNS-rebinding controls.
 
-- [ ] **Step 4: Implement the network boundary**
+- [x] **Step 4: Implement the network boundary**
 
 ```typescript
 export interface DnsResolver {
@@ -944,7 +944,7 @@ export function createPinnedHttpsClient(options: PinnedHttpsClientOptions): Pinn
 
 Use Node built-ins only. If tests cannot prove fixed-address connection with original-host SNI and certificate checking, stop without enabling custom Base URL.
 
-- [ ] **Step 5: Run GREEN and API gates**
+- [x] **Step 5: Run GREEN and API gates**
 
 ```powershell
 pnpm exec vitest run apps/api/tests/target-policy.test.ts apps/api/tests/address-policy.test.ts apps/api/tests/pinned-https-client.test.ts
@@ -955,7 +955,7 @@ git diff --check
 git status --short
 ```
 
-- [ ] **Step 6: Commit and stop**
+- [x] **Step 6: Commit and stop**
 
 ```powershell
 git add apps/api docs/superpowers/plans/2026-08-12-youju-m3-byok-ai-plan.md
