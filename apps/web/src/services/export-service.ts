@@ -63,7 +63,7 @@ async function buildExportSnapshot(caseId: UuidV4): Promise<ExportSnapshot | nul
   if (latestStatement === undefined) {
     return null
   }
-  const { findings } = await loadFindings(caseId)
+  const { findings, ruleVersion } = await loadFindings(caseId)
   const store = getExportBlobStore()
   const evidenceItems: EvidenceExportItem[] = []
   for (const item of await repository.listEvidence(caseId)) {
@@ -87,6 +87,7 @@ async function buildExportSnapshot(caseId: UuidV4): Promise<ExportSnapshot | nul
     confirmedFacts: currentFacts,
     confirmedTimeline,
     statement: latestStatement,
+    ruleVersion,
     findings,
     evidence: evidenceItems,
     conflicts: detectTimelineConflicts({ entries: confirmedTimeline, currentFacts }),

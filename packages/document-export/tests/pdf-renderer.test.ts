@@ -136,6 +136,7 @@ function snapshot(): ExportSnapshot {
     confirmedFacts,
     confirmedTimeline,
     statement,
+    ruleVersion: '1.0.0',
     findings: [finding],
     evidence: [{ metadata: evidenceFile, integrity: { status: 'verified', actualSha256: 'a'.repeat(64) } }],
     conflicts: [],

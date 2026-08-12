@@ -25,6 +25,7 @@ export interface ExportSnapshot {
   readonly confirmedFacts: readonly ConfirmedFact[]
   readonly confirmedTimeline: readonly TimelineEntry[]
   readonly statement: ConfirmedStatement
+  readonly ruleVersion: string
   readonly findings: readonly RuleFinding[]
   readonly evidence: readonly EvidenceExportItem[]
   readonly conflicts: readonly TimelineConflict[]

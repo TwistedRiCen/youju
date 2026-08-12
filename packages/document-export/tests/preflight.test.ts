@@ -149,6 +149,7 @@ function validSnapshot(): ExportSnapshot {
     confirmedFacts,
     confirmedTimeline,
     statement: statement(),
+    ruleVersion: '1.0.0',
     findings: [finding('missing_evidence', 'stable-method:payment-record')],
     evidence,
     conflicts: [],
@@ -171,6 +172,25 @@ describe('export preflight', () => {
 
     expect(validateExportSnapshot({ ...snapshot, findings: [] })).toEqual({
       status: 'ready',
+      warnings: [],
+    })
+  })
+
+  it('blocks a statement from an older rule version even when current findings are empty', () => {
+    const snapshot = {
+      ...validSnapshot(),
+      findings: [],
+      ruleVersion: '1.0.0',
+      statement: statement(
+        confirmedFacts.map((fact) => fact.id),
+        confirmedTimeline.map((entry) => entry.id),
+        '0.9.0',
+      ),
+    }
+
+    expect(validateExportSnapshot(snapshot)).toEqual({
+      status: 'blocked',
+      reasons: [{ code: 'statement_stale' }],
       warnings: [],
     })
   })
