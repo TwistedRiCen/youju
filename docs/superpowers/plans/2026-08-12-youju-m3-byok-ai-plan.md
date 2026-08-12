@@ -1123,13 +1123,13 @@ git commit -m "feat: add guarded AI proxy routes"
 - Consumes: Tasks 4/5 AI storage, Task 6 derived media, Task 7 session/consent, Task 10 routes and Task 3 localization/review.
 - Produces: abortable API client, same-case task lock, four single tasks, repair metadata handling, batch atomicity and sequential classify→facts→timeline orchestration.
 
-- [ ] **Step 1: Write failing client and runner tests**
+- [x] **Step 1: Write failing client and runner tests**
 
 Assert the client sends only the dedicated credential plus redacted wire fields and never stable IDs/names. Assert cancellation maps to `request_cancelled` and publishes nothing.
 
 Inject clocks, IDs, derivers, client and repositories to assert pre-consent preparation creates no analysis; consent creates `running`; a response with `repairAttempted: true` updates only the final completed analysis metadata and never exposes raw output; completion atomically publishes; only one task per case runs; a failed batch publishes zero current-stage candidates; one-click uses three separate versions in fixed order; statement is excluded and consumes current confirmed facts/timeline only; earlier completed stages remain after later failure; and startup cancels interrupted versions without replay.
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 ```powershell
 pnpm exec vitest run apps/web/tests/ai-api-client.test.ts apps/web/tests/ai-task-runner.test.ts
@@ -1137,7 +1137,7 @@ pnpm exec vitest run apps/web/tests/ai-api-client.test.ts apps/web/tests/ai-task
 
 Expected: FAIL because browser API client and task orchestration do not exist. This is valid RED for absent lifecycle behavior.
 
-- [ ] **Step 3: Implement runner ports**
+- [x] **Step 3: Implement runner ports**
 
 ```typescript
 export interface AiApiClient {
@@ -1155,7 +1155,7 @@ export interface AiTaskRunner {
 
 All batch outputs remain in memory until the complete stage validates and merges. Always release derived bytes in `finally`. API key never enters analysis, errors or thrown messages.
 
-- [ ] **Step 4: Run GREEN and service gates**
+- [x] **Step 4: Run GREEN and service gates**
 
 ```powershell
 pnpm exec vitest run apps/web/tests/ai-api-client.test.ts apps/web/tests/ai-task-runner.test.ts
@@ -1167,7 +1167,7 @@ git diff --check
 git status --short
 ```
 
-- [ ] **Step 5: Commit and stop**
+- [x] **Step 5: Commit and stop**
 
 ```powershell
 git add apps/web/src/ai apps/web/src/services/recover-local-operations.ts apps/web/tests docs/superpowers/plans/2026-08-12-youju-m3-byok-ai-plan.md

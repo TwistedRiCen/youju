@@ -1,17 +1,25 @@
 import { evidenceStoragePath } from '@youju/evidence-store'
 import type { EvidenceBlobStore } from '@youju/evidence-store'
 import type { CaseRepository } from '../storage/index.js'
+import type { AiRepository } from '../storage/ai-repository.js'
 import { resumeCaseDeletion } from './delete-case-service.js'
 
 export interface LocalOperationRecoveryDependencies {
   readonly repository: CaseRepository
   readonly blobStore: EvidenceBlobStore
+  readonly aiRepository?: AiRepository
+  readonly now?: () => string
 }
 
 export async function recoverLocalOperations(
   dependencies: LocalOperationRecoveryDependencies,
 ): Promise<readonly string[]> {
   const cleaned: string[] = []
+  if (dependencies.aiRepository !== undefined) {
+    await dependencies.aiRepository.cancelInterruptedAnalyses(
+      (dependencies.now ?? (() => new Date().toISOString()))(),
+    )
+  }
   const entries = await dependencies.repository.listOperations()
 
   for (const entry of entries) {
