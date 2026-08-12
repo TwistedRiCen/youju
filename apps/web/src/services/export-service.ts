@@ -99,6 +99,15 @@ async function buildExportSnapshot(caseId: UuidV4): Promise<ExportSnapshot | nul
 export interface ExportBundle {
   readonly fileName: string
   readonly blob: Blob
+  readonly cleanup: () => Promise<void>
+}
+
+export function createExportBundle(
+  fileName: string,
+  stagedFile: Blob,
+  cleanup: () => Promise<void>,
+): ExportBundle {
+  return { fileName, blob: stagedFile, cleanup }
 }
 
 function createStagedSink(
@@ -195,8 +204,6 @@ export async function prepareExportBundle(caseId: UuidV4): Promise<ExportBundle>
     await repository.putOperation({ ...baseEntry, stage: 'finalizing', temporaryStorageRef })
 
     const stagedFile = await store.read(temporaryStorageRef)
-    const bytes = new Uint8Array(await stagedFile.arrayBuffer())
-    const blob = new Blob([bytes], { type: 'application/zip' })
     const current = await repository.getCase(caseId)
     if (current !== null) {
       await repository.updateCase({
@@ -207,9 +214,15 @@ export async function prepareExportBundle(caseId: UuidV4): Promise<ExportBundle>
         writerId: 'export',
       })
     }
-    await store.deleteTemporary(operationId)
-    await repository.deleteOperation(operationId)
-    return { fileName: `${buildPackageDirectoryName(snapshot.generatedAt)}.zip`, blob }
+    const cleanup = async (): Promise<void> => {
+      await store.deleteTemporary(operationId).catch(() => undefined)
+      await repository.deleteOperation(operationId).catch(() => undefined)
+    }
+    return createExportBundle(
+      `${buildPackageDirectoryName(snapshot.generatedAt)}.zip`,
+      stagedFile,
+      cleanup,
+    )
   } catch (error) {
     await store.deleteTemporary(operationId).catch(() => undefined)
     await repository.deleteOperation(operationId).catch(() => undefined)

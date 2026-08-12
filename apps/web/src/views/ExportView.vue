@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { onBeforeRouteLeave, RouterLink, useRoute } from 'vue-router'
 import type { ExportPreflightResult } from '@youju/document-export'
 import type { UuidV4 } from '@youju/domain'
 import { loadExportState, prepareExportBundle } from '../services/export-service.js'
@@ -17,6 +17,8 @@ const reasons = ref<string[]>([])
 const warnings = ref<string[]>([])
 const exporting = ref(false)
 const message = ref('')
+let pendingDownload: { url: string; cleanup: () => Promise<void> } | null = null
+let cleanupTimer: ReturnType<typeof setTimeout> | null = null
 
 const reasonTexts: Readonly<Record<string, string>> = {
   missing_required_fact: '缺少必填事实',
@@ -70,13 +72,17 @@ async function generate(): Promise<void> {
   exporting.value = true
   message.value = ''
   try {
+    await cleanupPendingDownload()
     const bundle = await prepareExportBundle(caseId)
     const url = URL.createObjectURL(bundle.blob)
     const anchor = document.createElement('a')
     anchor.href = url
     anchor.download = bundle.fileName
     anchor.click()
-    setTimeout(() => URL.revokeObjectURL(url), 60_000)
+    pendingDownload = { url, cleanup: bundle.cleanup }
+    cleanupTimer = setTimeout(() => {
+      void cleanupPendingDownload()
+    }, 60_000)
     message.value = `已生成材料包：${bundle.fileName}`
   } catch {
     message.value = '生成材料包失败，请检查缺口后重试。'
@@ -84,6 +90,28 @@ async function generate(): Promise<void> {
     exporting.value = false
   }
 }
+
+async function cleanupPendingDownload(): Promise<void> {
+  const pending = pendingDownload
+  pendingDownload = null
+  if (cleanupTimer !== null) {
+    clearTimeout(cleanupTimer)
+    cleanupTimer = null
+  }
+  if (pending === null) {
+    return
+  }
+  URL.revokeObjectURL(pending.url)
+  await pending.cleanup()
+}
+
+onBeforeUnmount(() => {
+  void cleanupPendingDownload()
+})
+
+onBeforeRouteLeave(async () => {
+  await cleanupPendingDownload()
+})
 
 onMounted(async () => {
   try {
@@ -96,7 +124,7 @@ onMounted(async () => {
 
 <template>
   <main class="export-shell">
-    <a class="back" :href="`/cases/${caseId}`">返回事件工作台</a>
+    <RouterLink class="back" :to="`/cases/${caseId}`">返回事件工作台</RouterLink>
     <h1>导出材料包</h1>
     <p class="warning">
       材料包未加密，可能包含敏感个人信息，请妥善保存。建议先导出备份再继续。
