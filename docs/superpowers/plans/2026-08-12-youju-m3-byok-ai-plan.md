@@ -980,13 +980,13 @@ git commit -m "feat: secure custom AI targets"
 - Consumes: Task 8 `PinnedHttpsClient`; Task 2 task/provider contracts.
 - Produces: controlled upstream envelopes, capability probes, structured result normalization, stable error mapping and one internal repair attempt.
 
-- [ ] **Step 1: Write failing adapter tests with fixed upstream envelopes**
+- [x] **Step 1: Write failing adapter tests with fixed upstream envelopes**
 
 For Responses, assert `/v1/responses`, `store:false`, no conversation/previous response/background/files/tools, image data only from derived WebP, and JSON Schema when capability permits. For Chat Completions, assert fixed `messages`, controlled `response_format`, no Provider-private fields and no arbitrary endpoint.
 
 For both protocols, assert connection test uses fixed fictional text and a minimal fictional image only; raw response, reasoning and full upstream errors are not returned; malformed JSON or Schema failure triggers at most one internal repair containing only original output, Schema ID, task type and repair instruction; repair success returns only the standardized result plus `repairAttempted: true` and merged usage; repair failure returns `repair_failed`; auth/model/rate/quota/content/timeout/empty/too-large statuses never repair and map to stable errors.
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 ```powershell
 pnpm exec vitest run apps/api/tests/provider-adapters.test.ts apps/api/tests/prompt-catalog.test.ts
@@ -994,7 +994,7 @@ pnpm exec vitest run apps/api/tests/provider-adapters.test.ts apps/api/tests/pro
 
 Expected: FAIL because protocol adapters and prompt catalog do not exist. This is valid RED for missing provider translation behavior.
 
-- [ ] **Step 3: Implement adapters and prompt versions**
+- [x] **Step 3: Implement adapters and prompt versions**
 
 ```typescript
 export interface AiProviderAdapter {
@@ -1010,7 +1010,7 @@ export function createProviderAdapter(input: {
 
 Prompt versions are `connection-v1`, `classify-evidence-v1`, `extract-facts-v1`, `build-timeline-v1`, `draft-statement-v1` and `repair-structured-output-v1`. Every task prompt treats material as untrusted data, forbids tools/external access/legal conclusions and requires source tokens. Do not log expanded prompts.
 
-- [ ] **Step 4: Run GREEN and adapter gates**
+- [x] **Step 4: Run GREEN and adapter gates**
 
 ```powershell
 pnpm exec vitest run apps/api/tests/provider-adapters.test.ts apps/api/tests/prompt-catalog.test.ts
@@ -1020,7 +1020,7 @@ git diff --check
 git status --short
 ```
 
-- [ ] **Step 5: Commit and stop**
+- [x] **Step 5: Commit and stop**
 
 ```powershell
 git add apps/api docs/superpowers/plans/2026-08-12-youju-m3-byok-ai-plan.md
