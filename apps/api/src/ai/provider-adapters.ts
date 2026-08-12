@@ -40,6 +40,8 @@ export interface AiTaskRequest {
   readonly inputText?: string
   readonly images: readonly DerivedImageInput[]
   readonly capabilities: ProviderCapabilities
+  readonly repairTimeoutMs?: number
+  readonly deadlineAt?: number
 }
 
 export interface TokenUsage {
@@ -429,6 +431,35 @@ function requestConnectionPayload(
   return requestPayload(protocol, taskRequest, prompt, { text: CONNECTION_TEXT }, taskRequest.images)
 }
 
+function createRepairSignal(parent: AbortSignal, timeoutMs: number | undefined, deadlineAt: number | undefined): {
+  readonly signal: AbortSignal
+  readonly timedOut: () => boolean
+  readonly cleanup: () => void
+} {
+  if (timeoutMs === undefined) {
+    return { signal: parent, timedOut: () => false, cleanup: () => undefined }
+  }
+  const controller = new AbortController()
+  let timedOut = false
+  const availableMs = deadlineAt === undefined
+    ? timeoutMs
+    : Math.min(timeoutMs, Math.max(1, deadlineAt - Date.now()))
+  const timer = setTimeout(() => {
+    timedOut = true
+    controller.abort(new Error('provider_timeout'))
+  }, availableMs)
+  const abort = () => controller.abort(parent.reason ?? new Error('request_cancelled'))
+  parent.addEventListener('abort', abort, { once: true })
+  return {
+    signal: controller.signal,
+    timedOut: () => timedOut,
+    cleanup: () => {
+      clearTimeout(timer)
+      parent.removeEventListener('abort', abort)
+    },
+  }
+}
+
 function assertSuccessful(response: PinnedHttpsResponse): void {
   const code = mapStatus(response.statusCode)
   if (code !== null) {
@@ -485,18 +516,24 @@ export function createProviderAdapter(input: {
       }
 
       let repair: UpstreamEnvelope
+      const repairSignal = createRepairSignal(signal, request.repairTimeoutMs, request.deadlineAt)
       try {
         repair = await call(
           request.apiKey,
           buildRepairRequest(input.protocol, request.modelName, request.taskType, initial.text),
-          signal,
+          repairSignal.signal,
         )
       } catch (error) {
         const mapped = mapTransportError(error)
+        if (repairSignal.timedOut()) {
+          throw new AiProviderError('provider_timeout')
+        }
         if (mapped.code === 'request_cancelled') {
           throw mapped
         }
         throw new AiProviderError('repair_failed')
+      } finally {
+        repairSignal.cleanup()
       }
 
       const repaired = parseTaskOutput(request.taskType, repair.text)

@@ -12,6 +12,7 @@
     "start": "node dist/server.js"
   },
   "dependencies": {
+    "@youju/ai-core": "workspace:*",
     "fastify": "^5.0.0"
   },
   "devDependencies": {

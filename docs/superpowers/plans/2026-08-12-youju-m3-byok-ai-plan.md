@@ -1049,13 +1049,13 @@ git commit -m "feat: adapt AI provider protocols"
 - Consumes: Task 8 target resolver, Task 9 adapters and Task 2 request/response Schema.
 - Produces: two synchronous no-store routes, abort propagation, hard limits, in-memory rate/concurrency guards and sanitized logging.
 
-- [ ] **Step 1: Write failing route and guard tests**
+- [x] **Step 1: Write failing route and guard tests**
 
 Using `buildApp()` dependency injection and Fastify `inject()`, assert unknown routes/tasks/additional fields/invalid UUIDs/missing credentials return bounded 4xx; `/ai/tasks/:taskType/repair` is absent; request over 32 MiB and response over 2 MiB fail without echo; timeout classes are 10/60/120 seconds with a 45-second internal repair sub-budget that cannot exceed the outer deadline; per-IP concurrency 2, 10 requests/60 seconds and process concurrency 8 are enforced; counters expire without retaining payload or key; disconnect aborts both initial and repair upstream calls; every response is `no-store`; and errors contain no credential/raw response/reasoning/full URL/upstream body.
 
 Extend log tests with sentinel values for API key, authorization, body, response, filename, case title, prompt and candidate value. Only request ID, task type, Provider preset, Base URL fingerprint, status class, stable error, duration, batch number, byte counts and returned Token counts may appear.
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 ```powershell
 pnpm exec vitest run apps/api/tests/ai-routes.test.ts apps/api/tests/request-guard.test.ts apps/api/tests/log-redaction.test.ts
@@ -1063,7 +1063,7 @@ pnpm exec vitest run apps/api/tests/ai-routes.test.ts apps/api/tests/request-gua
 
 Expected: FAIL because routes, guard and recursive credential/body redaction do not exist. This is valid RED for missing API boundary behavior.
 
-- [ ] **Step 3: Wire workspace dependency and implement routes**
+- [x] **Step 3: Wire workspace dependency and implement routes**
 
 ```powershell
 pnpm --filter @youju/api add @youju/ai-core@workspace:*
@@ -1083,7 +1083,7 @@ export function buildApp(overrides?: Partial<AppDependencies>): FastifyInstance
 
 Implement only `POST /ai/connection-test` and `POST /ai/tasks/:taskType`. API key is removed from any loggable object immediately after Schema parsing. The task adapter may perform one repair internally before the route responds; no raw output crosses the Fastify/browser boundary. Do not add repair, task history, polling, uploads, model listing, cache, queue or persistence routes.
 
-- [ ] **Step 4: Run GREEN and full API regression**
+- [x] **Step 4: Run GREEN and full API regression**
 
 ```powershell
 pnpm --filter @youju/api test
@@ -1097,7 +1097,7 @@ git status --short
 
 Expected: health route remains green and all AI routes are stateless and bounded.
 
-- [ ] **Step 5: Commit and stop**
+- [x] **Step 5: Commit and stop**
 
 ```powershell
 git add apps/api pnpm-lock.yaml docs/superpowers/plans/2026-08-12-youju-m3-byok-ai-plan.md

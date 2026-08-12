@@ -74,6 +74,9 @@ importers:
 
   apps/api:
     dependencies:
+      '@youju/ai-core':
+        specifier: workspace:*
+        version: link:../../packages/ai-core
       fastify:
         specifier: ^5.0.0
         version: 5.10.0
