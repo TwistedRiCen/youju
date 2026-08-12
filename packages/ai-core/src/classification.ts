@@ -6,7 +6,7 @@ import { AiConfidenceLevelSchema } from './source-location.js'
 
 export const EvidenceClassificationSchema = Type.Object(
   {
-    evidenceId: UuidV4Schema,
+    sourceToken: UuidV4Schema,
     category: EvidenceCategorySchema,
     confidenceLevel: AiConfidenceLevelSchema,
   },
@@ -15,7 +15,6 @@ export const EvidenceClassificationSchema = Type.Object(
 
 export const ClassifyEvidenceResultSchema = Type.Object(
   {
-    analysisVersionId: UuidV4Schema,
     classifications: Type.Array(EvidenceClassificationSchema),
     warnings: Type.Array(Type.String({ minLength: 1 })),
   },

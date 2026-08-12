@@ -1,5 +1,5 @@
 import { readFile } from 'node:fs/promises'
-import { ExtractFactsResultSchema } from '@youju/ai-core'
+import { ExtractFactsWireOutputSchema } from '@youju/ai-core'
 import {
   CaseEventSchema,
   ConfirmedFactSchema,
@@ -35,7 +35,12 @@ describe('golden case cross-package contracts', () => {
       expect(Value.Check(TimelineEntrySchema, timelineEntry)).toBe(true)
       expect(timelineEntry.caseId).toBe(fixture.case.id)
     }
-    expect(Value.Check(ExtractFactsResultSchema, fixture.expected.aiExtraction)).toBe(true)
+    expect(Value.Check(ExtractFactsWireOutputSchema, fixture.expected.aiExtraction)).toBe(true)
+    expect(
+      fixture.expected.aiExtraction.facts.every((fact) =>
+        fact.sources.every((source) => 'sourceToken' in source && !('evidenceId' in source)),
+      ),
+    ).toBe(true)
 
     const findings = evaluateRule(rule, {
       confirmedFactFields: fixture.expected.confirmedFactFields,

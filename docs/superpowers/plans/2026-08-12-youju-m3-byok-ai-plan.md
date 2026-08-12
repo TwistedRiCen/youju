@@ -300,7 +300,7 @@ git commit -m "feat: add M3 analysis provenance contracts"
 - Consumes: Task 1 `AiTaskType`, `AiConfidenceLevel`, UUID and timestamp contracts.
 - Produces: Provider presets/capabilities/errors, local `InputManifest`, redacted wire projection, four strict task outputs, deterministic batching and load estimate.
 
-- [ ] **Step 1: Write failing contract tests**
+- [x] **Step 1: Write failing contract tests**
 
 Test the exact presets and endpoint policy metadata:
 
@@ -323,7 +323,7 @@ Require model wire outputs to use `sourceToken` and page, never `evidenceId` or 
 
 Migrate the existing golden `aiExtraction` fixture to the wire contract in the same RED/GREEN cycle: replace stable evidence IDs with deterministic fictional source tokens and remove model-supplied `analysisVersionId`. Update fixture Schema and integration assertions so no later Task inherits a broken M1/M2 fixture.
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 ```powershell
 pnpm exec vitest run packages/ai-core/tests/provider.test.ts packages/ai-core/tests/input-manifest.test.ts packages/ai-core/tests/contracts.test.ts
@@ -331,7 +331,7 @@ pnpm exec vitest run packages/ai-core/tests/provider.test.ts packages/ai-core/te
 
 Expected: FAIL because provider metadata, local/wire manifest separation and new task contracts do not exist. This is valid RED for the missing M3 protocol boundary.
 
-- [ ] **Step 3: Implement public contracts and deterministic limits**
+- [x] **Step 3: Implement public contracts and deterministic limits**
 
 Use these signatures:
 
@@ -366,7 +366,7 @@ export function estimateTextTokens(text: string): number
 
 `sourceToken` 使用每次任务新生成的 UUID v4，但只是 wire alias，不得在任务间复用。`splitManifestBatches()` preserves manifest item order and starts a new batch before crossing 20 MiB. It never splits a page. Provider capability snapshots remain memory-only contracts and contain no API key.
 
-- [ ] **Step 4: Run GREEN and package gates**
+- [x] **Step 4: Run GREEN and package gates**
 
 ```powershell
 pnpm --filter @youju/ai-core test
@@ -381,7 +381,7 @@ git status --short
 
 Expected: all contract and snapshot tests pass; no output contract accepts stable local IDs from the model.
 
-- [ ] **Step 5: Commit and stop**
+- [x] **Step 5: Commit and stop**
 
 ```powershell
 git add packages/ai-core packages/test-support fixtures/ecommerce-refund/case-001-transport-damage/expected/facts.json tests/integration/golden-case-contracts.test.ts docs/superpowers/plans/2026-08-12-youju-m3-byok-ai-plan.md

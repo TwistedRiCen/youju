@@ -29,6 +29,11 @@ describe('golden case fixture loader', () => {
     }
     expect(fixture.expected.confirmedFacts).toHaveLength(6)
     expect(fixture.expected.timeline).toHaveLength(4)
+    expect(
+      fixture.expected.aiExtraction.facts.every((fact) =>
+        fact.sources.every((source) => 'sourceToken' in source && !('evidenceId' in source)),
+      ),
+    ).toBe(true)
     expect(goldenCase001Summary).toEqual({
       id: fixture.manifest.id,
       title: fixture.manifest.title,

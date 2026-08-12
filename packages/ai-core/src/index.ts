@@ -1,3 +1,6 @@
+export * from './provider.js'
+export * from './input-manifest.js'
+export * from './task-contracts.js'
 export * from './classification.js'
 export * from './fact-extraction.js'
 export * from './source-location.js'

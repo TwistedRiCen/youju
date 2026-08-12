@@ -1,4 +1,4 @@
-import { ExtractFactsResultSchema } from '@youju/ai-core'
+import { ExtractFactsWireOutputSchema } from '@youju/ai-core'
 import {
   CaseEventSchema,
   ConfirmedFactSchema,
@@ -63,7 +63,7 @@ export const GoldenCaseExpectedFactsSchema = Type.Object(
     fictional: Type.Literal(true),
     confirmedFactFields: Type.Array(FactFieldNameSchema, { minItems: 1, uniqueItems: true }),
     confirmedFacts: Type.Array(ConfirmedFactSchema, { minItems: 1 }),
-    aiExtraction: ExtractFactsResultSchema,
+    aiExtraction: ExtractFactsWireOutputSchema,
   },
   { additionalProperties: false },
 )

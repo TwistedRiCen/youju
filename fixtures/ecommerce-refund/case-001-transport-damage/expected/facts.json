@@ -92,7 +92,6 @@
     }
   ],
   "aiExtraction": {
-    "analysisVersionId": "00000000-0000-4000-8000-000000000301",
     "facts": [
       {
         "factType": "order",
@@ -100,7 +99,7 @@
         "value": "2026-07-01T12:16:00.000Z",
         "normalizedValue": "2026-07-01T12:16:00.000Z",
         "confidenceLevel": "high",
-        "sources": [{ "evidenceId": "00000000-0000-4000-8000-000000000101" }]
+        "sources": [{ "sourceToken": "00000000-0000-4000-8000-000000000501", "page": 1 }]
       },
       {
         "factType": "order",
@@ -108,7 +107,7 @@
         "value": "示例商城",
         "normalizedValue": "示例商城",
         "confidenceLevel": "high",
-        "sources": [{ "evidenceId": "00000000-0000-4000-8000-000000000101" }]
+        "sources": [{ "sourceToken": "00000000-0000-4000-8000-000000000501", "page": 1 }]
       },
       {
         "factType": "merchant",
@@ -116,7 +115,7 @@
         "value": "晴川生活示例店",
         "normalizedValue": "晴川生活示例店",
         "confidenceLevel": "high",
-        "sources": [{ "evidenceId": "00000000-0000-4000-8000-000000000101" }]
+        "sources": [{ "sourceToken": "00000000-0000-4000-8000-000000000501", "page": 1 }]
       },
       {
         "factType": "product",
@@ -124,7 +123,7 @@
         "value": "便携折叠桌（虚构商品）",
         "normalizedValue": "便携折叠桌（虚构商品）",
         "confidenceLevel": "high",
-        "sources": [{ "evidenceId": "00000000-0000-4000-8000-000000000101" }]
+        "sources": [{ "sourceToken": "00000000-0000-4000-8000-000000000501", "page": 1 }]
       },
       {
         "factType": "payment",
@@ -132,7 +131,7 @@
         "value": "899.00",
         "normalizedValue": "89900",
         "confidenceLevel": "high",
-        "sources": [{ "evidenceId": "00000000-0000-4000-8000-000000000102" }]
+        "sources": [{ "sourceToken": "00000000-0000-4000-8000-000000000502", "page": 1 }]
       },
       {
         "factType": "delivery",
@@ -140,7 +139,7 @@
         "value": "2026-07-03T06:30:00.000Z",
         "normalizedValue": "2026-07-03T06:30:00.000Z",
         "confidenceLevel": "high",
-        "sources": [{ "evidenceId": "00000000-0000-4000-8000-000000000103" }]
+        "sources": [{ "sourceToken": "00000000-0000-4000-8000-000000000503", "page": 1 }]
       },
       {
         "factType": "issue",
@@ -148,7 +147,7 @@
         "value": "包裹外箱凹陷，桌板边角开裂并有明显压痕",
         "normalizedValue": "包裹外箱凹陷，桌板边角开裂并有明显压痕",
         "confidenceLevel": "high",
-        "sources": [{ "evidenceId": "00000000-0000-4000-8000-000000000103" }]
+        "sources": [{ "sourceToken": "00000000-0000-4000-8000-000000000503", "page": 1 }]
       },
       {
         "factType": "communication",
@@ -156,7 +155,7 @@
         "value": "商家称破损由用户使用造成，因此拒绝退货退款",
         "normalizedValue": "商家称破损由用户使用造成，因此拒绝退货退款",
         "confidenceLevel": "needs_confirmation",
-        "sources": [{ "evidenceId": "00000000-0000-4000-8000-000000000104" }]
+        "sources": [{ "sourceToken": "00000000-0000-4000-8000-000000000504", "page": 1 }]
       },
       {
         "factType": "resolution",
@@ -164,7 +163,7 @@
         "value": "退货并退还已支付金额89900分",
         "normalizedValue": "退货并退还已支付金额89900分",
         "confidenceLevel": "high",
-        "sources": [{ "evidenceId": "00000000-0000-4000-8000-000000000104" }]
+        "sources": [{ "sourceToken": "00000000-0000-4000-8000-000000000504", "page": 1 }]
       }
     ],
     "uncertainties": ["商家关于破损原因的说法需要用户确认"],

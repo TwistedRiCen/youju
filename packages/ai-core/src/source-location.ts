@@ -1,13 +1,9 @@
-import { UuidV4Schema } from '@youju/domain'
+import { AiConfidenceLevelSchema, UuidV4Schema } from '@youju/domain'
 import { Type } from '@sinclair/typebox'
 import type { Static } from '@sinclair/typebox'
 
-export const AiConfidenceLevelSchema = Type.Union([
-  Type.Literal('high'),
-  Type.Literal('needs_confirmation'),
-  Type.Literal('conflicted'),
-  Type.Literal('unknown'),
-])
+export { AiConfidenceLevelSchema }
+export type { AiConfidenceLevel } from '@youju/domain'
 
 export const SourceRegionSchema = Type.Object(
   {
@@ -21,13 +17,12 @@ export const SourceRegionSchema = Type.Object(
 
 export const SourceLocationSchema = Type.Object(
   {
-    evidenceId: UuidV4Schema,
+    sourceToken: UuidV4Schema,
     page: Type.Optional(Type.Integer({ minimum: 1 })),
     region: Type.Optional(SourceRegionSchema),
   },
   { additionalProperties: false },
 )
 
-export type AiConfidenceLevel = Static<typeof AiConfidenceLevelSchema>
 export type SourceRegion = Static<typeof SourceRegionSchema>
 export type SourceLocation = Static<typeof SourceLocationSchema>

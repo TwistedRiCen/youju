@@ -2,7 +2,6 @@ import {
   EvidenceCategorySchema,
   TimePrecisionSchema,
   UtcTimestampSchema,
-  UuidV4Schema,
 } from '@youju/domain'
 import { Type } from '@sinclair/typebox'
 import type { Static } from '@sinclair/typebox'
@@ -23,7 +22,6 @@ export const TimelineCandidateSchema = Type.Object(
 
 export const BuildTimelineResultSchema = Type.Object(
   {
-    analysisVersionId: UuidV4Schema,
     entries: Type.Array(TimelineCandidateSchema),
     uncertainties: Type.Array(Type.String({ minLength: 1 })),
     warnings: Type.Array(Type.String({ minLength: 1 })),
@@ -43,7 +41,6 @@ export const MissingMaterialSuggestionSchema = Type.Object(
 
 export const MissingMaterialResultSchema = Type.Object(
   {
-    analysisVersionId: UuidV4Schema,
     suggestions: Type.Array(MissingMaterialSuggestionSchema),
     warnings: Type.Array(Type.String({ minLength: 1 })),
   },

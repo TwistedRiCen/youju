@@ -4,11 +4,6 @@ exports[`AI structured output contracts > keeps a reviewable snapshot of the ext
 {
   "additionalProperties": false,
   "properties": {
-    "analysisVersionId": {
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
-      "type": "string",
-      Symbol(TypeBox.Kind): "String",
-    },
     "facts": {
       "items": {
         "anyOf": [
@@ -59,11 +54,6 @@ exports[`AI structured output contracts > keeps a reviewable snapshot of the ext
                 "items": {
                   "additionalProperties": false,
                   "properties": {
-                    "evidenceId": {
-                      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
-                      "type": "string",
-                      Symbol(TypeBox.Kind): "String",
-                    },
                     "page": {
                       "minimum": 1,
                       "type": "integer",
@@ -104,9 +94,14 @@ exports[`AI structured output contracts > keeps a reviewable snapshot of the ext
                       Symbol(TypeBox.Kind): "Object",
                       Symbol(TypeBox.Optional): "Optional",
                     },
+                    "sourceToken": {
+                      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+                      "type": "string",
+                      Symbol(TypeBox.Kind): "String",
+                    },
                   },
                   "required": [
-                    "evidenceId",
+                    "sourceToken",
                   ],
                   "type": "object",
                   Symbol(TypeBox.Kind): "Object",
@@ -179,11 +174,6 @@ exports[`AI structured output contracts > keeps a reviewable snapshot of the ext
                 "items": {
                   "additionalProperties": false,
                   "properties": {
-                    "evidenceId": {
-                      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
-                      "type": "string",
-                      Symbol(TypeBox.Kind): "String",
-                    },
                     "page": {
                       "minimum": 1,
                       "type": "integer",
@@ -224,9 +214,14 @@ exports[`AI structured output contracts > keeps a reviewable snapshot of the ext
                       Symbol(TypeBox.Kind): "Object",
                       Symbol(TypeBox.Optional): "Optional",
                     },
+                    "sourceToken": {
+                      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+                      "type": "string",
+                      Symbol(TypeBox.Kind): "String",
+                    },
                   },
                   "required": [
-                    "evidenceId",
+                    "sourceToken",
                   ],
                   "type": "object",
                   Symbol(TypeBox.Kind): "Object",
@@ -299,11 +294,6 @@ exports[`AI structured output contracts > keeps a reviewable snapshot of the ext
                 "items": {
                   "additionalProperties": false,
                   "properties": {
-                    "evidenceId": {
-                      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
-                      "type": "string",
-                      Symbol(TypeBox.Kind): "String",
-                    },
                     "page": {
                       "minimum": 1,
                       "type": "integer",
@@ -344,9 +334,14 @@ exports[`AI structured output contracts > keeps a reviewable snapshot of the ext
                       Symbol(TypeBox.Kind): "Object",
                       Symbol(TypeBox.Optional): "Optional",
                     },
+                    "sourceToken": {
+                      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+                      "type": "string",
+                      Symbol(TypeBox.Kind): "String",
+                    },
                   },
                   "required": [
-                    "evidenceId",
+                    "sourceToken",
                   ],
                   "type": "object",
                   Symbol(TypeBox.Kind): "Object",
@@ -419,11 +414,6 @@ exports[`AI structured output contracts > keeps a reviewable snapshot of the ext
                 "items": {
                   "additionalProperties": false,
                   "properties": {
-                    "evidenceId": {
-                      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
-                      "type": "string",
-                      Symbol(TypeBox.Kind): "String",
-                    },
                     "page": {
                       "minimum": 1,
                       "type": "integer",
@@ -464,9 +454,14 @@ exports[`AI structured output contracts > keeps a reviewable snapshot of the ext
                       Symbol(TypeBox.Kind): "Object",
                       Symbol(TypeBox.Optional): "Optional",
                     },
+                    "sourceToken": {
+                      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+                      "type": "string",
+                      Symbol(TypeBox.Kind): "String",
+                    },
                   },
                   "required": [
-                    "evidenceId",
+                    "sourceToken",
                   ],
                   "type": "object",
                   Symbol(TypeBox.Kind): "Object",
@@ -539,11 +534,6 @@ exports[`AI structured output contracts > keeps a reviewable snapshot of the ext
                 "items": {
                   "additionalProperties": false,
                   "properties": {
-                    "evidenceId": {
-                      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
-                      "type": "string",
-                      Symbol(TypeBox.Kind): "String",
-                    },
                     "page": {
                       "minimum": 1,
                       "type": "integer",
@@ -584,9 +574,14 @@ exports[`AI structured output contracts > keeps a reviewable snapshot of the ext
                       Symbol(TypeBox.Kind): "Object",
                       Symbol(TypeBox.Optional): "Optional",
                     },
+                    "sourceToken": {
+                      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+                      "type": "string",
+                      Symbol(TypeBox.Kind): "String",
+                    },
                   },
                   "required": [
-                    "evidenceId",
+                    "sourceToken",
                   ],
                   "type": "object",
                   Symbol(TypeBox.Kind): "Object",
@@ -659,11 +654,6 @@ exports[`AI structured output contracts > keeps a reviewable snapshot of the ext
                 "items": {
                   "additionalProperties": false,
                   "properties": {
-                    "evidenceId": {
-                      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
-                      "type": "string",
-                      Symbol(TypeBox.Kind): "String",
-                    },
                     "page": {
                       "minimum": 1,
                       "type": "integer",
@@ -704,9 +694,14 @@ exports[`AI structured output contracts > keeps a reviewable snapshot of the ext
                       Symbol(TypeBox.Kind): "Object",
                       Symbol(TypeBox.Optional): "Optional",
                     },
+                    "sourceToken": {
+                      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+                      "type": "string",
+                      Symbol(TypeBox.Kind): "String",
+                    },
                   },
                   "required": [
-                    "evidenceId",
+                    "sourceToken",
                   ],
                   "type": "object",
                   Symbol(TypeBox.Kind): "Object",
@@ -779,11 +774,6 @@ exports[`AI structured output contracts > keeps a reviewable snapshot of the ext
                 "items": {
                   "additionalProperties": false,
                   "properties": {
-                    "evidenceId": {
-                      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
-                      "type": "string",
-                      Symbol(TypeBox.Kind): "String",
-                    },
                     "page": {
                       "minimum": 1,
                       "type": "integer",
@@ -824,9 +814,14 @@ exports[`AI structured output contracts > keeps a reviewable snapshot of the ext
                       Symbol(TypeBox.Kind): "Object",
                       Symbol(TypeBox.Optional): "Optional",
                     },
+                    "sourceToken": {
+                      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+                      "type": "string",
+                      Symbol(TypeBox.Kind): "String",
+                    },
                   },
                   "required": [
-                    "evidenceId",
+                    "sourceToken",
                   ],
                   "type": "object",
                   Symbol(TypeBox.Kind): "Object",
@@ -899,11 +894,6 @@ exports[`AI structured output contracts > keeps a reviewable snapshot of the ext
                 "items": {
                   "additionalProperties": false,
                   "properties": {
-                    "evidenceId": {
-                      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
-                      "type": "string",
-                      Symbol(TypeBox.Kind): "String",
-                    },
                     "page": {
                       "minimum": 1,
                       "type": "integer",
@@ -944,9 +934,14 @@ exports[`AI structured output contracts > keeps a reviewable snapshot of the ext
                       Symbol(TypeBox.Kind): "Object",
                       Symbol(TypeBox.Optional): "Optional",
                     },
+                    "sourceToken": {
+                      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+                      "type": "string",
+                      Symbol(TypeBox.Kind): "String",
+                    },
                   },
                   "required": [
-                    "evidenceId",
+                    "sourceToken",
                   ],
                   "type": "object",
                   Symbol(TypeBox.Kind): "Object",
@@ -1019,11 +1014,6 @@ exports[`AI structured output contracts > keeps a reviewable snapshot of the ext
                 "items": {
                   "additionalProperties": false,
                   "properties": {
-                    "evidenceId": {
-                      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
-                      "type": "string",
-                      Symbol(TypeBox.Kind): "String",
-                    },
                     "page": {
                       "minimum": 1,
                       "type": "integer",
@@ -1064,9 +1054,14 @@ exports[`AI structured output contracts > keeps a reviewable snapshot of the ext
                       Symbol(TypeBox.Kind): "Object",
                       Symbol(TypeBox.Optional): "Optional",
                     },
+                    "sourceToken": {
+                      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+                      "type": "string",
+                      Symbol(TypeBox.Kind): "String",
+                    },
                   },
                   "required": [
-                    "evidenceId",
+                    "sourceToken",
                   ],
                   "type": "object",
                   Symbol(TypeBox.Kind): "Object",
@@ -1139,11 +1134,6 @@ exports[`AI structured output contracts > keeps a reviewable snapshot of the ext
                 "items": {
                   "additionalProperties": false,
                   "properties": {
-                    "evidenceId": {
-                      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
-                      "type": "string",
-                      Symbol(TypeBox.Kind): "String",
-                    },
                     "page": {
                       "minimum": 1,
                       "type": "integer",
@@ -1184,9 +1174,14 @@ exports[`AI structured output contracts > keeps a reviewable snapshot of the ext
                       Symbol(TypeBox.Kind): "Object",
                       Symbol(TypeBox.Optional): "Optional",
                     },
+                    "sourceToken": {
+                      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+                      "type": "string",
+                      Symbol(TypeBox.Kind): "String",
+                    },
                   },
                   "required": [
-                    "evidenceId",
+                    "sourceToken",
                   ],
                   "type": "object",
                   Symbol(TypeBox.Kind): "Object",
@@ -1238,7 +1233,6 @@ exports[`AI structured output contracts > keeps a reviewable snapshot of the ext
     },
   },
   "required": [
-    "analysisVersionId",
     "facts",
     "uncertainties",
     "warnings",

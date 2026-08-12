@@ -1,7 +1,7 @@
 import { readdir, readFile } from 'node:fs/promises'
 import { join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import type { ExtractFactsResult } from '@youju/ai-core'
+import type { ExtractFactsWireOutput } from '@youju/ai-core'
 import type {
   CaseEvent,
   ConfirmedFact,
@@ -30,7 +30,7 @@ export interface GoldenCase {
   expected: {
     confirmedFactFields: FactFieldName[]
     confirmedFacts: ConfirmedFact[]
-    aiExtraction: ExtractFactsResult
+    aiExtraction: ExtractFactsWireOutput
     timeline: TimelineEntry[]
     findings: RuleFinding[]
   }

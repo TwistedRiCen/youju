@@ -6,15 +6,16 @@ import { Value } from '@sinclair/typebox/value'
 export const DraftStatementRequestSchema = Type.Object(
   {
     confirmedFactIds: Type.Array(UuidV4Schema, { minItems: 1, uniqueItems: true }),
+    confirmedTimelineEntryIds: Type.Array(UuidV4Schema, { minItems: 1, uniqueItems: true }),
   },
   { additionalProperties: false },
 )
 
 export const DraftStatementResultSchema = Type.Object(
   {
-    analysisVersionId: UuidV4Schema,
     text: Type.String({ minLength: 1 }),
     confirmedFactIds: Type.Array(UuidV4Schema, { minItems: 1, uniqueItems: true }),
+    confirmedTimelineEntryIds: Type.Array(UuidV4Schema, { minItems: 1, uniqueItems: true }),
     warnings: Type.Array(Type.String({ minLength: 1 })),
   },
   { additionalProperties: false },

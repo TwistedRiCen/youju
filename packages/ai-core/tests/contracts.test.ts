@@ -9,12 +9,11 @@ import {
   isMissingMaterialResult,
 } from '../src/index.js'
 
-const analysisVersionId = '00000000-0000-4000-8000-000000000030'
-const evidenceId = '00000000-0000-4000-8000-000000000020'
+const sourceToken = '00000000-0000-4000-8000-000000000501'
 const confirmedFactId = '00000000-0000-4000-8000-000000000011'
+const confirmedTimelineEntryId = '00000000-0000-4000-8000-000000000040'
 
 const validExtraction = {
-  analysisVersionId,
   facts: [
     {
       factType: 'payment',
@@ -24,7 +23,7 @@ const validExtraction = {
       confidenceLevel: 'high',
       sources: [
         {
-          evidenceId,
+          sourceToken,
           page: 1,
           region: { x: 112, y: 306, width: 358, height: 53 },
         },
@@ -58,7 +57,7 @@ describe('AI structured output contracts', () => {
             ...validExtraction.facts[0],
             sources: [
               {
-                evidenceId,
+                sourceToken,
                 page: 1,
                 region: { x: -1, y: 306, width: 358, height: 53 },
               },
@@ -104,10 +103,9 @@ describe('AI structured output contracts', () => {
 
   it('validates evidence classification outputs against domain categories', () => {
     const result = {
-      analysisVersionId,
       classifications: [
         {
-          evidenceId,
+          sourceToken,
           category: 'payment_record',
           confidenceLevel: 'needs_confirmation',
         },
@@ -126,7 +124,6 @@ describe('AI structured output contracts', () => {
 
   it('requires timeline candidates to remain source-linked', () => {
     const result = {
-      analysisVersionId,
       entries: [
         {
           occurredAt: '2026-07-29T10:00:00.000Z',
@@ -134,7 +131,7 @@ describe('AI structured output contracts', () => {
           summary: '用户完成付款',
           detail: null,
           confidenceLevel: 'high',
-          sources: [{ evidenceId, page: 1 }],
+          sources: [{ sourceToken, page: 1 }],
         },
       ],
       uncertainties: [],
@@ -152,13 +149,12 @@ describe('AI structured output contracts', () => {
 
   it('requires missing-material suggestions to cite their source evidence', () => {
     const result = {
-      analysisVersionId,
       suggestions: [
         {
           category: 'merchant_communication',
           label: '商家沟通记录',
           reason: '当前材料未体现商家对退款请求的回复',
-          sources: [{ evidenceId }],
+          sources: [{ sourceToken, page: 1 }],
         },
       ],
       warnings: [],
@@ -174,10 +170,16 @@ describe('AI structured output contracts', () => {
   })
 
   it('allows statement requests to reference confirmed facts only', () => {
-    expect(isDraftStatementRequest({ confirmedFactIds: [confirmedFactId] })).toBe(true)
     expect(
       isDraftStatementRequest({
         confirmedFactIds: [confirmedFactId],
+        confirmedTimelineEntryIds: [confirmedTimelineEntryId],
+      }),
+    ).toBe(true)
+    expect(
+      isDraftStatementRequest({
+        confirmedFactIds: [confirmedFactId],
+        confirmedTimelineEntryIds: [confirmedTimelineEntryId],
         factCandidateIds: ['00000000-0000-4000-8000-000000000010'],
       }),
     ).toBe(false)
@@ -185,9 +187,9 @@ describe('AI structured output contracts', () => {
 
   it('rejects statement drafts containing non-confirmed references or legal conclusions', () => {
     const result = {
-      analysisVersionId,
       text: '用户已付款并请求退货退款。',
       confirmedFactIds: [confirmedFactId],
+      confirmedTimelineEntryIds: [confirmedTimelineEntryId],
       warnings: [],
     }
 

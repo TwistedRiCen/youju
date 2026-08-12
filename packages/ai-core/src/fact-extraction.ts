@@ -1,4 +1,3 @@
-import { UuidV4Schema } from '@youju/domain'
 import type { FactFieldName, FactType } from '@youju/domain'
 import { Type } from '@sinclair/typebox'
 import type { Static } from '@sinclair/typebox'
@@ -49,7 +48,6 @@ export const ExtractedFactSchema = Type.Union([
 
 export const ExtractFactsResultSchema = Type.Object(
   {
-    analysisVersionId: UuidV4Schema,
     facts: Type.Array(ExtractedFactSchema),
     uncertainties: Type.Array(Type.String({ minLength: 1 })),
     warnings: Type.Array(Type.String({ minLength: 1 })),
