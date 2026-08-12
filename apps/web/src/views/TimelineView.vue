@@ -19,9 +19,11 @@ import {
   toOccurredAt,
 } from '../services/timeline-service.js'
 import { listConfirmedFacts } from '../services/fact-service.js'
+import { useCaseWriteAccess } from '../composables/use-case-write-access.js'
 
 const route = useRoute()
 const caseId = String(route.params.caseId ?? '') as UuidV4
+const { canWrite } = useCaseWriteAccess()
 
 const loading = ref(true)
 const entries = shallowRef<readonly TimelineEntry[]>([])
@@ -137,11 +139,11 @@ onMounted(async () => {
     <section class="add-form" aria-label="添加时间线">
       <div class="field">
         <label for="timeline-summary">摘要</label>
-        <input id="timeline-summary" v-model="formSummary" type="text" />
+        <input id="timeline-summary" v-model="formSummary" type="text" :disabled="!canWrite" />
       </div>
       <div class="field">
         <label for="timeline-precision">精确度</label>
-        <select id="timeline-precision" v-model="formPrecision">
+        <select id="timeline-precision" v-model="formPrecision" :disabled="!canWrite">
           <option v-for="precision in (['minute', 'date', 'approximate', 'unknown'] as const)"
             :key="precision"
             :value="precision">
@@ -151,20 +153,27 @@ onMounted(async () => {
       </div>
       <div v-if="formPrecision === 'date'" class="field">
         <label for="timeline-date">日期</label>
-        <input id="timeline-date" v-model="formTime" type="date" />
+        <input id="timeline-date" v-model="formTime" type="date" :disabled="!canWrite" />
       </div>
       <div v-else-if="formPrecision !== 'unknown'" class="field">
         <label for="timeline-time">时间</label>
-        <input id="timeline-time" v-model="formTime" type="datetime-local" />
+        <input id="timeline-time" v-model="formTime" type="datetime-local" :disabled="!canWrite" />
       </div>
       <fieldset class="sources">
         <legend>关联材料</legend>
         <label v-for="item in evidence" :key="item.id" class="source-item">
-          <input type="checkbox" :value="item.id" v-model="formSources" />
+          <input
+            type="checkbox"
+            :value="item.id"
+            v-model="formSources"
+            :disabled="!canWrite"
+          />
           关联材料：{{ item.originalName }}
         </label>
       </fieldset>
-      <button type="button" class="add-button" @click="addEntry">添加时间线</button>
+      <button type="button" class="add-button" :disabled="!canWrite" @click="addEntry">
+        添加时间线
+      </button>
     </section>
 
     <p v-if="loading">正在加载时间线…</p>
@@ -180,13 +189,18 @@ onMounted(async () => {
             v-else
             type="button"
             :aria-label="`确认时间线：${entry.summary}`"
+            :disabled="!canWrite"
             @click="confirmEntry(entry)"
           >
             确认
           </button>
           <div class="reorder">
-            <button type="button" aria-label="上移" @click="move(entry, -1)">上移</button>
-            <button type="button" aria-label="下移" @click="move(entry, 1)">下移</button>
+            <button type="button" aria-label="上移" :disabled="!canWrite" @click="move(entry, -1)">
+              上移
+            </button>
+            <button type="button" aria-label="下移" :disabled="!canWrite" @click="move(entry, 1)">
+              下移
+            </button>
           </div>
         </li>
       </ul>

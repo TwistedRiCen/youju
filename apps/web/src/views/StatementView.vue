@@ -8,9 +8,11 @@ import {
   loadStatement,
   updateStatementDraft,
 } from '../services/statement-service.js'
+import { useCaseWriteAccess } from '../composables/use-case-write-access.js'
 
 const route = useRoute()
 const caseId = String(route.params.caseId ?? '') as UuidV4
+const { canWrite } = useCaseWriteAccess()
 
 const loading = ref(true)
 const content = ref('')
@@ -61,11 +63,16 @@ onMounted(async () => {
         class="content"
         aria-label="事实陈述内容"
         rows="14"
+        :disabled="!canWrite"
       ></textarea>
       <div class="actions">
-        <button type="button" @click="generate">生成事实陈述</button>
-        <button type="button" :disabled="content === ''" @click="saveEdit">保存修改</button>
-        <button type="button" :disabled="content === ''" @click="confirm">确认陈述</button>
+        <button type="button" :disabled="!canWrite" @click="generate">生成事实陈述</button>
+        <button type="button" :disabled="!canWrite || content === ''" @click="saveEdit">
+          保存修改
+        </button>
+        <button type="button" :disabled="!canWrite || content === ''" @click="confirm">
+          确认陈述
+        </button>
       </div>
     </template>
   </main>

@@ -2,7 +2,10 @@
 import type { EvidenceCategory, EvidenceFile } from '@youju/domain'
 import { EVIDENCE_CATEGORY_LABELS } from '../services/evidence-service.js'
 
-const props = defineProps<{ evidence: readonly EvidenceFile[] }>()
+const props = defineProps<{
+  evidence: readonly EvidenceFile[]
+  disabled?: boolean
+}>()
 
 const emit = defineEmits<{
   categoryChange: [payload: { evidenceId: string; category: EvidenceCategory }]
@@ -30,6 +33,7 @@ function onChange(evidenceId: string, event: Event): void {
         <select
           :id="`category-${item.id}`"
           :aria-label="`分类：${item.originalName}`"
+          :disabled="props.disabled ?? false"
           :value="item.category"
           @change="onChange(item.id, $event)"
         >
@@ -44,6 +48,7 @@ function onChange(evidenceId: string, event: Event): void {
           type="button"
           class="remove-button"
           :aria-label="`删除材料：${item.originalName}`"
+          :disabled="props.disabled ?? false"
           @click="emit('removeEvidence', item.id)"
         >
           删除材料

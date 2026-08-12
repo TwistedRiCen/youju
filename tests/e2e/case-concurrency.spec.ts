@@ -38,6 +38,27 @@ test('second tab is read-only while the first tab holds the write lock', async (
   await secondPage.close()
 })
 
+test('child case routes remain read-only in a secondary tab', async ({ page }) => {
+  await createCase(page)
+  const workspaceUrl = page.url()
+
+  const secondPage = await page.context().newPage()
+  await secondPage.goto(`${workspaceUrl}/facts`)
+
+  await expect(secondPage.getByText('另一个标签页正在编辑，本页只读')).toBeVisible()
+  await expect(secondPage.getByRole('textbox', { name: '商家名称' })).toBeDisabled()
+
+  await page.close()
+  await secondPage.getByRole('button', { name: '获取编辑权' }).click()
+  await expect(secondPage.getByRole('textbox', { name: '商家名称' })).toBeEnabled()
+
+  const thirdPage = await secondPage.context().newPage()
+  await thirdPage.goto(`${workspaceUrl}/timeline`)
+  await expect(thirdPage.getByRole('textbox', { name: '摘要' })).toBeDisabled()
+  await thirdPage.close()
+  await secondPage.close()
+})
+
 test('editing continues with revision protection when Web Locks are absent', async ({
   browser,
 }) => {

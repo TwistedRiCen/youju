@@ -5,10 +5,12 @@ import type { UuidV4 } from '@youju/domain'
 import { selectCurrentConfirmedFacts } from '@youju/domain'
 import { getCaseRepository } from '../services/case-service.js'
 import { deleteCasePermanently } from '../services/delete-case-service.js'
+import { useCaseWriteAccess } from '../composables/use-case-write-access.js'
 
 const route = useRoute()
 const router = useRouter()
 const caseId = String(route.params.caseId ?? '') as UuidV4
+const { canWrite } = useCaseWriteAccess()
 
 const loading = ref(true)
 const title = ref('')
@@ -89,10 +91,19 @@ async function deleteCase(): Promise<void> {
       </ul>
       <div class="field">
         <label for="delete-title-confirm">输入事件标题以确认删除</label>
-        <input id="delete-title-confirm" v-model="enteredTitle" type="text" />
+        <input
+          id="delete-title-confirm"
+          v-model="enteredTitle"
+          type="text"
+          :disabled="!canWrite"
+        />
       </div>
       <p v-if="message" class="message" :class="{ failed }">{{ message }}</p>
-      <button type="button" :disabled="!titleMatches || deleting" @click="deleteCase">
+      <button
+        type="button"
+        :disabled="!canWrite || !titleMatches || deleting"
+        @click="deleteCase"
+      >
         永久删除
       </button>
     </template>

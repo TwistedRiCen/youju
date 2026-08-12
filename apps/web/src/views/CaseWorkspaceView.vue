@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, reactive, ref, shallowRef } from 'vue'
-import { useRoute } from 'vue-router'
+import { RouterView, useRoute } from 'vue-router'
 import type { FactDraft, UuidV4 } from '@youju/domain'
 import { detectBrowserCapabilities } from '../browser/browser-capabilities.js'
 import type { BrowserCapabilities } from '../browser/browser-capabilities.js'
 import { createAutosave } from '../composables/use-autosave.js'
 import type { AutosaveController } from '../composables/use-autosave.js'
 import { useCaseWriteLock } from '../composables/use-case-write-lock.js'
+import { provideCaseWriteAccess } from '../composables/use-case-write-access.js'
 import {
   fenToYuan,
   getCaseRepository,
@@ -22,6 +23,9 @@ const caseId = String(route.params.caseId ?? '') as UuidV4
 
 const capabilities: BrowserCapabilities = detectBrowserCapabilities()
 const { mode: writeMode, acquire, release } = useCaseWriteLock()
+const isOverview = computed(() => route.name === 'case-workspace')
+
+provideCaseWriteAccess(writeMode)
 
 const loading = ref(true)
 const notFound = ref(false)
@@ -196,7 +200,8 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <main class="workspace-shell">
+  <template v-if="isOverview">
+    <main class="workspace-shell">
     <a class="back" href="/">返回首页</a>
     <p v-if="loading">正在加载本地事件…</p>
     <section v-else-if="notFound" class="not-found">
@@ -255,7 +260,15 @@ onUnmounted(() => {
       </div>
       <p class="boundary">这里只整理事实与材料，不提供法律判断或结果预测。</p>
     </section>
-  </main>
+    </main>
+  </template>
+  <template v-else>
+    <div v-if="writeMode === 'reader'" class="read-only child-route-read-only">
+      <p>另一个标签页正在编辑，本页只读</p>
+      <button type="button" @click="retryAcquire">获取编辑权</button>
+    </div>
+    <RouterView />
+  </template>
 </template>
 
 <style scoped>

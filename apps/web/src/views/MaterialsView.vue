@@ -14,10 +14,12 @@ import type { FileImportOutcome } from '../services/evidence-service.js'
 import { getCaseRepository } from '../services/case-service.js'
 import { deleteEvidence } from '../services/reference-service.js'
 import { EvidenceReferencedError } from '../services/reference-service.js'
+import { useCaseWriteAccess } from '../composables/use-case-write-access.js'
 
 const route = useRoute()
 const caseId = String(route.params.caseId ?? '') as UuidV4
 const capabilities = detectBrowserCapabilities()
+const { canWrite } = useCaseWriteAccess()
 
 const loading = ref(true)
 const importing = ref(false)
@@ -107,7 +109,7 @@ async function removeEvidenceItem(evidenceId: string): Promise<void> {
       当前浏览器不能可靠保存原始材料
     </p>
     <template v-else>
-      <EvidenceImportField :disabled="importing" @files="importFiles" />
+      <EvidenceImportField :disabled="importing || !canWrite" @files="importFiles" />
       <p v-if="deleteError" class="delete-error">{{ deleteError }}</p>
       <ul v-if="referenceDetails.length > 0" class="delete-references">
         <li v-for="(detail, index) in referenceDetails" :key="index">{{ detail }}</li>
@@ -123,6 +125,7 @@ async function removeEvidenceItem(evidenceId: string): Promise<void> {
     <EvidenceList
       v-else
       :evidence="evidence"
+      :disabled="!canWrite"
       @category-change="applyCategory"
       @remove-evidence="removeEvidenceItem"
     />

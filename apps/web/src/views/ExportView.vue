@@ -4,9 +4,11 @@ import { useRoute } from 'vue-router'
 import type { ExportPreflightResult } from '@youju/document-export'
 import type { UuidV4 } from '@youju/domain'
 import { loadExportState, prepareExportBundle } from '../services/export-service.js'
+import { useCaseWriteAccess } from '../composables/use-case-write-access.js'
 
 const route = useRoute()
 const caseId = String(route.params.caseId ?? '') as UuidV4
+const { canWrite } = useCaseWriteAccess()
 
 const loading = ref(true)
 const blocked = ref(false)
@@ -113,7 +115,7 @@ onMounted(async () => {
         <p v-if="message" class="message">{{ message }}</p>
         <button
           type="button"
-          :disabled="blocked || exporting"
+          :disabled="blocked || exporting || !canWrite"
           class="export-button"
           @click="generate"
         >

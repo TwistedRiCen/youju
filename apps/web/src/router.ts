@@ -26,41 +26,43 @@ const routes: RouteRecordRaw[] = [
     path: '/cases/:caseId',
     name: 'case-workspace',
     component: CaseWorkspaceView,
-  },
-  {
-    path: '/cases/:caseId/materials',
-    name: 'case-materials',
-    component: MaterialsView,
-  },
-  {
-    path: '/cases/:caseId/facts',
-    name: 'case-facts',
-    component: FactsView,
-  },
-  {
-    path: '/cases/:caseId/timeline',
-    name: 'case-timeline',
-    component: TimelineView,
-  },
-  {
-    path: '/cases/:caseId/findings',
-    name: 'case-findings',
-    component: FindingsView,
-  },
-  {
-    path: '/cases/:caseId/statement',
-    name: 'case-statement',
-    component: StatementView,
-  },
-  {
-    path: '/cases/:caseId/export',
-    name: 'case-export',
-    component: ExportView,
-  },
-  {
-    path: '/cases/:caseId/delete',
-    name: 'case-delete',
-    component: DeleteCaseView,
+    children: [
+      {
+        path: 'materials',
+        name: 'case-materials',
+        component: MaterialsView,
+      },
+      {
+        path: 'facts',
+        name: 'case-facts',
+        component: FactsView,
+      },
+      {
+        path: 'timeline',
+        name: 'case-timeline',
+        component: TimelineView,
+      },
+      {
+        path: 'findings',
+        name: 'case-findings',
+        component: FindingsView,
+      },
+      {
+        path: 'statement',
+        name: 'case-statement',
+        component: StatementView,
+      },
+      {
+        path: 'export',
+        name: 'case-export',
+        component: ExportView,
+      },
+      {
+        path: 'delete',
+        name: 'case-delete',
+        component: DeleteCaseView,
+      },
+    ],
   },
 ]
 

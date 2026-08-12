@@ -20,6 +20,7 @@ import {
   saveFactDrafts,
 } from '../services/fact-service.js'
 import { listCaseEvidence } from '../services/evidence-service.js'
+import { useCaseWriteAccess } from '../composables/use-case-write-access.js'
 
 interface RequiredFactRow {
   readonly fieldName: FactFieldName
@@ -54,6 +55,7 @@ const REQUIRED_FACTS: readonly RequiredFactRow[] = [
 
 const route = useRoute()
 const caseId = String(route.params.caseId ?? '') as UuidV4
+const { canWrite } = useCaseWriteAccess()
 
 const loading = ref(true)
 const drafts = shallowRef<readonly FactDraft[]>([])
@@ -287,7 +289,7 @@ onMounted(async () => {
         :value="values[row.fieldName] ?? ''"
         :input-type="row.inputType"
         :input-mode="row.inputMode"
-        :disabled="false"
+        :disabled="!canWrite"
         :evidence="evidence"
         :selected-source-ids="selectedSourceIdsByField[row.fieldName] ?? []"
         @update-value="onValueChange(row.fieldName, $event)"
