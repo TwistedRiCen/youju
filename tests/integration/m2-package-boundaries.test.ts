@@ -9,7 +9,7 @@ async function listFiles(directory: string, extensions: readonly string[]): Prom
   const entries = await readdir(directory, { withFileTypes: true })
   const files: string[] = []
   for (const entry of entries) {
-    const path = join(directory, entry.name)
+    const path = join(directory, entry.name).replaceAll('\\', '/')
     if (entry.isDirectory()) {
       files.push(...(await listFiles(path, extensions)))
     } else if (extensions.some((extension) => entry.name.endsWith(extension))) {
@@ -20,6 +20,12 @@ async function listFiles(directory: string, extensions: readonly string[]): Prom
 }
 
 describe('M2 package boundaries', () => {
+  it('normalizes source paths before applying boundary filters', async () => {
+    const files = await listFiles(join(repositoryRoot, 'apps', 'web', 'src'), ['.ts', '.vue'])
+
+    expect(files.filter((file) => file.includes('/src/')).length).toBeGreaterThan(0)
+  })
+
   it('keeps Web business modules free of API imports and health calls', async () => {
     const files = await listFiles(join(repositoryRoot, 'apps', 'web', 'src'), ['.ts', '.vue'])
 
