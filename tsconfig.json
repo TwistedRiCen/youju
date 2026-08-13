@@ -1,8 +1,12 @@
 {
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "noEmit": true
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "baseUrl": ".",
+    "paths": {
+      "/src/*": ["apps/web/src/*"]
+    }
   },
-  "include": ["tests/**/*.ts", "scripts/**/*.ts", "*.ts"],
-  "exclude": ["tests/e2e"]
+  "include": ["tests/**/*.ts", "scripts/**/*.ts", "*.ts"]
 }

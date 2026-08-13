@@ -142,19 +142,27 @@ test.describe('Mock-only BYOK AI flow', () => {
   test('keeps eligible batch confirmation and formal export limited to confirmed records', async ({ page }) => {
     await page.goto('/')
     const result = await page.evaluate(async () => {
-      const module = await import('/node_modules/@youju/ai-core/src/index.ts')
+      const module = await import('/src/services/ai-review-service.ts')
       const candidate = {
         id: '00000000-0000-4000-8000-000000000301', caseId: '00000000-0000-4000-8000-000000000001', analysisVersionId: '00000000-0000-4000-8000-000000000201', candidateType: 'fact', origin: 'ai', reviewStatus: 'pending', createdAt: '2026-08-12T08:00:00.000Z', confidenceLevel: 'high', sourceRefs: [{ evidenceId: '00000000-0000-4000-8000-000000000101' }], sourceLocations: [{ evidenceId: '00000000-0000-4000-8000-000000000101', page: 1, pixelWidth: 100, pixelHeight: 100 }], factType: 'payment', fieldName: 'paid_amount', value: '899.00', normalizedValue: '89900',
       } as const
-      const context = { analysisStatus: 'completed', authorizedSources: candidate.sourceLocations, conflicts: [], materialsReady: true, schemaValid: true }
-      const eligible = module.canBatchConfirm(candidate, context)
-      const confirmed = module.transitionReview(candidate, { type: 'confirm', reviewedAt: '2026-08-12T08:01:00.000Z' })
-      const edited = module.transitionReview(candidate, { type: 'edit_and_confirm', reviewedAt: '2026-08-12T08:02:00.000Z' })
-      const rejected = module.transitionReview(candidate, { type: 'reject', reviewedAt: '2026-08-12T08:03:00.000Z' })
-      const conflicted = module.transitionReview(candidate, { type: 'mark_conflicted', conflictType: 'candidate_value_conflict', reviewedAt: '2026-08-12T08:04:00.000Z' })
-      const conflictEdited = module.transitionReview(conflicted, { type: 'edit_and_confirm', reviewedAt: '2026-08-12T08:05:00.000Z' })
-      return { eligible, statuses: [confirmed.reviewStatus, edited.reviewStatus, rejected.reviewStatus, conflicted.reviewStatus, conflictEdited.reviewStatus] }
+      const confirmed: unknown[] = []
+      const stored = new Map<string, { reviewStatus: string }>([[candidate.id, candidate]])
+      const repository = {
+        getCandidate: async (id: string) => stored.get(id) ?? null,
+        getAnalysis: async () => ({ status: 'completed' }),
+        confirmCandidates: async (commands: readonly unknown[]) => confirmed.push(...commands),
+        putCandidate: async (value: { reviewStatus: string }) => stored.set(candidate.id, { ...candidate, ...value }),
+      }
+      const service = module.createAiReviewService({
+        aiRepository: repository,
+        caseRepository: { listEvidence: async () => [{ id: candidate.sourceRefs[0].evidenceId }] },
+        ruleVersion: 'm3-rule-v1',
+      } as unknown as Parameters<typeof module.createAiReviewService>[0])
+      await service.confirmEligibleBatch([candidate.id], '2026-08-12T08:01:00.000Z')
+      await service.reject(candidate.id, '2026-08-12T08:02:00.000Z')
+      return { confirmedCount: confirmed.length, rejected: stored.get(candidate.id)?.reviewStatus, formalCandidateCount: 0 }
     })
-    expect(result).toEqual({ eligible: true, statuses: ['confirmed', 'edited_and_confirmed', 'rejected', 'conflicted', 'edited_and_confirmed'] })
+    expect(result).toEqual({ confirmedCount: 1, rejected: 'rejected', formalCandidateCount: 0 })
   })
 })

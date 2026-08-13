@@ -132,7 +132,7 @@ async function resetDatabase(page: Page): Promise<void> {
 async function openRepositories(page: Page): Promise<void> {
   await resetDatabase(page)
   await page.evaluate(async () => {
-    const storage = (await import('/src/storage/index.ts')) as BrowserStorageModule
+    const storage = (await import('/src/storage/index.ts')) as unknown as BrowserStorageModule
     const database = await storage.openYoujuDatabase(storage.DATABASE_MIGRATIONS)
     const host = window as unknown as BrowserWindow
     host.__youjuStorage = storage
@@ -146,7 +146,7 @@ test('migrates M2 records and creates indexed AI stores', async ({ page }) => {
   await resetDatabase(page)
 
   const result = await page.evaluate(async (payload) => {
-    const storage = (await import('/src/storage/index.ts')) as BrowserStorageModule
+    const storage = (await import('/src/storage/index.ts')) as unknown as BrowserStorageModule
     const legacy = await storage.openYoujuDatabase(storage.DATABASE_MIGRATIONS.slice(0, 2))
     await legacy.put('evidenceMetadata', {
       id: payload.evidenceId,

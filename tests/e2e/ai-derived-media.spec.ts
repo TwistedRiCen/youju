@@ -83,7 +83,7 @@ test('derives bounded image bytes, renders selected PDF pages, and performs no e
         byteSize: image.bytes.byteLength,
         sha256: image.sha256,
         calculatedSha256: Array.from(
-          new Uint8Array(await crypto.subtle.digest('SHA-256', image.bytes)),
+          new Uint8Array(await crypto.subtle.digest('SHA-256', image.bytes as unknown as BufferSource)),
         ).map((byte) => byte.toString(16).padStart(2, '0')).join(''),
       },
       pages: pages.map((item) => item.page),

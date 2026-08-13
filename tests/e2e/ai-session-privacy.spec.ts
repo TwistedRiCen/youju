@@ -73,16 +73,19 @@ async function readPersistentSurfaces(page: Page): Promise<string> {
     }
 
     if ('storage' in navigator && 'getDirectory' in navigator.storage) {
-      const walk = async (directory: FileSystemDirectoryHandle): Promise<void> => {
+      type DirectoryWithValues = FileSystemDirectoryHandle & {
+        values(): AsyncIterableIterator<FileSystemHandle>
+      }
+      const walk = async (directory: DirectoryWithValues): Promise<void> => {
         for await (const entry of directory.values()) {
           if (entry.kind === 'file') {
-            values.push(await (await entry.getFile()).text())
+            values.push(await (await (entry as FileSystemFileHandle).getFile()).text())
           } else {
-            await walk(entry)
+            await walk(entry as DirectoryWithValues)
           }
         }
       }
-      await walk(await navigator.storage.getDirectory())
+      await walk(await navigator.storage.getDirectory() as DirectoryWithValues)
     }
 
     return values.join('\n')
