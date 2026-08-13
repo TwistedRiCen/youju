@@ -33,5 +33,20 @@
       "size": 63011,
       "sha256": "160b843063e40a5641b2240775c9fe4b091066d2e356f8e8eea205b2c2ca6d64"
     }
-  ]
+  ],
+  "ai": {
+    "authorizedSourceTokens": [
+      "00000000-0000-4000-8000-000000000501",
+      "00000000-0000-4000-8000-000000000502",
+      "00000000-0000-4000-8000-000000000503",
+      "00000000-0000-4000-8000-000000000504"
+    ],
+    "responsesClassification": "ai/responses-classification.json",
+    "chatFacts": "ai/chat-facts.json",
+    "chatTimeline": "ai/chat-timeline.json",
+    "chatStatement": "ai/chat-statement.json",
+    "malformedFirstResponse": "ai/malformed-first-response.json",
+    "repairedResponse": "ai/repaired-response.json",
+    "expectedMetrics": "ai/expected-metrics.json"
+  }
 }

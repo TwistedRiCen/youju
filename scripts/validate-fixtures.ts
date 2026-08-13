@@ -5,10 +5,41 @@ import { fileURLToPath } from 'node:url'
 import { dirname, join, resolve } from 'node:path'
 import { evaluateRule, parseEcommerceRefundRule } from '@youju/rule-engine'
 import { loadGoldenCase } from '@youju/test-support'
+import { evaluateGoldenCase } from './evaluate-ai-golden-case.js'
 
 const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const fixtureRoot = join(repositoryRoot, 'fixtures', 'ecommerce-refund')
 const rulePath = join(repositoryRoot, 'rules', 'consumer', 'ecommerce-refund.v1.yaml')
+
+const forbiddenFixturePatterns = [
+  /(?<!\d)1[3-9]\d{9}(?!\d)/,
+  /(?<!\d)\d{17}[\dXx](?!\d)/,
+  /(?:api[_-]?key|secret|password)\s*[:=]/i,
+  /\bsk-[A-Za-z0-9_-]{20,}/,
+  /(?:省|市|区|县|路|街|号|室)\s*\d{1,5}/,
+]
+
+async function listTextFiles(directory: string): Promise<string[]> {
+  const files: string[] = []
+  for (const entry of await readdir(directory, { withFileTypes: true })) {
+    const path = join(directory, entry.name)
+    if (entry.isDirectory()) {
+      files.push(...(await listTextFiles(path)))
+    } else if (/\.(?:json|txt|yaml|yml|md)$/i.test(entry.name)) {
+      files.push(path)
+    }
+  }
+  return files
+}
+
+async function validateFixturePrivacy(directory: string): Promise<void> {
+  for (const path of await listTextFiles(directory)) {
+    const content = await readFile(path, 'utf8')
+    if (forbiddenFixturePatterns.some((pattern) => pattern.test(content))) {
+      throw new Error('Fixture contains prohibited personal data or secret-like content')
+    }
+  }
+}
 
 async function main(): Promise<void> {
   const rule = parseEcommerceRefundRule(await readFile(rulePath, 'utf8'))
@@ -41,6 +72,8 @@ async function main(): Promise<void> {
         }
       }
 
+      await validateFixturePrivacy(join(fixtureRoot, directoryName))
+
       process.stdout.write(
         `PASS ${fixture.manifest.id}: ${fixture.evidence.length} evidence, ${fixture.binaryEvidence.length} binary materials, ${fixture.expected.confirmedFacts.length} confirmed facts, ${fixture.expected.timeline.length} timeline entries\n`,
       )
@@ -50,6 +83,8 @@ async function main(): Promise<void> {
       return
     }
   }
+
+  await evaluateGoldenCase()
 
   process.stdout.write(`Validated ${fixtureDirectories.length} golden case.\n`)
 }

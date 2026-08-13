@@ -1357,7 +1357,7 @@ git commit -m "feat: review AI candidates locally"
 - Consumes: complete M3 behavior from Tasks 1–13 and existing fictional M2 fixture.
 - Produces: validated AI fixtures, deterministic metrics, mock protocol UI flows and package-boundary regression.
 
-- [ ] **Step 1: Write failing fixture/evaluation and E2E tests**
+- [x] **Step 1: Write failing fixture/evaluation and E2E tests**
 
 Extend fixture validation to reject real-looking phone numbers, addresses, identity numbers, secrets, unknown fields and missing source tokens. `expected-metrics.json` must contain these exact deterministic expectations for the fixed fixture set:
 
@@ -1381,7 +1381,7 @@ The four normal task fixtures account for the initial passes; `malformed-first-r
 
 `byok-ai-errors.spec.ts` covers auth, capability missing, rate, quota, timeout, invalid output, repair success/failure, cancellation, refresh and mid-sequence failure. Assert manual editing/export remains available after every error.
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 ```powershell
 pnpm exec vitest run tests/integration/ai-golden-evaluation.test.ts tests/integration/m3-package-boundaries.test.ts
@@ -1390,7 +1390,7 @@ pnpm exec playwright test tests/e2e/byok-ai-flow.spec.ts tests/e2e/byok-ai-error
 
 Expected: FAIL because AI fixtures, evaluator and E2E scenarios do not exist. Existing app/test servers must start, making this valid RED.
 
-- [ ] **Step 3: Implement evaluator and root scripts**
+- [x] **Step 3: Implement evaluator and root scripts**
 
 Add:
 
@@ -1400,7 +1400,7 @@ Add:
 
 Evaluator uses only exported `@youju/ai-core` functions and fixture files, returns nonzero on any mismatch, prints only case ID plus aggregate metrics, and never prints fixture content. Package-boundary test forbids browser direct Provider hosts, package `src` penetration, candidate imports in `document-export`, API persistence packages and real-network test helpers.
 
-- [ ] **Step 4: Run GREEN across all browsers**
+- [x] **Step 4: Run GREEN across all browsers**
 
 ```powershell
 pnpm --filter @youju/test-support test
@@ -1420,7 +1420,7 @@ git status --short
 
 Expected: desktop Chromium, mobile Chromium and mobile WebKit pass; no test performs public network or real paid calls; formal data change count before confirmation is exactly zero.
 
-- [ ] **Step 5: Commit and stop**
+- [x] **Step 5: Commit and stop**
 
 ```powershell
 git add fixtures packages/test-support scripts tests package.json docs/superpowers/plans/2026-08-12-youju-m3-byok-ai-plan.md

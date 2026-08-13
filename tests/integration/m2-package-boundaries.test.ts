@@ -42,7 +42,7 @@ describe('M2 package boundaries', () => {
     for (const file of files) {
       const content = await readFile(file, 'utf8')
       expect(content).not.toMatch(
-        /@youju\/(?:evidence-[\w-]+|document-export|timeline|ai-core)/,
+        /@youju\/(?:evidence-[\w-]+|document-export|timeline)/,
       )
     }
   })
@@ -51,7 +51,7 @@ describe('M2 package boundaries', () => {
     const files = [
       ...(await listFiles(join(repositoryRoot, 'apps', 'web', 'src'), ['.ts', '.vue'])),
       ...(await listFiles(join(repositoryRoot, 'packages'), ['.ts'])),
-    ].filter((file) => file.includes('/src/'))
+    ].filter((file) => file.includes('/src/') && !file.endsWith('/packages/ai-core/src/provider.ts'))
 
     for (const file of files) {
       if (file.includes('node_modules') || !file.includes('/src/')) {

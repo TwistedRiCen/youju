@@ -1,0 +1,22 @@
+{
+  "fictional": true,
+  "taskType": "extract_facts",
+  "providerPreset": "aliyun_bailian",
+  "protocol": "chat_completions",
+  "modelName": "fictional-chat-model",
+  "output": {
+    "facts": [
+      { "factType": "order", "fieldName": "purchase_time", "value": "2026-07-01T12:16:00.000Z", "normalizedValue": "2026-07-01T12:16:00.000Z", "confidenceLevel": "high", "sources": [{ "sourceToken": "00000000-0000-4000-8000-000000000501", "page": 1 }] },
+      { "factType": "order", "fieldName": "platform_name", "value": "fictional marketplace", "normalizedValue": "fictional marketplace", "confidenceLevel": "high", "sources": [{ "sourceToken": "00000000-0000-4000-8000-000000000501", "page": 1 }] },
+      { "factType": "merchant", "fieldName": "merchant_name", "value": "fictional riverside shop", "normalizedValue": "fictional riverside shop", "confidenceLevel": "high", "sources": [{ "sourceToken": "00000000-0000-4000-8000-000000000501", "page": 1 }] },
+      { "factType": "product", "fieldName": "product_name", "value": "portable folding table", "normalizedValue": "portable folding table", "confidenceLevel": "high", "sources": [{ "sourceToken": "00000000-0000-4000-8000-000000000501", "page": 1 }] },
+      { "factType": "payment", "fieldName": "paid_amount", "value": "899.00", "normalizedValue": "89900", "confidenceLevel": "high", "sources": [{ "sourceToken": "00000000-0000-4000-8000-000000000502", "page": 1 }] },
+      { "factType": "delivery", "fieldName": "received_time", "value": "2026-07-03T06:30:00.000Z", "normalizedValue": "2026-07-03T06:30:00.000Z", "confidenceLevel": "high", "sources": [{ "sourceToken": "00000000-0000-4000-8000-000000000503", "page": 1 }] },
+      { "factType": "issue", "fieldName": "problem_description", "value": "the package was damaged and the table edge was cracked", "normalizedValue": "the package was damaged and the table edge was cracked", "confidenceLevel": "high", "sources": [{ "sourceToken": "00000000-0000-4000-8000-000000000503", "page": 1 }] },
+      { "factType": "communication", "fieldName": "merchant_response", "value": "the merchant attributed the damage to customer use and rejected the refund", "normalizedValue": "the merchant attributed the damage to customer use and rejected the refund", "confidenceLevel": "needs_confirmation", "sources": [{ "sourceToken": "00000000-0000-4000-8000-000000000504", "page": 1 }] },
+      { "factType": "resolution", "fieldName": "requested_resolution", "value": "return the product and refund the paid amount", "normalizedValue": "return the product and refund the paid amount", "confidenceLevel": "high", "sources": [{ "sourceToken": "00000000-0000-4000-8000-000000000504", "page": 1 }] }
+    ],
+    "uncertainties": ["The cause of damage requires user confirmation"],
+    "warnings": ["AI content is a candidate and requires user confirmation"]
+  }
+}

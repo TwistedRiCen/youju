@@ -1,0 +1,12 @@
+{
+  "fictional": true,
+  "taskType": "extract_facts",
+  "providerPreset": "aliyun_bailian",
+  "protocol": "chat_completions",
+  "modelName": "fictional-chat-model",
+  "output": {
+    "facts": [{ "factType": "order" }],
+    "uncertainties": [],
+    "warnings": []
+  }
+}

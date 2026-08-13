@@ -22,6 +22,11 @@ describe('golden case fixture loader', () => {
     })
     expect(fixture.evidence).toHaveLength(4)
     expect(fixture.binaryEvidence).toHaveLength(4)
+    expect(fixture.ai.responsesClassification.taskType).toBe('classify_evidence')
+    expect(fixture.ai.chatFacts.taskType).toBe('extract_facts')
+    expect(fixture.ai.chatTimeline.taskType).toBe('build_timeline')
+    expect(fixture.ai.chatStatement.taskType).toBe('draft_statement')
+    expect(fixture.ai.expectedMetrics.initialSchema).toEqual({ passed: 4, total: 5 })
     for (const binary of fixture.binaryEvidence) {
       expect(binary.relativePath).toMatch(/^binary\/[0-9]{2}-[a-z0-9-]+[.](?:png|pdf)$/)
       expect(binary.size).toBeGreaterThan(0)

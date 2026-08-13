@@ -1,0 +1,25 @@
+{
+  "fictional": true,
+  "taskType": "draft_statement",
+  "providerPreset": "siliconflow",
+  "protocol": "chat_completions",
+  "modelName": "fictional-statement-model",
+  "output": {
+    "text": "The fictional case records an order, payment, delivery damage, a refund request, and the merchant response. This is a draft for user review.",
+    "confirmedFactIds": [
+      "00000000-0000-4000-8000-000000000201",
+      "00000000-0000-4000-8000-000000000202",
+      "00000000-0000-4000-8000-000000000203",
+      "00000000-0000-4000-8000-000000000204",
+      "00000000-0000-4000-8000-000000000205",
+      "00000000-0000-4000-8000-000000000206"
+    ],
+    "confirmedTimelineEntryIds": [
+      "00000000-0000-4000-8000-000000000401",
+      "00000000-0000-4000-8000-000000000402",
+      "00000000-0000-4000-8000-000000000403",
+      "00000000-0000-4000-8000-000000000404"
+    ],
+    "warnings": ["Statement is a draft and requires explicit user confirmation"]
+  }
+}

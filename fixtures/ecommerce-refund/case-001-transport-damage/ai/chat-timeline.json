@@ -1,0 +1,17 @@
+{
+  "fictional": true,
+  "taskType": "build_timeline",
+  "providerPreset": "deepseek",
+  "protocol": "chat_completions",
+  "modelName": "fictional-timeline-model",
+  "output": {
+    "entries": [
+      { "occurredAt": "2026-07-01T12:16:00.000Z", "timePrecision": "minute", "summary": "User placed the order and paid", "detail": "A fictional marketplace order was placed and paid.", "confidenceLevel": "high", "sources": [{ "sourceToken": "00000000-0000-4000-8000-000000000501", "page": 1 }] },
+      { "occurredAt": "2026-07-03T06:30:00.000Z", "timePrecision": "minute", "summary": "User received the product and found transport damage", "detail": "The package was damaged and the table edge was cracked.", "confidenceLevel": "high", "sources": [{ "sourceToken": "00000000-0000-4000-8000-000000000503", "page": 1 }] },
+      { "occurredAt": "2026-07-03T07:15:00.000Z", "timePrecision": "minute", "summary": "User requested a return and refund", "detail": "The user requested a return and a refund of the paid amount.", "confidenceLevel": "high", "sources": [{ "sourceToken": "00000000-0000-4000-8000-000000000504", "page": 1 }] },
+      { "occurredAt": "2026-07-03T08:00:00.000Z", "timePrecision": "minute", "summary": "Merchant rejected the return and refund", "detail": "The merchant rejected the request and attributed damage to customer use.", "confidenceLevel": "needs_confirmation", "sources": [{ "sourceToken": "00000000-0000-4000-8000-000000000504", "page": 1 }] }
+    ],
+    "uncertainties": [],
+    "warnings": ["Timeline entries are candidates and require user confirmation"]
+  }
+}

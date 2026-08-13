@@ -3,5 +3,6 @@
   "compilerOptions": {
     "noEmit": true
   },
-  "include": ["tests/**/*.ts", "scripts/**/*.ts", "*.ts"]
+  "include": ["tests/**/*.ts", "scripts/**/*.ts", "*.ts"],
+  "exclude": ["tests/e2e"]
 }

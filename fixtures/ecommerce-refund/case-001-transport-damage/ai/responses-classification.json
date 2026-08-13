@@ -1,0 +1,16 @@
+{
+  "fictional": true,
+  "taskType": "classify_evidence",
+  "providerPreset": "openai",
+  "protocol": "responses",
+  "modelName": "fictional-responses-model",
+  "output": {
+    "classifications": [
+      { "sourceToken": "00000000-0000-4000-8000-000000000501", "category": "order_record", "confidenceLevel": "high" },
+      { "sourceToken": "00000000-0000-4000-8000-000000000502", "category": "payment_record", "confidenceLevel": "high" },
+      { "sourceToken": "00000000-0000-4000-8000-000000000503", "category": "product_issue_photo", "confidenceLevel": "high" },
+      { "sourceToken": "00000000-0000-4000-8000-000000000504", "category": "merchant_communication", "confidenceLevel": "high" }
+    ],
+    "warnings": ["固定 Mock 输出仅用于虚构黄金案例评测"]
+  }
+}

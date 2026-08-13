@@ -16,6 +16,7 @@
     "test:ai-contract": "vitest run packages/ai-core/tests",
     "check:forbidden-content": "tsx scripts/check-forbidden-content.ts",
     "validate:fixtures": "tsx scripts/validate-fixtures.ts",
+    "eval:golden-case": "tsx scripts/evaluate-ai-golden-case.ts",
     "build": "pnpm -r --if-present build",
     "e2e": "playwright test",
     "verify": "pnpm lint && pnpm typecheck && pnpm test && pnpm validate:fixtures && pnpm build && pnpm e2e"

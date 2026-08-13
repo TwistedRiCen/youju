@@ -1,4 +1,9 @@
-import { ExtractFactsWireOutputSchema } from '@youju/ai-core'
+import {
+  AiProtocolSchema,
+  ProviderPresetSchema,
+  AiTaskTypeSchema,
+  ExtractFactsWireOutputSchema,
+} from '@youju/ai-core'
 import {
   CaseEventSchema,
   ConfirmedFactSchema,
@@ -38,6 +43,49 @@ export const GoldenCaseManifestSchema = Type.Object(
       ),
       { minItems: 4, maxItems: 4 },
     ),
+    ai: Type.Object(
+      {
+        authorizedSourceTokens: Type.Array(Type.String({ pattern: UUID_V4_PATTERN }), {
+          minItems: 1,
+          uniqueItems: true,
+        }),
+        responsesClassification: Type.Literal('ai/responses-classification.json'),
+        chatFacts: Type.Literal('ai/chat-facts.json'),
+        chatTimeline: Type.Literal('ai/chat-timeline.json'),
+        chatStatement: Type.Literal('ai/chat-statement.json'),
+        malformedFirstResponse: Type.Literal('ai/malformed-first-response.json'),
+        repairedResponse: Type.Literal('ai/repaired-response.json'),
+        expectedMetrics: Type.Literal('ai/expected-metrics.json'),
+      },
+      { additionalProperties: false },
+    ),
+  },
+  { additionalProperties: false },
+)
+
+export const GoldenCaseAiResponseSchema = Type.Object(
+  {
+    fictional: Type.Literal(true),
+    taskType: AiTaskTypeSchema,
+    providerPreset: ProviderPresetSchema,
+    protocol: AiProtocolSchema,
+    modelName: Type.String({ minLength: 1 }),
+    output: Type.Unknown(),
+  },
+  { additionalProperties: false },
+)
+
+export const GoldenCaseExpectedMetricsSchema = Type.Object(
+  {
+    classification: Type.Object({ correct: Type.Integer({ minimum: 0 }), total: Type.Integer({ minimum: 0 }) }, { additionalProperties: false }),
+    facts: Type.Object({ correct: Type.Integer({ minimum: 0 }), total: Type.Integer({ minimum: 0 }) }, { additionalProperties: false }),
+    timeline: Type.Object({ matched: Type.Integer({ minimum: 0 }), expected: Type.Integer({ minimum: 0 }) }, { additionalProperties: false }),
+    sources: Type.Object({ correct: Type.Integer({ minimum: 0 }), total: Type.Integer({ minimum: 0 }) }, { additionalProperties: false }),
+    missingSourceCount: Type.Integer({ minimum: 0 }),
+    conflictCount: Type.Integer({ minimum: 0 }),
+    hallucinationCount: Type.Integer({ minimum: 0 }),
+    initialSchema: Type.Object({ passed: Type.Integer({ minimum: 0 }), total: Type.Integer({ minimum: 0 }) }, { additionalProperties: false }),
+    afterRepairSchema: Type.Object({ passed: Type.Integer({ minimum: 0 }), total: Type.Integer({ minimum: 0 }) }, { additionalProperties: false }),
   },
   { additionalProperties: false },
 )
@@ -85,6 +133,8 @@ export const GoldenCaseExpectedFindingsSchema = Type.Object(
 )
 
 export type GoldenCaseManifest = Static<typeof GoldenCaseManifestSchema>
+export type GoldenCaseAiResponse = Static<typeof GoldenCaseAiResponseSchema>
+export type GoldenCaseExpectedMetrics = Static<typeof GoldenCaseExpectedMetricsSchema>
 export type GoldenCaseCaseDocument = Static<typeof GoldenCaseCaseDocumentSchema>
 export type GoldenCaseEvidenceDocument = Static<typeof GoldenCaseEvidenceDocumentSchema>
 export type GoldenCaseExpectedFacts = Static<typeof GoldenCaseExpectedFactsSchema>
