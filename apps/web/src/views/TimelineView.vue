@@ -186,6 +186,7 @@ onMounted(async () => {
         <li v-for="entry in sorted" :key="entry.id" class="timeline-item">
           <h2>{{ entry.summary }}</h2>
           <p>{{ precisionLabels[entry.timePrecision] }}：{{ toDisplayOccurredAt(entry) }}</p>
+          <p v-if="entry.contentOrigin !== 'manual'" class="provenance-badge">AI 候选已确认</p>
           <p v-if="entry.status === 'confirmed'" class="confirmed-badge">已确认</p>
           <button
             v-else
@@ -312,6 +313,11 @@ select {
 
 .confirmed-badge {
   color: #1d5c3a;
+  font-weight: 700;
+}
+
+.provenance-badge {
+  color: #7a5a32;
   font-weight: 700;
 }
 

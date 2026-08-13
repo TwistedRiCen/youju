@@ -52,6 +52,20 @@ describe('material management', () => {
     expect(wrapper.findAll('select option')).toHaveLength(10)
   })
 
+  it('keeps candidate classification provenance on the formal material record', () => {
+    const confirmedByCandidate: EvidenceFile = {
+      ...evidenceItem,
+      category: 'product_issue_photo',
+      categoryOrigin: 'candidate_confirmed',
+      categoryCandidateId: '00000000-0000-4000-8000-000000000301',
+    }
+
+    expect(confirmedByCandidate).toMatchObject({
+      categoryOrigin: 'candidate_confirmed',
+      categoryCandidateId: '00000000-0000-4000-8000-000000000301',
+    })
+  })
+
   it('emits category changes from the list select', async () => {
     const { default: EvidenceList } = await import('../src/components/EvidenceList.vue')
     const { mount } = await import('@vue/test-utils')

@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 import type { UuidV4 } from '@youju/domain'
 import AiAssistantView from './views/AiAssistantView.vue'
+import AiReviewView from './views/AiReviewView.vue'
 import AiSettingsView from './views/AiSettingsView.vue'
 import CaseWorkspaceView from './views/CaseWorkspaceView.vue'
 import CreateCaseView from './views/CreateCaseView.vue'
@@ -69,6 +70,12 @@ const routes: RouteRecordRaw[] = [
         path: 'ai',
         name: 'case-ai',
         component: AiAssistantView,
+        props: (route) => ({ caseId: String(route.params.caseId) as UuidV4 }),
+      },
+      {
+        path: 'ai-review',
+        name: 'case-ai-review',
+        component: AiReviewView,
         props: (route) => ({ caseId: String(route.params.caseId) as UuidV4 }),
       },
       {

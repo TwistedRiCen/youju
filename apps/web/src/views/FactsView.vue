@@ -301,6 +301,9 @@ onMounted(async () => {
         <ul>
           <li v-for="fact in currentFacts" :key="fact.id">
             {{ fact.fieldName }}：{{ fact.value }}（版本 {{ fact.version }}）
+            <span v-if="fact.confirmationMethod !== 'manual'" class="provenance-badge">
+              AI 候选已确认
+            </span>
           </li>
         </ul>
       </section>
@@ -342,5 +345,11 @@ h2 {
   padding-left: 1.25rem;
   color: #31564c;
   line-height: 1.8;
+}
+
+.provenance-badge {
+  margin-left: 0.4rem;
+  color: #7a5a32;
+  font-size: 0.85rem;
 }
 </style>

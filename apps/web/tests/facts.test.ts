@@ -26,6 +26,25 @@ describe('fact source policy', () => {
     expect(requiresEvidenceSource('problem_description')).toBe(false)
     expect(requiresEvidenceSource('requested_resolution')).toBe(false)
   })
+
+  it('keeps candidate provenance on a formally confirmed fact', () => {
+    const confirmedFact = {
+      id: '00000000-0000-4000-8000-000000000201',
+      caseId: evidenceItem.caseId,
+      factType: 'payment' as const,
+      fieldName: 'paid_amount' as const,
+      value: '89900',
+      confirmedAt: '2026-07-31T07:00:00.000Z',
+      replacesFactId: null,
+      version: 1,
+      confirmationMethod: 'candidate_confirmed' as const,
+      derivedFromCandidateId: '00000000-0000-4000-8000-000000000301',
+      sourceRefs: [{ evidenceId: evidenceItem.id }],
+    }
+
+    expect(confirmedFact.confirmationMethod).toBe('candidate_confirmed')
+    expect(confirmedFact.derivedFromCandidateId).toBe('00000000-0000-4000-8000-000000000301')
+  })
 })
 
 describe('fact editor', () => {

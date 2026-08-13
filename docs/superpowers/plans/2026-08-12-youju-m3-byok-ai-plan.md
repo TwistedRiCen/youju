@@ -1279,13 +1279,13 @@ git commit -m "feat: add BYOK AI task controls"
 - Consumes: Task 5 `AiReviewService`, Task 4 persisted candidates and Task 6 local region rendering.
 - Produces: pending/conflict/processed review lists, source page/region preview, edit-confirm/reject and eligible-only batch confirmation.
 
-- [ ] **Step 1: Write failing review UI tests**
+- [x] **Step 1: Write failing review UI tests**
 
 Assert candidates are visibly labeled “AI 候选” and grouped into 待确认、冲突、已处理. Each card shows candidate type/value, AI confidence, source original name resolved locally, page and highlighted region. URLs/HTML/Markdown in output render as plain text and never create links or executable markup.
 
 Assert pending candidates allow confirm, edit then confirm and reject; conflicts cannot batch confirm; batch action appears only when every selected candidate passes `canBatchConfirm`; failure leaves all selected pending. Classification confirmation updates material only after click; fact/timeline confirmation creates formal records only after click; statement confirmation creates a draft and still requires the existing final “确认陈述”. Manual editing afterward clears candidate provenance where specified.
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 ```powershell
 pnpm exec vitest run apps/web/tests/ai-review-view.test.ts apps/web/tests/materials.test.ts apps/web/tests/facts.test.ts apps/web/tests/timeline.test.ts apps/web/tests/findings-and-statement.test.ts
@@ -1293,7 +1293,7 @@ pnpm exec vitest run apps/web/tests/ai-review-view.test.ts apps/web/tests/materi
 
 Expected: FAIL because review route, cards, region preview and UI review operations do not exist. This is valid RED for absent user confirmation behavior.
 
-- [ ] **Step 3: Implement review components and route**
+- [x] **Step 3: Implement review components and route**
 
 Add:
 
@@ -1305,7 +1305,7 @@ Add:
 
 Relevant M2 views may display provenance badges but must keep their manual controls and existing export semantics unchanged. Candidate stores are never queried by export services.
 
-- [ ] **Step 4: Run GREEN and formal isolation gates**
+- [x] **Step 4: Run GREEN and formal isolation gates**
 
 ```powershell
 pnpm exec vitest run apps/web/tests/ai-review-view.test.ts apps/web/tests/materials.test.ts apps/web/tests/facts.test.ts apps/web/tests/timeline.test.ts apps/web/tests/findings-and-statement.test.ts
@@ -1318,7 +1318,7 @@ git status --short
 
 Expected: all review and M2 view tests pass; unconfirmed candidates never appear as formal content.
 
-- [ ] **Step 5: Commit and stop**
+- [x] **Step 5: Commit and stop**
 
 ```powershell
 git add apps/web docs/superpowers/plans/2026-08-12-youju-m3-byok-ai-plan.md

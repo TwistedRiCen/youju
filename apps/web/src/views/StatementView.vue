@@ -18,12 +18,14 @@ const loading = ref(true)
 const content = ref('')
 const hasConfirmed = ref(false)
 const stale = ref(false)
+const contentOrigin = ref<'manual' | 'candidate_confirmed' | 'candidate_edited'>('manual')
 
 async function refresh(): Promise<void> {
   const snapshot = await loadStatement(caseId)
   content.value = snapshot.latestConfirmed?.content ?? snapshot.draft?.content ?? ''
   hasConfirmed.value = snapshot.latestConfirmed !== null
   stale.value = snapshot.latestConfirmed !== null && !snapshot.isCurrent
+  contentOrigin.value = snapshot.latestConfirmed?.contentOrigin ?? snapshot.draft?.contentOrigin ?? 'manual'
 }
 
 async function generate(): Promise<void> {
@@ -58,6 +60,7 @@ onMounted(async () => {
     <template v-else>
       <p v-if="stale" class="stale">内容已过期，请重新确认</p>
       <p v-else-if="hasConfirmed" class="confirmed">陈述已确认</p>
+      <p v-if="contentOrigin !== 'manual'" class="provenance-badge">AI 候选已确认，仍需人工最终确认</p>
       <textarea
         v-model="content"
         class="content"
@@ -112,6 +115,11 @@ h1 {
 
 .confirmed {
   color: #1d5c3a;
+  font-weight: 700;
+}
+
+.provenance-badge {
+  color: #7a5a32;
   font-weight: 700;
 }
 

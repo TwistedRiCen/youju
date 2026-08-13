@@ -129,6 +129,9 @@ async function removeEvidenceItem(evidenceId: string): Promise<void> {
       @category-change="applyCategory"
       @remove-evidence="removeEvidenceItem"
     />
+    <p v-if="evidence.some((item) => item.categoryOrigin !== 'manual')" class="provenance-note">
+      部分材料分类来自已确认的 AI 候选；手工修改分类后会清除该来源关联。
+    </p>
   </main>
 </template>
 
@@ -170,5 +173,10 @@ h1 {
 
 .delete-references {
   color: #7a4b20;
+}
+
+.provenance-note {
+  color: #527067;
+  font-size: 0.9rem;
 }
 </style>

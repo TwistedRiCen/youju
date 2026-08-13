@@ -46,4 +46,23 @@ describe('timeline time conversions', () => {
     expect(toDisplayOccurredAt(dateEntry)).toBe('2026-07-03')
     expect(toDisplayOccurredAt(unknownEntry)).toBe('')
   })
+
+  it('retains candidate provenance on a confirmed timeline entry', () => {
+    const entry: TimelineEntry = {
+      id: '00000000-0000-4000-8000-000000000473',
+      caseId: '00000000-0000-4000-8000-000000000001',
+      occurredAt: '2026-07-03T00:00:00.000Z',
+      timePrecision: 'date',
+      summary: '收到商品',
+      detail: null,
+      sourceRefs: [{ evidenceId: '00000000-0000-4000-8000-000000000101' }],
+      contentOrigin: 'candidate_confirmed',
+      derivedFromCandidateId: '00000000-0000-4000-8000-000000000301',
+      status: 'confirmed',
+      sortOrder: 0,
+    }
+
+    expect(entry.contentOrigin).toBe('candidate_confirmed')
+    expect(entry.derivedFromCandidateId).toBe('00000000-0000-4000-8000-000000000301')
+  })
 })
