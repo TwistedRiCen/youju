@@ -1,5 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
+import type { UuidV4 } from '@youju/domain'
+import AiAssistantView from './views/AiAssistantView.vue'
+import AiSettingsView from './views/AiSettingsView.vue'
 import CaseWorkspaceView from './views/CaseWorkspaceView.vue'
 import CreateCaseView from './views/CreateCaseView.vue'
 import DeleteCaseView from './views/DeleteCaseView.vue'
@@ -56,6 +59,17 @@ const routes: RouteRecordRaw[] = [
         path: 'export',
         name: 'case-export',
         component: ExportView,
+      },
+      {
+        path: 'ai-settings',
+        name: 'case-ai-settings',
+        component: AiSettingsView,
+      },
+      {
+        path: 'ai',
+        name: 'case-ai',
+        component: AiAssistantView,
+        props: (route) => ({ caseId: String(route.params.caseId) as UuidV4 }),
       },
       {
         path: 'delete',

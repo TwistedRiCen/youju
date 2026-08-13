@@ -1196,7 +1196,7 @@ git commit -m "feat: orchestrate local AI tasks"
 - Consumes: Task 7 session/consent and Task 11 client/runner.
 - Produces: session-only Provider setup, capability test, page/material selection, strict/convenience consent, explicit task controls and honest progress/cancel UI.
 
-- [ ] **Step 1: Write failing component tests**
+- [x] **Step 1: Write failing component tests**
 
 Assert AI settings offer exactly OpenAI, 阿里云百炼, DeepSeek, SiliconFlow and custom; OpenAI locks Responses, others lock Chat Completions; Base URL is editable only for custom; API key uses password input and never appears in rendered text; model is user-entered; connection results show text/vision/JSON/JSON Schema/streaming independently; changing bound fields invalidates capability state; disable clears fields and session.
 
@@ -1204,7 +1204,7 @@ Assert sending preview lists Provider/model, original names locally, selected PD
 
 Assert assistant exposes four explicit tasks plus one-click classify→facts→timeline, disables tasks by capability, excludes statement from one-click, starts only after consent, displays stage and `currentBatch / totalBatches`, has cancel, states refresh aborts work, and never shows fabricated percentages or background continuation.
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 ```powershell
 pnpm exec vitest run apps/web/tests/ai-settings.test.ts apps/web/tests/ai-assistant.test.ts
@@ -1212,7 +1212,7 @@ pnpm exec vitest run apps/web/tests/ai-settings.test.ts apps/web/tests/ai-assist
 
 Expected: FAIL because settings, preview and task UI do not exist. This is valid RED for the missing user-visible AI flow.
 
-- [ ] **Step 3: Implement settings and task UI**
+- [x] **Step 3: Implement settings and task UI**
 
 Add child routes:
 
@@ -1231,7 +1231,7 @@ The UI must state:
 - AI may be wrong and every candidate requires review;
 - AI can be disabled and manual workflow remains available.
 
-- [ ] **Step 4: Run GREEN and UI regression**
+- [x] **Step 4: Run GREEN and UI regression**
 
 ```powershell
 pnpm exec vitest run apps/web/tests/ai-settings.test.ts apps/web/tests/ai-assistant.test.ts
@@ -1245,7 +1245,7 @@ git status --short
 
 Expected: AI UI tests pass and all existing manual views remain reachable.
 
-- [ ] **Step 5: Commit and stop**
+- [x] **Step 5: Commit and stop**
 
 ```powershell
 git add apps/web docs/superpowers/plans/2026-08-12-youju-m3-byok-ai-plan.md

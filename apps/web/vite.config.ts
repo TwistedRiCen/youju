@@ -23,4 +23,13 @@ export default defineConfig({
       },
     }),
   ],
+  server: {
+    proxy: {
+      '/ai': {
+        target: 'http://127.0.0.1:3000',
+        changeOrigin: false,
+        secure: false,
+      },
+    },
+  },
 })

@@ -225,6 +225,8 @@ onUnmounted(() => {
         <a :href="`/cases/${caseId}/findings`">缺口检查</a>
         <a :href="`/cases/${caseId}/statement`">陈述</a>
         <a :href="`/cases/${caseId}/export`">导出</a>
+        <a :href="`/cases/${caseId}/ai-settings`">AI 设置</a>
+        <a :href="`/cases/${caseId}/ai`">AI 助手</a>
         <a :href="`/cases/${caseId}/delete`">删除事件</a>
       </nav>
       <p v-if="writeMode === 'writer'" class="write-mode">可编辑</p>
