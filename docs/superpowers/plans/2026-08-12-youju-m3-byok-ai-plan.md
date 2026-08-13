@@ -1444,13 +1444,13 @@ git commit -m "test: add M3 AI golden workflow"
 - Consumes: completed M3 implementation and actual verification evidence.
 - Produces: accurate operator guidance, security traceability, final M3 verification record and explicit remaining risks.
 
-- [ ] **Step 1: Update operational documentation**
+- [x] **Step 1: Update operational documentation**
 
 Document exact Node/pnpm commands, API/Web local startup, same-origin `/ai` routing, all Provider presets, custom Base URL restrictions, session-only key behavior, source/page authorization, hard limits, cancellation, one repair, candidate review, AI disable/manual fallback, Mock-only tests and prohibition on production key use in automated tests.
 
 Do not claim Provider availability, pricing, retention, accuracy or domestic reachability as permanent facts. State that M2 real-device and domestic-browser checks remain M4 release work.
 
-- [ ] **Step 2: Write the M3 threat checklist**
+- [x] **Step 2: Write the M3 threat checklist**
 
 Map each threat to code and tests:
 
@@ -1467,7 +1467,7 @@ Map each threat to code and tests:
 
 Separate automated evidence, manual checks and remaining risks. Do not mark manual real-Provider or real-device checks as performed unless actually run.
 
-- [ ] **Step 3: Run document and contradiction scans**
+- [x] **Step 3: Run document and contradiction scans**
 
 ```powershell
 pnpm exec prettier --check README.md docs
@@ -1478,7 +1478,7 @@ rg -n ($scanPatterns -join '|') README.md docs/security docs/development
 
 Expected: formatting and forbidden-content pass; scan has no matches. Plan files are excluded because self-review commands intentionally contain those tokens.
 
-- [ ] **Step 4: Run frozen install and complete milestone verification**
+- [x] **Step 4: Run frozen install and complete milestone verification**
 
 ```powershell
 pnpm install --frozen-lockfile
@@ -1492,13 +1492,13 @@ git status --short
 
 Expected: frozen install, all root gates, all browser projects, AI contract tests and golden evaluation pass. No real Provider is contacted.
 
-- [ ] **Step 5: Review every approved M3 acceptance criterion**
+- [x] **Step 5: Review every approved M3 acceptance criterion**
 
 Record concrete file/test evidence in `m3-threat-checklist.md` for dual protocols, four presets/custom target, memory-only key, no original upload, strict/convenience consent, source mapping, capability gating, candidate/formal isolation, one-click stages, cancellation, repair, limits, rate guard, deletion, AI-off M2 flow and all-browser E2E.
 
 Any missing requirement is fixed in the owning earlier Task before Task 15 completion; it is not deferred in documentation.
 
-- [ ] **Step 6: Commit and stop**
+- [x] **Step 6: Commit and stop**
 
 ```powershell
 git add README.md docs/development docs/security docs/superpowers/plans/2026-08-12-youju-m3-byok-ai-plan.md

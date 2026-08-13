@@ -86,3 +86,18 @@ pnpm check:forbidden-content
 - M1 实施计划：[M1 Foundation Implementation Plan](docs/superpowers/plans/2026-07-29-youju-m1-foundation-plan.md)
 - M2 设计规格：[M2 无 AI 核心闭环设计](docs/superpowers/specs/2026-07-30-youju-m2-no-ai-core-design.md)
 - M2 实施计划：[M2 No-AI Core Implementation Plan](docs/superpowers/plans/2026-07-31-youju-m2-no-ai-core-plan.md)
+
+## M3 BYOK AI 当前状态
+
+M3 已完成实现与自动化验收。它是可选的辅助能力：原始材料、正式事实、时间线、陈述和导出仍由本地 M2 流程负责；未配置 AI 或主动关闭 AI 时，手工流程不受影响。
+
+M3 的 Fastify 服务端只做一次请求范围内的临时转发，不保存事件、原始材料、分析内容或 API Key。浏览器把 API Key 保留在当前页面会话内存中，并只在请求体中发送。AI 只能写入带来源的候选内容，用户确认后才可能进入正式记录；候选内容不会直接进入导出包。
+
+M3 提供四个预设 Provider（OpenAI、阿里云百炼、DeepSeek、SiliconFlow）以及一个严格受限的自定义 HTTPS Base URL。预设仅代表仓库中的协议和目标配置，不代表 Provider 在某个网络、账户、模型或时间点一定可用。自定义目标必须通过 HTTPS、公网 DNS、TLS 主机名和重定向检查，且不能带凭据、查询参数或已拼接的具体接口路径。
+
+本地运行、测试边界、输入上限和安全复核见[本地开发指南](docs/development/local-development.md)与[M3 威胁检查清单](docs/security/m3-threat-checklist.md)。自动化测试全部使用固定 Mock 或虚构黄金案例，不使用生产 API Key，也不会调用真实付费模型。真实 Provider、真实设备和国内浏览器的兼容性检查属于 M4 发布工作。
+
+M3 相关设计和实施记录：
+
+- [M3 BYOK AI 设计规格](docs/superpowers/specs/2026-08-12-youju-m3-byok-ai-design.md)
+- [M3 BYOK AI 详细实施计划](docs/superpowers/plans/2026-08-12-youju-m3-byok-ai-plan.md)

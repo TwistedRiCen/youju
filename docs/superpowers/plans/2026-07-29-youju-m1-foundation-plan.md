@@ -54,6 +54,7 @@ tests/e2e/home-and-diagnostics.spec.ts         # M1 smoke E2E
 ### Task 1: Initialize the pnpm TypeScript Workspace
 
 **Files:**
+
 - Create: `.nvmrc`
 - Create: `.npmrc`
 - Create: `pnpm-workspace.yaml`
@@ -68,6 +69,7 @@ tests/e2e/home-and-diagnostics.spec.ts         # M1 smoke E2E
 - Test: `tests/config/root-config.test.ts`
 
 **Interfaces:**
+
 - Consumes: approved design spec and `AGENTS.md`.
 - Produces: root commands `lint`, `typecheck`, `test`, `validate:fixtures`, `build`, `e2e`, `verify`; workspace package naming convention `@youju/*`.
 
@@ -93,7 +95,10 @@ import { readFile } from 'node:fs/promises'
 import { describe, expect, it } from 'vitest'
 
 const readJson = async (path: string) =>
-  JSON.parse(await readFile(new URL(`../../${path}`, import.meta.url), 'utf8')) as Record<string, unknown>
+  JSON.parse(await readFile(new URL(`../../${path}`, import.meta.url), 'utf8')) as Record<
+    string,
+    unknown
+  >
 
 describe('root workspace configuration', () => {
   it('pins Node 24 and exposes the required quality gates', async () => {
@@ -109,7 +114,8 @@ describe('root workspace configuration', () => {
       'validate:fixtures': 'tsx scripts/validate-fixtures.ts',
       build: 'pnpm -r --if-present build',
       e2e: 'playwright test',
-      verify: 'pnpm lint && pnpm typecheck && pnpm test && pnpm validate:fixtures && pnpm build && pnpm e2e',
+      verify:
+        'pnpm lint && pnpm typecheck && pnpm test && pnpm validate:fixtures && pnpm build && pnpm e2e',
     })
   })
 })
@@ -350,6 +356,7 @@ git commit -m "chore: initialize TypeScript workspace"
 ### Task 2: Define Runtime-Validated Domain Contracts
 
 **Files:**
+
 - Create: `packages/domain/package.json`
 - Create: `packages/domain/tsconfig.json`
 - Create: `packages/domain/vitest.config.ts`
@@ -358,6 +365,7 @@ git commit -m "chore: initialize TypeScript workspace"
 - Test: `packages/domain/tests/schemas.test.ts`
 
 **Interfaces:**
+
 - Consumes: root TypeScript configuration.
 - Produces: `CaseEventSchema`, `EvidenceFileSchema`, `FactCandidateSchema`, `ConfirmedFactSchema`, `TimelineEntrySchema`, `AnalysisVersionSchema`, `ReviewStatusSchema`, and inferred TypeScript types.
 
@@ -368,11 +376,7 @@ Create `packages/domain/tests/schemas.test.ts`:
 ```typescript
 import { Value } from '@sinclair/typebox/value'
 import { describe, expect, it } from 'vitest'
-import {
-  CaseEventSchema,
-  FactCandidateSchema,
-  TimelineEntrySchema,
-} from '../src/index.js'
+import { CaseEventSchema, FactCandidateSchema, TimelineEntrySchema } from '../src/index.js'
 
 describe('domain schemas', () => {
   it('accepts a valid ecommerce refund case', () => {
@@ -533,7 +537,6 @@ export const TimePrecisionSchema = Type.Union([
 
 Use `Type.String({ pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$' })` for UUIDs and an explicit ISO-8601 UTC pattern for timestamps; `Type.Union([Type.String(), Type.Null()])` for nullable text, and `Type.Integer({ minimum: 1 })` for schema versions. Export inferred `Static<typeof Schema>` types from `src/index.ts`.
 
-
 - [x] **Step 4: Run tests and type checking**
 
 Run:
@@ -557,6 +560,7 @@ git commit -m "feat: define domain contracts"
 ### Task 3: Define the Versioned Rule Schema and Deterministic Evaluator
 
 **Files:**
+
 - Create: `packages/rule-engine/package.json`
 - Create: `packages/rule-engine/tsconfig.json`
 - Create: `packages/rule-engine/vitest.config.ts`
@@ -567,6 +571,7 @@ git commit -m "feat: define domain contracts"
 - Test: `packages/rule-engine/tests/evaluate-rule.test.ts`
 
 **Interfaces:**
+
 - Consumes: `@youju/domain` evidence categories and confirmed fact field names.
 - Produces: `EcommerceRefundRuleSchema`, `evaluateRule(input): RuleFinding[]`, and rule file `consumer.ecommerce.refund.basic@1.0.0`.
 
@@ -712,6 +717,7 @@ git commit -m "feat: add ecommerce refund rule engine"
 ### Task 4: Define AI Structured Output Contracts
 
 **Files:**
+
 - Create: `packages/ai-core/package.json`
 - Create: `packages/ai-core/tsconfig.json`
 - Create: `packages/ai-core/vitest.config.ts`
@@ -724,6 +730,7 @@ git commit -m "feat: add ecommerce refund rule engine"
 - Test: `packages/ai-core/tests/contracts.test.ts`
 
 **Interfaces:**
+
 - Consumes: `@youju/domain` categories, fact types and source references.
 - Produces: runtime schemas for classification, fact extraction, timeline candidates, missing-material suggestions and statement drafts.
 
@@ -855,6 +862,7 @@ git commit -m "feat: define AI output contracts"
 ### Task 5: Create Golden Case 001 and Fixture Validation
 
 **Files:**
+
 - Create: `packages/test-support/package.json`
 - Create: `packages/test-support/src/fixture-schema.ts`
 - Create: `packages/test-support/src/load-fixture.ts`
@@ -871,6 +879,7 @@ git commit -m "feat: define AI output contracts"
 - Test: `packages/test-support/tests/load-fixture.test.ts`
 
 **Interfaces:**
+
 - Consumes: domain, rule and AI schemas.
 - Produces: `loadGoldenCase(path): GoldenCase`, CLI `pnpm validate:fixtures`, and case ID `case-001-transport-damage`.
 
@@ -1032,6 +1041,7 @@ git commit -m "test: add first fictional golden case"
 ### Task 6: Create the Vue Web/PWA Shell and Diagnostics Page
 
 **Files:**
+
 - Create: `apps/web/package.json`
 - Create: `apps/web/tsconfig.json`
 - Create: `apps/web/vite.config.ts`
@@ -1047,6 +1057,7 @@ git commit -m "test: add first fictional golden case"
 - Test: `apps/web/tests/diagnostics.test.ts`
 
 **Interfaces:**
+
 - Consumes: domain, rule-engine, ai-core and the browser-safe `@youju/test-support/browser` export.
 - Produces: routes `/` and development-only `/dev/diagnostics`; PWA manifest; visible product boundary.
 
@@ -1161,6 +1172,7 @@ git commit -m "feat: add web application shell"
 ### Task 7: Create the Stateless Fastify API Shell and Log Redaction
 
 **Files:**
+
 - Create: `apps/api/package.json`
 - Create: `apps/api/tsconfig.json`
 - Create: `apps/api/tsconfig.build.json`
@@ -1173,6 +1185,7 @@ git commit -m "feat: add web application shell"
 - Test: `apps/api/tests/log-redaction.test.ts`
 
 **Interfaces:**
+
 - Consumes: no business storage package.
 - Produces: `buildApp(): FastifyInstance`, `GET /health`, and redacted logging configuration reusable by M3 relay.
 
@@ -1267,12 +1280,14 @@ git commit -m "feat: add stateless API shell"
 ### Task 8: Add Cross-Package Integration and Browser Smoke Tests
 
 **Files:**
+
 - Create: `playwright.config.ts`
 - Create: `tests/e2e/home-and-diagnostics.spec.ts`
 - Create: `tests/integration/golden-case-contracts.test.ts`
 - Modify: root `package.json`
 
 **Interfaces:**
+
 - Consumes: Web dev server, fixture loader, domain/rule/AI schemas.
 - Produces: browser smoke coverage and a single integration test proving case1 conforms across packages.
 
@@ -1332,12 +1347,14 @@ git commit -m "test: add foundation integration coverage"
 ### Task 9: Add CI and Supply-Chain Guardrails
 
 **Files:**
+
 - Create: `.github/workflows/ci.yml`
 - Create: `scripts/check-forbidden-content.ts`
 - Test: `tests/config/forbidden-content.test.ts`
 - Modify: `package.json`
 
 **Interfaces:**
+
 - Consumes: all root quality commands.
 - Produces: CI job and `pnpm check:forbidden-content` guard.
 
@@ -1414,6 +1431,7 @@ git commit -m "chore: add CI and repository safety checks"
 ### Task 10: Document M1 Operation and Verify the Milestone
 
 **Files:**
+
 - Create: `README.md`
 - Create: `CONTRIBUTING.md`
 - Create: `SECURITY.md`
@@ -1422,6 +1440,7 @@ git commit -m "chore: add CI and repository safety checks"
 - Modify: `docs/superpowers/plans/2026-07-29-youju-m1-foundation-plan.md` checkboxes only after evidence exists
 
 **Interfaces:**
+
 - Consumes: completed M1 implementation.
 - Produces: reproducible setup, security reporting path and final verification evidence.
 
