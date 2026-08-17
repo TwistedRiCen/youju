@@ -1,8 +1,10 @@
 # 有据 M4 Public Demo and Deployment Implementation Plan
 
-> 状态：实施计划初稿（待批准）
+> 状态：详细实施计划已批准（实现尚未开始）
 >
 > 日期：2026-08-13
+>
+> 批准日期：2026-08-17
 >
 > 对应设计：`docs/superpowers/specs/2026-08-13-youju-m4-public-demo-deployment-design.md`
 >
