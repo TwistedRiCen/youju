@@ -305,11 +305,9 @@ test('migrates every version 3 case identity durably to version 4', async ({ pag
       const versionThree = await storage.openYoujuDatabase(storage.DATABASE_MIGRATIONS.slice(0, 3))
       versionThree.close()
 
-      const {
-        dataOrigin: _dataOrigin,
-        demoFixtureId: _demoFixtureId,
-        ...legacyCase
-      } = payload.caseEvent
+      const legacyCase: Record<string, unknown> = { ...payload.caseEvent }
+      delete legacyCase.dataOrigin
+      delete legacyCase.demoFixtureId
       await new Promise<void>((resolve, reject) => {
         const request = indexedDB.open('youju-local', 3)
         request.onsuccess = () => {
@@ -416,8 +414,9 @@ test('migrates a legacy version 1 database and preserves its case', async ({ pag
           request.onerror = () => reject(request.error)
       })
 
-    const { dataOrigin: _dataOrigin, demoFixtureId: _demoFixtureId, ...legacyCase } =
-      payload.caseEvent
+    const legacyCase: Record<string, unknown> = { ...payload.caseEvent }
+    delete legacyCase.dataOrigin
+    delete legacyCase.demoFixtureId
     await createLegacyV1Database(legacyCase, payload.drafts[0]!)
   }, { caseEvent, drafts })
 
