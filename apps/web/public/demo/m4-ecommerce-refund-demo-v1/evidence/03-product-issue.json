@@ -1,0 +1,18 @@
+{
+  "fixtureId": "m4-ecommerce-refund-demo-v1",
+  "fictional": true,
+  "evidence": {
+    "token": "evidence-product-issue",
+    "caseToken": "case-main",
+    "originalName": "03-product-issue.png",
+    "mediaType": "image/png",
+    "size": 130,
+    "sha256": "d73a26db0e2042835190d1c18bd14686f2c0260ca37a53057f4f1f85a513d25f",
+    "importedAt": "2026-07-04T02:03:00.000Z",
+    "sourceCreatedAt": "2026-07-03T06:35:00.000Z",
+    "category": "product_issue_photo",
+    "assetPath": "binary/03-product-issue.png",
+    "metadataPath": "evidence/03-product-issue.json",
+    "description": "完全虚构的商品破损图片示例"
+  }
+}

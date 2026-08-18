@@ -1,0 +1,18 @@
+{
+  "fixtureId": "m4-ecommerce-refund-demo-v1",
+  "fictional": true,
+  "evidence": {
+    "token": "evidence-communication",
+    "caseToken": "case-main",
+    "originalName": "04-merchant-communication.pdf",
+    "mediaType": "application/pdf",
+    "size": 63011,
+    "sha256": "160b843063e40a5641b2240775c9fe4b091066d2e356f8e8eea205b2c2ca6d64",
+    "importedAt": "2026-07-04T02:04:00.000Z",
+    "sourceCreatedAt": "2026-07-03T08:00:00.000Z",
+    "category": "merchant_communication",
+    "assetPath": "binary/04-merchant-communication.pdf",
+    "metadataPath": "evidence/04-merchant-communication.json",
+    "description": "完全虚构的商家沟通记录示例"
+  }
+}

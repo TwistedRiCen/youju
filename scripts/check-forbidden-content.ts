@@ -4,7 +4,10 @@ import { fileURLToPath } from 'node:url'
 
 export type ForbiddenContentRuleId =
   | 'environment-file'
+  | 'fixture-address-like'
+  | 'fixture-mainland-identity'
   | 'fixture-mainland-mobile'
+  | 'fixture-secret-like'
   | 'openai-secret'
   | 'real-user-data-marker'
   | 'real-user-material-marker'
@@ -28,6 +31,9 @@ const POLICY_REFERENCE_FILES = new Set(['docs/development/first-codex-prompt.md'
 const POLICY_REFERENCE_DIRECTORIES = ['docs/superpowers/plans/']
 const SECRET_PATTERN = /\bsk-[A-Za-z0-9_-]{20,}\b/
 const MAINLAND_MOBILE_PATTERN = /(?<!\d)1[3-9]\d{9}(?!\d)/
+const MAINLAND_IDENTITY_PATTERN = /(?<!\d)\d{17}[\dXx](?!\d)/
+const SECRET_LIKE_PATTERN = /(?:api[_-]?key|secret|password)\s*["']?\s*[:=]/i
+const ADDRESS_LIKE_PATTERN = /(?:省|市|区|县|路|街|号|室)\s*\d{1,5}/
 const ENGLISH_REAL_DATA_MARKER = 'REAL_' + 'USER_DATA'
 const CHINESE_REAL_MATERIAL_MARKER = '真实用户' + '材料'
 
@@ -42,7 +48,8 @@ const isPolicyReference = (path: string) =>
   POLICY_REFERENCE_FILES.has(path) ||
   POLICY_REFERENCE_DIRECTORIES.some((directory) => path.startsWith(directory))
 
-const isFixturePath = (path: string) => path.split('/').includes('fixtures')
+const isFixturePath = (path: string) =>
+  path.split('/').includes('fixtures') || path.startsWith('apps/web/public/demo/')
 
 const collectFilePaths = async (root: string, directory = root): Promise<string[]> => {
   const entries = await readdir(directory, { withFileTypes: true })
@@ -83,6 +90,15 @@ const scanText = (path: string, content: string): ForbiddenContentRuleId[] => {
   }
   if (isFixturePath(path) && MAINLAND_MOBILE_PATTERN.test(content)) {
     ruleIds.push('fixture-mainland-mobile')
+  }
+  if (isFixturePath(path) && MAINLAND_IDENTITY_PATTERN.test(content)) {
+    ruleIds.push('fixture-mainland-identity')
+  }
+  if (isFixturePath(path) && ADDRESS_LIKE_PATTERN.test(content)) {
+    ruleIds.push('fixture-address-like')
+  }
+  if (isFixturePath(path) && SECRET_LIKE_PATTERN.test(content)) {
+    ruleIds.push('fixture-secret-like')
   }
 
   return ruleIds

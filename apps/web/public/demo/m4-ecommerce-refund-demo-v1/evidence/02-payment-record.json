@@ -1,0 +1,18 @@
+{
+  "fixtureId": "m4-ecommerce-refund-demo-v1",
+  "fictional": true,
+  "evidence": {
+    "token": "evidence-payment",
+    "caseToken": "case-main",
+    "originalName": "02-payment-record.pdf",
+    "mediaType": "application/pdf",
+    "size": 63418,
+    "sha256": "2c8689303f6354d3fbdfdf707e376dd8bc9d2c5a8b62692695e5779b985d4b5d",
+    "importedAt": "2026-07-04T02:02:00.000Z",
+    "sourceCreatedAt": "2026-07-01T12:16:00.000Z",
+    "category": "payment_record",
+    "assetPath": "binary/02-payment-record.pdf",
+    "metadataPath": "evidence/02-payment-record.json",
+    "description": "完全虚构的付款记录示例"
+  }
+}

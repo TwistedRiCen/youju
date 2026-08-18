@@ -71,4 +71,36 @@ describe('forbidden content scanner', () => {
       { path: 'notes.txt', ruleId: 'real-user-material-marker' },
     ])
   })
+
+  it('applies personal-data and secret-like rules to public demo text', async () => {
+    const root = await createRepository()
+    const mobile = '139' + '12345678'
+    const identityNumber = '11010519491231002' + 'X'
+    await writeRepositoryFile(
+      root,
+      'apps/web/public/demo/example/manifest.json',
+      JSON.stringify({ mobile, identityNumber, address: '示例市示例路 88', password: 'synthetic' }),
+    )
+
+    const findings = await scanRepository(root)
+
+    expect(findings).toEqual([
+      {
+        path: 'apps/web/public/demo/example/manifest.json',
+        ruleId: 'fixture-address-like',
+      },
+      {
+        path: 'apps/web/public/demo/example/manifest.json',
+        ruleId: 'fixture-mainland-identity',
+      },
+      {
+        path: 'apps/web/public/demo/example/manifest.json',
+        ruleId: 'fixture-mainland-mobile',
+      },
+      {
+        path: 'apps/web/public/demo/example/manifest.json',
+        ruleId: 'fixture-secret-like',
+      },
+    ])
+  })
 })

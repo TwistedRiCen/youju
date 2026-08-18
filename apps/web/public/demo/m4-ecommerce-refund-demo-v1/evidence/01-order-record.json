@@ -1,0 +1,18 @@
+{
+  "fixtureId": "m4-ecommerce-refund-demo-v1",
+  "fictional": true,
+  "evidence": {
+    "token": "evidence-order",
+    "caseToken": "case-main",
+    "originalName": "01-order-record.png",
+    "mediaType": "image/png",
+    "size": 129,
+    "sha256": "f632b5cd21f0943eaff3919644051fe41c02982232c1c6dd03f5dccdeceac77d",
+    "importedAt": "2026-07-04T02:01:00.000Z",
+    "sourceCreatedAt": "2026-07-01T12:16:00.000Z",
+    "category": "order_record",
+    "assetPath": "binary/01-order-record.png",
+    "metadataPath": "evidence/01-order-record.json",
+    "description": "完全虚构的订单记录示例"
+  }
+}

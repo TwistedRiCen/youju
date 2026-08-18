@@ -284,7 +284,7 @@ git commit -m "feat: migrate M4 local preferences"
 - Runtime parser rejects unknown fields, unsafe paths, duplicate tokens, broken references, hash/size mismatch and non-fictional origin.
 - Public assets are copied from the validated golden case and total less than the fixed application-shell budget.
 
-- [ ] **Step 1: Write fixture parser and validation RED tests**
+- [x] **Step 1: Write fixture parser and validation RED tests**
 
 Test valid manifest plus traversal, external URL, duplicate ID, missing source, unexpected property and privacy-pattern failures.
 
@@ -295,15 +295,15 @@ pnpm validate:public-demo
 
 Expected RED: parser, script, package command and public assets do not exist.
 
-- [ ] **Step 2: Add minimal public fixture and runtime parser**
+- [x] **Step 2: Add minimal public fixture and runtime parser**
 
 Do not include AI fixture responses, Provider settings, API Keys or external URLs. Reuse the four small fictional golden binaries; do not add large media.
 
-- [ ] **Step 3: Extend forbidden-content coverage**
+- [x] **Step 3: Extend forbidden-content coverage**
 
 Scan public demo text and manifest for phone, ID-card, address and secret-like patterns. Validate all asset summaries from bytes.
 
-- [ ] **Step 4: Run Task 3 gates**
+- [x] **Step 4: Run Task 3 gates**
 
 ```powershell
 pnpm validate:fixtures
@@ -314,7 +314,7 @@ pnpm --filter @youju/web build
 git diff --check
 ```
 
-- [ ] **Step 5: Commit and stop**
+- [x] **Step 5: Commit and stop**
 
 ```powershell
 git add apps/web/public/demo apps/web/src/demo/demo-fixture.ts apps/web/tests/demo-fixture.test.ts scripts/validate-public-demo.ts scripts/check-forbidden-content.ts package.json docs/superpowers/plans/2026-08-13-youju-m4-public-demo-deployment-plan.md

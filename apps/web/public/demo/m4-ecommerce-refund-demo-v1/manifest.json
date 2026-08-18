@@ -1,0 +1,215 @@
+{
+  "fixtureId": "m4-ecommerce-refund-demo-v1",
+  "fixtureVersion": 1,
+  "fictional": true,
+  "case": {
+    "token": "case-main",
+    "scenarioType": "ecommerce_refund",
+    "title": "运输破损退款纠纷（完全虚构）",
+    "createdAt": "2026-07-04T02:00:00.000Z",
+    "updatedAt": "2026-07-04T02:30:00.000Z",
+    "status": "in_progress",
+    "requestedResolution": "退货并退还已支付金额89900分",
+    "storageMode": "local",
+    "schemaVersion": 2,
+    "dataOrigin": "fictional_demo",
+    "demoFixtureId": "m4-ecommerce-refund-demo-v1"
+  },
+  "evidence": [
+    {
+      "token": "evidence-order",
+      "caseToken": "case-main",
+      "originalName": "01-order-record.png",
+      "mediaType": "image/png",
+      "size": 129,
+      "sha256": "f632b5cd21f0943eaff3919644051fe41c02982232c1c6dd03f5dccdeceac77d",
+      "importedAt": "2026-07-04T02:01:00.000Z",
+      "sourceCreatedAt": "2026-07-01T12:16:00.000Z",
+      "category": "order_record",
+      "assetPath": "binary/01-order-record.png",
+      "metadataPath": "evidence/01-order-record.json",
+      "description": "完全虚构的订单记录示例"
+    },
+    {
+      "token": "evidence-payment",
+      "caseToken": "case-main",
+      "originalName": "02-payment-record.pdf",
+      "mediaType": "application/pdf",
+      "size": 63418,
+      "sha256": "2c8689303f6354d3fbdfdf707e376dd8bc9d2c5a8b62692695e5779b985d4b5d",
+      "importedAt": "2026-07-04T02:02:00.000Z",
+      "sourceCreatedAt": "2026-07-01T12:16:00.000Z",
+      "category": "payment_record",
+      "assetPath": "binary/02-payment-record.pdf",
+      "metadataPath": "evidence/02-payment-record.json",
+      "description": "完全虚构的付款记录示例"
+    },
+    {
+      "token": "evidence-product-issue",
+      "caseToken": "case-main",
+      "originalName": "03-product-issue.png",
+      "mediaType": "image/png",
+      "size": 130,
+      "sha256": "d73a26db0e2042835190d1c18bd14686f2c0260ca37a53057f4f1f85a513d25f",
+      "importedAt": "2026-07-04T02:03:00.000Z",
+      "sourceCreatedAt": "2026-07-03T06:35:00.000Z",
+      "category": "product_issue_photo",
+      "assetPath": "binary/03-product-issue.png",
+      "metadataPath": "evidence/03-product-issue.json",
+      "description": "完全虚构的商品破损图片示例"
+    },
+    {
+      "token": "evidence-communication",
+      "caseToken": "case-main",
+      "originalName": "04-merchant-communication.pdf",
+      "mediaType": "application/pdf",
+      "size": 63011,
+      "sha256": "160b843063e40a5641b2240775c9fe4b091066d2e356f8e8eea205b2c2ca6d64",
+      "importedAt": "2026-07-04T02:04:00.000Z",
+      "sourceCreatedAt": "2026-07-03T08:00:00.000Z",
+      "category": "merchant_communication",
+      "assetPath": "binary/04-merchant-communication.pdf",
+      "metadataPath": "evidence/04-merchant-communication.json",
+      "description": "完全虚构的商家沟通记录示例"
+    }
+  ],
+  "facts": [
+    {
+      "token": "fact-purchase-time",
+      "caseToken": "case-main",
+      "factType": "order",
+      "fieldName": "purchase_time",
+      "value": "2026-07-01T12:16:00.000Z",
+      "sourceTokens": ["evidence-order"],
+      "confirmedAt": "2026-07-04T02:10:00.000Z",
+      "confirmationMethod": "manual",
+      "version": 1
+    },
+    {
+      "token": "fact-merchant-name",
+      "caseToken": "case-main",
+      "factType": "merchant",
+      "fieldName": "merchant_name",
+      "value": "晴川生活示例店",
+      "sourceTokens": ["evidence-order", "evidence-communication"],
+      "confirmedAt": "2026-07-04T02:11:00.000Z",
+      "confirmationMethod": "manual",
+      "version": 1
+    },
+    {
+      "token": "fact-product-name",
+      "caseToken": "case-main",
+      "factType": "product",
+      "fieldName": "product_name",
+      "value": "便携折叠桌（虚构商品）",
+      "sourceTokens": ["evidence-order"],
+      "confirmedAt": "2026-07-04T02:12:00.000Z",
+      "confirmationMethod": "manual",
+      "version": 1
+    },
+    {
+      "token": "fact-paid-amount",
+      "caseToken": "case-main",
+      "factType": "payment",
+      "fieldName": "paid_amount",
+      "value": "89900",
+      "sourceTokens": ["evidence-payment"],
+      "confirmedAt": "2026-07-04T02:13:00.000Z",
+      "confirmationMethod": "manual",
+      "version": 1
+    },
+    {
+      "token": "fact-problem-description",
+      "caseToken": "case-main",
+      "factType": "issue",
+      "fieldName": "problem_description",
+      "value": "包裹外箱凹陷，桌板边角开裂并有明显压痕",
+      "sourceTokens": ["evidence-product-issue"],
+      "confirmedAt": "2026-07-04T02:14:00.000Z",
+      "confirmationMethod": "manual",
+      "version": 1
+    },
+    {
+      "token": "fact-requested-resolution",
+      "caseToken": "case-main",
+      "factType": "resolution",
+      "fieldName": "requested_resolution",
+      "value": "退货并退还已支付金额89900分",
+      "sourceTokens": ["evidence-communication"],
+      "confirmedAt": "2026-07-04T02:15:00.000Z",
+      "confirmationMethod": "manual",
+      "version": 1
+    }
+  ],
+  "timeline": [
+    {
+      "token": "timeline-purchase",
+      "caseToken": "case-main",
+      "occurredAt": "2026-07-01T12:16:00.000Z",
+      "timePrecision": "minute",
+      "summary": "用户下单并完成付款",
+      "detail": "在示例商城购买便携折叠桌（虚构商品），支付89900分",
+      "sourceTokens": ["evidence-order", "evidence-payment"],
+      "contentOrigin": "manual",
+      "status": "confirmed",
+      "sortOrder": 1
+    },
+    {
+      "token": "timeline-receipt",
+      "caseToken": "case-main",
+      "occurredAt": "2026-07-03T06:30:00.000Z",
+      "timePrecision": "minute",
+      "summary": "用户收货并发现运输破损",
+      "detail": "包裹外箱凹陷，桌板边角开裂并有明显压痕",
+      "sourceTokens": ["evidence-product-issue"],
+      "contentOrigin": "manual",
+      "status": "confirmed",
+      "sortOrder": 2
+    },
+    {
+      "token": "timeline-request",
+      "caseToken": "case-main",
+      "occurredAt": "2026-07-03T07:15:00.000Z",
+      "timePrecision": "minute",
+      "summary": "用户请求退货退款",
+      "detail": "用户向晴川生活示例店提出退货并退还已支付金额",
+      "sourceTokens": ["evidence-communication"],
+      "contentOrigin": "manual",
+      "status": "confirmed",
+      "sortOrder": 3
+    },
+    {
+      "token": "timeline-refusal",
+      "caseToken": "case-main",
+      "occurredAt": "2026-07-03T08:00:00.000Z",
+      "timePrecision": "minute",
+      "summary": "商家拒绝退货退款",
+      "detail": "商家称破损由用户使用造成，因此拒绝退货退款",
+      "sourceTokens": ["evidence-communication"],
+      "contentOrigin": "manual",
+      "status": "confirmed",
+      "sortOrder": 4
+    }
+  ],
+  "statement": {
+    "token": "statement-confirmed",
+    "caseToken": "case-main",
+    "content": "本人于2026年7月1日在示例商城购买便携折叠桌（虚构商品）并支付89900分。2026年7月3日收货时发现包裹外箱凹陷，桌板边角开裂并有明显压痕。我随后向晴川生活示例店提出退货退款，商家拒绝处理。我的期望处理结果是退货并退还已支付金额89900分。本陈述及全部材料均为完全虚构的公开演示内容。",
+    "factTokens": [
+      "fact-purchase-time",
+      "fact-merchant-name",
+      "fact-product-name",
+      "fact-paid-amount",
+      "fact-problem-description",
+      "fact-requested-resolution"
+    ],
+    "timelineTokens": [
+      "timeline-purchase",
+      "timeline-receipt",
+      "timeline-request",
+      "timeline-refusal"
+    ],
+    "confirmedAt": "2026-07-04T02:30:00.000Z",
+    "confirmationMethod": "manual"
+  }
+}
