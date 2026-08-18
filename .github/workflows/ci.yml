@@ -54,6 +54,9 @@ jobs:
       - name: Run end-to-end tests
         run: pnpm e2e
 
+      - name: Verify production release candidate
+        run: pnpm verify:release-candidate
+
       - name: Upload Playwright report
         if: failure()
         uses: actions/upload-artifact@v6

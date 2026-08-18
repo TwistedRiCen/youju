@@ -24,6 +24,8 @@
     "eval:golden-case": "tsx scripts/evaluate-ai-golden-case.ts",
     "build": "pnpm -r --if-present build",
     "e2e": "playwright test",
+    "e2e:production": "playwright test --config=playwright.production.config.ts",
+    "verify:release-candidate": "pnpm build && pnpm generate:release && pnpm check:web-budget && pnpm check:production-headers && pnpm exec vitest run tests/integration/production-routing.test.ts tests/integration/security-headers.test.ts && pnpm e2e:production",
     "verify": "pnpm lint && pnpm typecheck && pnpm test && pnpm validate:fixtures && pnpm build && pnpm e2e"
   },
   "devDependencies": {

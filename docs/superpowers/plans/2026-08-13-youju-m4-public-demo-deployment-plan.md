@@ -825,7 +825,7 @@ git commit -m "build: add M4 production deployment contract"
 - Release update test installs release A, stores local data, activates release B by user confirmation and proves data remains while page-memory Key clears.
 - CI adds only release-candidate verification; it does not deploy, push, tag or publish.
 
-- [ ] **Step 1: Write production release RED tests**
+- [x] **Step 1: Write production release RED tests**
 
 ```powershell
 pnpm e2e:production
@@ -833,15 +833,15 @@ pnpm e2e:production
 
 Expected RED: scripts and complete production flow do not exist.
 
-- [ ] **Step 2: Implement deterministic production E2E harness**
+- [x] **Step 2: Implement deterministic production E2E harness**
 
 Use fixed localhost ports and Mock Provider only. Tests must fail if the network reaches an unapproved host.
 
-- [ ] **Step 3: Add CI release-candidate gate**
+- [x] **Step 3: Add CI release-candidate gate**
 
 Modify CI only in this explicitly named Task. Preserve existing frozen install and root gates; do not add deployment credentials.
 
-- [ ] **Step 4: Run Task 12 gates**
+- [x] **Step 4: Run Task 12 gates**
 
 ```powershell
 pnpm e2e:production
@@ -852,10 +852,10 @@ git status --short
 
 Expected: all unit, integration, regular E2E and production E2E gates pass with no public network calls.
 
-- [ ] **Step 5: Commit and stop**
+- [x] **Step 5: Commit and stop**
 
 ```powershell
-git add playwright.production.config.ts tests/e2e/production-public-demo.spec.ts tests/e2e/production-cache-privacy.spec.ts tests/e2e/production-release-update.spec.ts package.json .github/workflows/ci.yml docs/superpowers/plans/2026-08-13-youju-m4-public-demo-deployment-plan.md
+git add playwright.production.config.ts playwright.config.ts tests/e2e/production-public-demo.spec.ts tests/e2e/production-cache-privacy.spec.ts tests/e2e/production-release-update.spec.ts package.json .github/workflows/ci.yml docs/superpowers/plans/2026-08-13-youju-m4-public-demo-deployment-plan.md
 git commit -m "test: add M4 production release gates"
 ```
 
