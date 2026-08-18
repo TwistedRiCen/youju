@@ -15,6 +15,9 @@ export interface CreateCaseFormValue {
   readonly requestedResolution: string
 }
 
+/** Current persisted CaseEvent schema version produced by normal creation. */
+export const CASE_SCHEMA_VERSION = 2
+
 const WRITER_ID = 'local-session'
 
 let repositoryPromise: Promise<CaseRepository> | null = null
@@ -69,7 +72,7 @@ export async function createLocalCase(
     status: 'draft',
     requestedResolution: value.requestedResolution,
     storageMode: 'local',
-    schemaVersion: 2,
+    schemaVersion: CASE_SCHEMA_VERSION,
     dataOrigin: 'user_created',
     demoFixtureId: null,
   }

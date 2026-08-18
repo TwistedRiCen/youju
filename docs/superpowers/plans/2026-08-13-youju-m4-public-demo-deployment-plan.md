@@ -751,9 +751,11 @@ git commit -m "feat: harden M4 production API boundary"
 - Create: `scripts/serve-production-candidate.ts`
 - Create: `scripts/check-production-headers.ts`
 - Create: `deploy/nginx/youju.conf.template`
+- Create: `deploy/nginx/youju-security-headers.conf`（Review 修复：add_header 不跨层级继承，独立 include 文件）
 - Create: `deploy/README.md`
 - Modify: `package.json`
-- Modify: `apps/web/vite.config.ts`
+- ~~Modify: `apps/web/vite.config.ts`~~ 实际未修改：Task 8/9 已提交 navigateFallbackDenylist 与 build.manifest/sourcemap；release.json 构建后生成且不进 precache glob（Review 确认）
+- Modify: `apps/web/src/services/case-service.ts`（计划外最小扩展：导出 `CASE_SCHEMA_VERSION`，供 release 描述单一事实来源，Review 确认）
 - Create: `tests/integration/production-routing.test.ts`
 - Create: `tests/integration/security-headers.test.ts`
 - Modify: `docs/superpowers/plans/2026-08-13-youju-m4-public-demo-deployment-plan.md` Task 11 checkboxes only
@@ -766,7 +768,7 @@ git commit -m "feat: harden M4 production API boundary"
 - CSP and fixed headers match M4 design; HSTS uses one year without subdomain/preload; no COEP or remote CSP reporting.
 - `index.html`, `sw.js`, manifest and `release.json` revalidate; API and errors are no-store.
 
-- [ ] **Step 1: Write production routing/header RED tests**
+- [x] **Step 1: Write production routing/header RED tests**
 
 Test route matrix, static 404, API 404, CSP directives, absence of unsafe tokens, cache headers, request body limit and release pairing.
 
@@ -776,15 +778,15 @@ pnpm exec vitest run tests/integration/production-routing.test.ts tests/integrat
 
 Expected RED: no release descriptor, production candidate server or deploy template exists.
 
-- [ ] **Step 2: Implement release descriptor and local candidate server**
+- [x] **Step 2: Implement release descriptor and local candidate server**
 
 Use Node built-ins and existing API output; do not introduce a second production application server or dependency.
 
-- [ ] **Step 3: Add reviewed Nginx template**
+- [x] **Step 3: Add reviewed Nginx template**
 
 Template values remain explicit placeholders for domain, certificate paths and trusted upstream address. It is not deployed in this Task.
 
-- [ ] **Step 4: Run Task 11 gates**
+- [x] **Step 4: Run Task 11 gates**
 
 ```powershell
 pnpm build
@@ -794,10 +796,10 @@ pnpm check:web-budget
 git diff --check
 ```
 
-- [ ] **Step 5: Commit and stop**
+- [x] **Step 5: Commit and stop**
 
 ```powershell
-git add scripts/generate-release-descriptor.ts scripts/serve-production-candidate.ts scripts/check-production-headers.ts deploy package.json apps/web/vite.config.ts tests/integration/production-routing.test.ts tests/integration/security-headers.test.ts docs/superpowers/plans/2026-08-13-youju-m4-public-demo-deployment-plan.md
+git add scripts/generate-release-descriptor.ts scripts/serve-production-candidate.ts scripts/check-production-headers.ts deploy package.json apps/web/src/services/case-service.ts tests/integration/production-routing.test.ts tests/integration/security-headers.test.ts docs/superpowers/plans/2026-08-13-youju-m4-public-demo-deployment-plan.md
 git commit -m "build: add M4 production deployment contract"
 ```
 

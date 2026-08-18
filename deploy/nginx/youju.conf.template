@@ -1,0 +1,111 @@
+# 有据 YouJu M4 same-origin deployment template (Nginx)
+# 占位符（部署时替换，不得提交真实值）：
+#   ${YOUJU_DOMAIN}         公开域名，例如 demo.youju.example
+#   ${TLS_CERT_PATH}        证书链文件路径
+#   ${TLS_KEY_PATH}         私钥文件路径
+#   ${STATIC_ROOT}          构建产物目录（apps/web/dist）
+#   ${UPSTREAM_HOST}        Fastify 上游地址（默认 127.0.0.1）
+#   ${UPSTREAM_PORT}        Fastify 上游端口（默认 3000）
+#
+# 依赖同目录文件：youju-security-headers.conf、youju-proxy-params.conf。
+# 首版不启用 COEP；不设置远程 CSP 上报端点。
+# 注意：nginx 的 add_header 不跨层级继承——每个自带 add_header 的 location 都必须 include
+# youju-security-headers.conf，否则该 location 的响应会丢失全部安全头。
+
+server {
+    listen 80;
+    server_name ${YOUJU_DOMAIN};
+
+    include /etc/nginx/conf.d/youju-security-headers.conf;
+
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}
+
+server {
+    listen 443 ssl;
+    http2 on;
+    server_name ${YOUJU_DOMAIN};
+
+    ssl_certificate     ${TLS_CERT_PATH};
+    ssl_certificate_key ${TLS_KEY_PATH};
+
+    include /etc/nginx/conf.d/youju-security-headers.conf;
+
+    # 全部 404 统一 no-store（含 try_files =404 与 /ai/ 显式 404）
+    error_page 404 =404 @not_found;
+
+    root ${STATIC_ROOT};
+
+    # 应用壳入口重新校验；哈希资产长缓存不可变
+    location = /index.html {
+        include /etc/nginx/conf.d/youju-security-headers.conf;
+        add_header Cache-Control "no-cache" always;
+    }
+    location = /sw.js {
+        include /etc/nginx/conf.d/youju-security-headers.conf;
+        add_header Cache-Control "no-cache" always;
+    }
+    location = /manifest.webmanifest {
+        include /etc/nginx/conf.d/youju-security-headers.conf;
+        add_header Cache-Control "no-cache" always;
+    }
+    location = /release.json {
+        include /etc/nginx/conf.d/youju-security-headers.conf;
+        add_header Cache-Control "no-cache" always;
+    }
+    location /assets/ {
+        include /etc/nginx/conf.d/youju-security-headers.conf;
+        add_header Cache-Control "public, max-age=31536000, immutable" always;
+        try_files $uri =404;
+    }
+    location /demo/ {
+        include /etc/nginx/conf.d/youju-security-headers.conf;
+        add_header Cache-Control "public, max-age=31536000, immutable" always;
+        try_files $uri =404;
+    }
+
+    # 健康检查：仅转发，响应保持 no-store
+    location = /health {
+        include /etc/nginx/conf.d/youju-security-headers.conf;
+        add_header Cache-Control "no-store" always;
+        proxy_pass http://${UPSTREAM_HOST}:${UPSTREAM_PORT};
+        include /etc/nginx/conf.d/youju-proxy-params.conf;
+    }
+
+    # 同源 AI 转发：只允许两个已批准的 POST 路径；其余 /ai/* 直接 404
+    location = /ai/connection-test {
+        include /etc/nginx/conf.d/youju-security-headers.conf;
+        add_header Cache-Control "no-store" always;
+        limit_except POST { deny all; }
+        proxy_pass http://${UPSTREAM_HOST}:${UPSTREAM_PORT};
+        include /etc/nginx/conf.d/youju-proxy-params.conf;
+    }
+    location ~ ^/ai/tasks/[a-z_]+$ {
+        include /etc/nginx/conf.d/youju-security-headers.conf;
+        add_header Cache-Control "no-store" always;
+        limit_except POST { deny all; }
+        proxy_pass http://${UPSTREAM_HOST}:${UPSTREAM_PORT};
+        include /etc/nginx/conf.d/youju-proxy-params.conf;
+    }
+    location /ai/ {
+        include /etc/nginx/conf.d/youju-security-headers.conf;
+        add_header Cache-Control "no-store" always;
+        return 404;
+    }
+
+    # 单页应用回退：文件不存在且非文件形态的 GET 导航回退 index.html；
+    # /ai/* 与 /health 已在上方单独处理，绝不回退。
+    location / {
+        include /etc/nginx/conf.d/youju-security-headers.conf;
+        add_header Cache-Control "no-cache" always;
+        try_files $uri $uri/ /index.html;
+    }
+
+    location @not_found {
+        include /etc/nginx/conf.d/youju-security-headers.conf;
+        add_header Cache-Control "no-store" always;
+        return 404;
+    }
+}
