@@ -925,32 +925,25 @@ git commit -m "docs: add M4 deployment and operations guidance"
 - Any real Provider check has a dedicated low-limit test Key, approved fictional sample and current Provider terms review.
 - Key entry happens only in the browser UI; it is never pasted into chat, shell, file, screenshot or test code.
 
-- [ ] **Step 1: RED not applicable; freeze release candidate**
+- [x] **Step 1: RED not applicable; freeze release candidate**
 
-Record full commit and production build summary. Do not modify runtime code during evidence collection; discovered defects return to their owning Task as a new fix commit and require rerun.
+Recorded 2026-08-18：release 候选冻结于 `cf2201c20e0028960f2de8367261f93321f87148`，releaseId `2026.08.18-cf2201c`，生产构建（首屏 gzip 125.7 KiB、应用壳 765.6 KiB）与 release 摘要已记录至 `docs/release/m4-release-checklist.md` 头部。证据收集期间未修改任何运行时代码。
 
 - [ ] **Step 2: Run physical device/browser matrix**
 
-At minimum record Windows Chrome/Edge, Android Chrome, one available domestic Android browser, iOS Safari and WeChat embedded-browser degradation. Test direct access, demo, OPFS/degradation, import, refresh, export, delete, install, offline and update as applicable.
+2026-08-18 部分执行：本机真实安装的 Windows Chrome/Edge 已用 Playwright（channel: chrome/msedge）在生产候选服务器上完成验证（生产套件 12/12、补充检查 9/9，详见 release checklist 设备矩阵行）。Android Chrome、国内 Android 浏览器、iOS Safari、微信内置浏览器因无可用设备/环境未执行（Hard Stop，缺设备）。
 
 - [ ] **Step 3: Run authorized Provider checks**
 
-For every available preset, use the smallest fictional sample and record Provider/model/protocol/date/network/result/error mapping/terms status without content or Key. Unavailable presets remain “本版本未做真实验证”.
+2026-08-18：无专用低额度测试 Key（环境无 Key 且用户未提供），未执行真实 Provider 调用；四个 preset 端点主机仅做了无 Key 的 TLS 连通性探针并记录网络列（release checklist）。各 Provider 保持「本版本未做真实验证」。
 
-- [ ] **Step 4: Run regression after manual checks**
+- [x] **Step 4: Run regression after manual checks**
 
-```powershell
-pnpm verify:release-candidate
-pnpm check:forbidden-content
-git diff --check
-```
+2026-08-18 执行：`pnpm verify:release-candidate` 全绿（构建→release→预算→头→集成 11/11→生产 E2E 6/6）；`pnpm check:forbidden-content` PASS；`git diff --check` 通过。
 
-- [ ] **Step 5: Commit evidence and stop**
+- [x] **Step 5: Commit evidence and stop**
 
-```powershell
-git add docs/release/m4-release-checklist.md docs/security/m4-threat-checklist.md docs/superpowers/plans/2026-08-13-youju-m4-public-demo-deployment-plan.md
-git commit -m "test: record M4 real environment checks"
-```
+2026-08-18 提交部分真实环境证据与 Hard Stop 记录（commit `test: record M4 real environment checks`，显式 add 本 Task 三个文档，临时验证装备 `.real-browser/` 提交前已删除）；`PLAN.md` 状态同步按仓库既有模式随独立 docs commit 提交；Task 14 未完整验收，未执行 Task 15。
 
 Do not include screenshots or logs containing user data, Key, full IP or Provider response content.
 
