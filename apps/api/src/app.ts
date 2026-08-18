@@ -6,6 +6,7 @@ import { aiRoutes, createDefaultAiRouteDependencies, type CreateAdapter } from '
 import type { DnsResolver } from './ai/target-policy.js'
 import type { Clock } from './ai/request-guard.js'
 import { MAX_REQUEST_BYTES } from './routes/ai.js'
+import type { ProductionConfig } from './production-config.js'
 
 export interface AppDependencies {
   readonly createAdapter: CreateAdapter
@@ -13,12 +14,18 @@ export interface AppDependencies {
   readonly clock: Clock
 }
 
-export function buildApp(overrides: Partial<AppDependencies> = {}): FastifyInstance {
+const DEV_RELEASE_ID = 'dev-build'
+
+export function buildApp(
+  overrides: Partial<AppDependencies> = {},
+  production: ProductionConfig | null = null,
+): FastifyInstance {
   const dependencies = createDefaultAiRouteDependencies(overrides)
   const app = Fastify({
     logger: loggerOptions,
     bodyLimit: MAX_REQUEST_BYTES,
     ajv: { customOptions: { removeAdditional: false } },
+    trustProxy: production === null ? false : ([...production.trustedProxyCidrs] as string[]),
   })
 
   app.addHook('onSend', async (_request, reply) => {
@@ -33,7 +40,7 @@ export function buildApp(overrides: Partial<AppDependencies> = {}): FastifyInsta
       .send({ error: { code } })
   })
 
-  void app.register(healthRoute)
+  void app.register(healthRoute, { releaseId: production?.releaseId ?? DEV_RELEASE_ID })
   void app.register(aiRoutes, dependencies)
 
   return app

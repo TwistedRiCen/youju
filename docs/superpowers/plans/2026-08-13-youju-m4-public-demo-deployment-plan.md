@@ -706,7 +706,7 @@ git commit -m "perf: enforce M4 web build budgets"
 - Server handles SIGTERM/SIGINT with Fastify close and bounded shutdown.
 - Logger removes raw IP and full User-Agent while retaining request ID, route class, status, duration, Provider preset and stable error class.
 
-- [ ] **Step 1: Write proxy, origin, health and log RED tests**
+- [x] **Step 1: Write proxy, origin, health and log RED tests**
 
 Cover spoofed forwarded headers, trusted/untrusted proxy, cross-site headers, malformed release ID, graceful shutdown hooks and sensitive log fields.
 
@@ -716,15 +716,15 @@ pnpm exec vitest run apps/api/tests/production-config.test.ts apps/api/tests/req
 
 Expected RED: current app has no production parser, origin policy or release-aware health response.
 
-- [ ] **Step 2: Implement explicit production configuration**
+- [x] **Step 2: Implement explicit production configuration**
 
 Development remains usable without proxy config; production startup fails closed. Never set `trustProxy: true`.
 
-- [ ] **Step 3: Implement same-origin and shutdown behavior**
+- [x] **Step 3: Implement same-origin and shutdown behavior**
 
 Keep M3 target policy, body limits, timeouts, error mapping and no-store behavior unchanged.
 
-- [ ] **Step 4: Run Task 10 gates**
+- [x] **Step 4: Run Task 10 gates**
 
 ```powershell
 pnpm --filter @youju/api test
@@ -734,7 +734,7 @@ pnpm check:forbidden-content
 git diff --check
 ```
 
-- [ ] **Step 5: Commit and stop**
+- [x] **Step 5: Commit and stop**
 
 ```powershell
 git add apps/api docs/superpowers/plans/2026-08-13-youju-m4-public-demo-deployment-plan.md

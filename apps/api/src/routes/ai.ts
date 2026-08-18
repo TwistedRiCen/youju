@@ -17,6 +17,7 @@ import {
   type ProviderPreset,
 } from '@youju/ai-core'
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify'
+import { isSameOriginAiRequest } from '../request-origin-policy.js'
 import {
   AiProviderError,
   createProviderAdapter,
@@ -298,6 +299,12 @@ function logMetadata(
 }
 
 export async function aiRoutes(app: FastifyInstance, dependencies: AiRouteDependencies): Promise<void> {
+  app.addHook('onRequest', async (request, reply) => {
+    if (!isSameOriginAiRequest(request)) {
+      reply.code(403).send({ error: { code: 'cross_site_ai_request' } })
+    }
+  })
+
   app.post('/ai/connection-test', { schema: { body: ConnectionRequestSchema } }, async (request, reply) => {
     if (!Value.Check(ConnectionRequestSchema, request.body)) {
       sendError(reply, 'provider_content_rejected')

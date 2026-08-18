@@ -138,6 +138,48 @@ describe('guarded AI routes', () => {
     }
   })
 
+  it('rejects cross-site browser requests before any provider work', async () => {
+    const { adapter, createAdapter } = makeAdapter()
+    const app = buildApp({ createAdapter })
+    try {
+      const crossSite = await app.inject({
+        method: 'POST',
+        url: '/ai/connection-test',
+        headers: {
+          origin: 'https://evil.example',
+          'sec-fetch-site': 'cross-site',
+          'content-type': 'application/json',
+        },
+        payload: connectionBody,
+      })
+      const foreignOrigin = await app.inject({
+        method: 'POST',
+        url: '/ai/connection-test',
+        headers: {
+          origin: 'https://evil.example',
+          'content-type': 'application/json',
+        },
+        payload: connectionBody,
+      })
+      const sameOrigin = await app.inject({
+        method: 'POST',
+        url: '/ai/connection-test',
+        headers: {
+          origin: 'http://localhost:80',
+          'content-type': 'application/json',
+        },
+        payload: connectionBody,
+      })
+
+      expect(crossSite.statusCode).toBe(403)
+      expect(foreignOrigin.statusCode).toBe(403)
+      expect(sameOrigin.statusCode).toBe(200)
+      expect(adapter.testConnection).toHaveBeenCalledOnce()
+    } finally {
+      await closeApp(app)
+    }
+  })
+
   it('maps provider failures to stable errors without raw upstream content', async () => {
     const { createAdapter } = makeAdapter({
       executeTask: vi.fn(async () => { throw new AiProviderError('provider_auth_failed') }),

@@ -62,4 +62,52 @@ describe('API logging', () => {
     expect(serializedLog).toContain('request-id-sentinel')
     expect(serializedLog).toContain('classify_evidence')
   })
+
+  it('removes raw IP and full User-Agent while keeping route metadata', async () => {
+    const { loggerOptions } = await import('../src/logging.js')
+    const { default: fastify } = await import('fastify')
+    let serializedLog = ''
+    const destination = new Writable({
+      write(chunk, _encoding, callback) {
+        serializedLog += String(chunk)
+        callback()
+      },
+    })
+    const app = fastify({
+      logger: {
+        ...loggerOptions,
+        stream: destination,
+      },
+    })
+    app.get('/probe', async () => {
+      app.log.info({
+        requestId: 'request-id-sentinel',
+        taskType: 'classify_evidence',
+        providerPreset: 'openai',
+        statusClass: '4xx',
+        durationMs: 12,
+        errorCode: 'provider_auth_failed',
+      })
+      return { ok: true }
+    })
+
+    const response = await app.inject({
+      method: 'GET',
+      url: '/probe',
+      remoteAddress: '203.0.113.7',
+      headers: {
+        'user-agent': 'Mozilla/5.0 Full Agent String 1.2.3.4',
+        'x-forwarded-for': '203.0.113.7',
+        origin: 'https://youju.example',
+      },
+    })
+    expect(response.statusCode).toBe(200)
+    await app.close()
+
+    expect(serializedLog).toContain('request-id-sentinel')
+    expect(serializedLog).toContain('classify_evidence')
+    expect(serializedLog).toContain('provider_auth_failed')
+    expect(serializedLog).not.toContain('Mozilla/5.0 Full Agent')
+    expect(serializedLog).not.toContain('203.0.113.7')
+  })
 })

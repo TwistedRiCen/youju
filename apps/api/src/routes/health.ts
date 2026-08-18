@@ -1,9 +1,12 @@
 import type { FastifyPluginAsync } from 'fastify'
 
-export const healthRoute: FastifyPluginAsync = async (app) => {
+export interface HealthRouteOptions {
+  readonly releaseId: string
+}
+
+export const healthRoute: FastifyPluginAsync<HealthRouteOptions> = async (app, options) => {
   app.get('/health', async () => ({
     status: 'ok',
-    service: 'youju-api',
-    version: '0.1.0',
+    releaseId: options.releaseId,
   }))
 }
