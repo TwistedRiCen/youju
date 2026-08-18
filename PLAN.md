@@ -6,9 +6,9 @@
 
 ## Current Phase
 
-`EXECUTION`
+`EXECUTION` → 已执行到 Hard Stop 边界
 
-M4 方向设计和详细实施计划均已有用户批准证据。执行采用 `AUTONOMOUS WITH HARD GATES`，在批准边界内持续推进，直到 Goal Acceptance 完成或触发真正的 Hard Stop。
+M4 Task 1–13 全部验收并提交；Task 14/15 需要真实设备/Provider 与公开部署授权（当前授权信封 `REAL_PROVIDER_CALLS = NO`、`PRODUCTION_DEPLOYMENT = NO`、`PUSH = NO`），构成真实 Hard Stop。自动化可验证部分已全部完成；M4 完整 `ACCEPTED` 需要用户在 Task 14/15 授权后的真实环境证据。
 
 ## Execution Policy
 
@@ -115,14 +115,14 @@ Next Action：Hard Stop（Task 14/15 前置授权）——Task 14 需要真实�
 
 ## Acceptance Criteria
 
-- AC-01 `OPEN`：公开 HTTPS 地址无需注册、无需 AI、无需 Provider 即可加载完全虚构演示并完成整理、导出和删除主流程。
-- AC-02 `OPEN`：本地优先与服务端无业务持久化边界在生产拓扑、日志和发布物中可验证。
-- AC-03 `OPEN`：演示身份、幂等加载/重置、真实事件隔离及 PDF/CSV/HTML/ZIP/文件名演示标记均通过回归。
-- AC-04 `OPEN`：提示式 PWA 更新、离线应用壳和严格缓存边界通过生产 Service Worker 测试，恢复在线不自动发送数据。
-- AC-05 `OPEN`：同源代理信任、请求来源策略、CSP、安全响应头、缓存规则、SPA fallback 与 Web/API 发布配对可重复验证。
-- AC-06 `OPEN`：公开隐私、AI 数据流、非法律服务、本地删除和导出敏感性说明完整且与实现一致。
-- AC-07 `OPEN`：根级门禁、生产候选门禁、真实设备矩阵、国内网络可达性、部署冒烟和成对回滚均有真实证据。
-- AC-08 `OPEN`：运维与发布材料覆盖日志保留、证书、DNS、API 降级、故障恢复和诚实的 Provider 验证状态。
+- AC-01 `OPEN`（自动化部分已验证）：公开 HTTPS 地址无需注册、无需 AI、无需 Provider 即可加载完全虚构演示并完成整理、导出和删除主流程。无注册/无 AI 演示全流程已在开发与生产候选环境通过；「公开 HTTPS 地址」需 Task 15 部署。
+- AC-02 `OPEN`（自动化部分已验证）：本地优先与服务端无业务持久化边界在生产拓扑、日志和发布物中可验证。API 无持久化、日志白名单、无密钥发布物均有测试证据；生产拓扑证据需 Task 15。
+- AC-03 `VERIFIED`：演示身份、幂等加载/重置、真实事件隔离及 PDF/CSV/HTML/ZIP/文件名演示标记均通过回归（Task 1–7 证据链）。
+- AC-04 `VERIFIED`：提示式 PWA 更新、离线应用壳和严格缓存边界通过生产 Service Worker 测试，恢复在线不自动发送数据（Task 8/12 生产 E2E：无自动重载、缓存白名单/隐私枚举、无 sync/push/periodic）。
+- AC-05 `VERIFIED`：同源代理信任、请求来源策略、CSP、安全响应头、缓存规则、SPA fallback 与 Web/API 发布配对可重复验证（Task 10/11/12：集成测试 + 生产候选服务器 + 配对测试）。
+- AC-06 `VERIFIED`：公开隐私、AI 数据流、非法律服务、本地删除和导出敏感性说明完整且与实现一致（Task 7 页面 + Task 13 文档，Review 核对）。
+- AC-07 `OPEN`（自动化部分已验证）：根级门禁与生产候选门禁均有真实证据（`pnpm verify`、`pnpm verify:release-candidate` 全绿）；真实设备矩阵、国内网络可达性、部署冒烟和成对回滚需 Task 14/15。
+- AC-08 `OPEN`（材料部分已验证）：运维与发布材料覆盖日志保留、证书、DNS、API 降级、故障恢复和诚实的 Provider 验证状态（Task 13）；真实环境执行记录需 Task 14/15。
 
 ## Risks
 
@@ -136,9 +136,9 @@ Next Action：Hard Stop（Task 14/15 前置授权）——Task 14 需要真实�
 
 ## Blockers
 
-- M4 Task 13 当前没有未解决的设计、计划或分支 readiness blocker；Task 14/15 需要真实设备/Provider/部署授权（Hard Stop 条件）。
-- M4 Task 14/15：分别需要真实设备/Provider 授权和公开部署目标/外部操作授权。
+- M4 Task 14/15：分别需要真实设备/Provider 授权和公开部署目标/外部操作授权（Hard Stop，当前授权信封不允许执行）。
 - M5：受 M4 完整验收与公开部署证据阻塞。
+- Hard Stop 记录（2026-08-18）：Task 1–13 完成后，按批准计划 Task 14 的 Preconditions（用户显式授权设备/浏览器矩阵与专用低额度 Provider 测试 Key）与 Task 15 的 Preconditions（用户显式授权部署目标并确认备案/合规前提），以及本会话授权信封（REAL_PROVIDER_CALLS=NO、PRODUCTION_DEPLOYMENT=NO、PUSH=NO），自动执行在 Task 14 停止。停止前未执行任何真实 Provider 调用、真实设备检查、公开部署、push、PR、tag 或 release。
 
 ## Known Deferred Findings
 
@@ -172,6 +172,7 @@ Next Action：Hard Stop（Task 14/15 前置授权）——Task 14 需要真实�
 - 2026-08-18：M4 Task 11 完成。有效 RED 由缺失 release 描述、候选服务器与部署模板导致（2 个新集成测试失败）；实现 `generate-release-descriptor`（git rev-parse HEAD + 校验 releaseId=日期.短sha，仅六字段无密钥）、`serve-production-candidate`（node:http：安全头/CSP、/assets//demo/ 不可变、壳入口 no-cache、/ai*/health/错误 no-store、SPA 回退排除、同源 /ai 代理、路径穿越防护）、`check-production-headers`、Nginx 模板 + 安全头 include 文件（add_header 继承修复、error_page 404 no-store、limit_except POST、proxy_read_timeout 130s）。集成测试 6 文件 22/22（含既有回归，无构建时 skipIf 由发布门禁运行）、check:production-headers、check:web-budget、全量 vitest 424/424、typecheck/lint/forbidden/diff-check 通过；两轮独立 Review（首轮 FAIL：add_header 继承 BLOCKER、POSIX 路径、CI 顺序、超时不一致均已修复），re-check 全部闭环。偏差（Review 确认并记录）：vite.config.ts 计划列 Modify 实际无需改（Task 8/9 已覆盖）；case-service.ts 新增 `CASE_SCHEMA_VERSION` 导出供 release 描述引用。
 - 2026-08-18：M4 Task 12 完成。有效 RED 由 `e2e:production` 命令缺失导致；实现双 webServer 生产 harness（API 以生产配置 + release.json 的 releaseId 启动、候选服务器同源服务）、三个生产 spec（完整无 AI 演示 + release 配对；Cache Storage 全量枚举隐私断言；发布更新数据保留/页面内存清空）与 `e2e:production`/`verify:release-candidate` 脚本、CI release-candidate 步骤。生产 E2E 6/6、verify:release-candidate 全绿、根级 e2e 130/14、typecheck/lint/diff-check 通过；独立 Review 的 BLOCKER（dev 配置未排除生产 spec）已修复（playwright.config.ts testIgnore 增加 production-*.spec.ts），MINOR2（release.json 缺失报错指引）已修复，其余记录。
 - 2026-08-18：M4 Task 13 完成（文档任务，RED 不适用）。新增部署指南（前提/发布配对/Fastify 生产配置/Nginx/部署步骤/冒烟/回滚，不给法律结论）、运维手册（健康/告警/7 天日志保留/证书 DNS/访问控制/故障手册）、M4 威胁清单（12 项自动化威胁映射到文件/测试，6 项人工待授权）与 M4 发布清单（自动化/设备/Provider/国内可达性/部署显式列，人工行未勾选）；更新 README、本地开发指南与 roadmap（M4 状态与后续顺序）。prettier（含 5 个既有文档格式漂移修复）、forbidden-content、verify:release-candidate 与 `git diff --check` 通过；文档准确性独立 Review 的 2 个 MAJOR 已修复（提交 `deploy/nginx/youju-proxy-params.conf`、修正 T-07 证据表述与清单数字行）。
+- 2026-08-18：M4 最终系统验证：完整 `pnpm verify` 全绿（lint、typecheck、vitest 全项目、fixture、build、三浏览器 e2e 130 通过/14 跳过）；`pnpm verify:release-candidate` 全绿（生产 E2E 6/6）。M4 Acceptance 评估：AC-03/04/05/06 `VERIFIED`；AC-01/02/07/08 的自动化部分已验证、真实环境部分保持 `OPEN`（Task 14/15）。命中真实 Hard Stop：Task 14/15 需要用户授权，未执行任何真实 Provider/设备/部署/外部 Git 操作。
 
 ## Repository and Verification State
 
@@ -191,5 +192,6 @@ Next Action：Hard Stop（Task 14/15 前置授权）——Task 14 需要真实�
 - Task 10 acceptance commit：`becc870492de7d86290dd93d720229688239d82e`，`feat: harden M4 production API boundary`。
 - Task 11 acceptance commit：`138b3efe0123b74c729bad250faa60a670c5ca8f`，`build: add M4 production deployment contract`。
 - Task 12 acceptance commit：`3bda582deca1ff55aef802f19ed7acf57821d2a8`，`test: add M4 production release gates`。
-- Task 13 acceptance commit：本次 `PLAN.md` 更新随 `docs: add M4 deployment and operations guidance` 提交；未 push、未部署。
+- Task 13 acceptance commit：`8212fb526d4e5eda82721e96d444861d0fb9e6e3`，`docs: add M4 deployment and operations guidance`。
+- M4 Hard Stop 记录 commit：本次 `PLAN.md` 更新随 `docs: record M4 hard stop at task 14` 提交；未 push、未部署。
 - 当前自动化证据：Task 1 相关 71 测试；Task 2 Web 97/97 与 Chromium 9/9；Task 3 相关 24/24 与四个公开资产 126688 bytes；Task 4 Web 129/129、目标 24/24、Chromium public-demo/verified-deletion/evidence-import 3/3；Task 5 document-export/Web 29/29 与 Chromium demo/user export 2/2；Task 6 Web 141/141、目标 13/13 与 Chromium first-use/storage 2/2；Task 7 Web 150/150、目标 10/10 与 Chromium public-demo/no-ai 3/3；Task 8 Web 169/169、目标 18/18 与生产 Chromium offline/update 2/2；Task 9 Web 172/172、目标 11/11 与预算（首屏 125.7 KiB / 应用壳 765.6 KiB）达标；Task 10 API 91/91 与 ai-contract 34/34；根级完整 `pnpm e2e` 130 通过 / 14 跳过，`pnpm verify` 全绿。
