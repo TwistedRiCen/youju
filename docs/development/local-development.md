@@ -216,3 +216,24 @@ git diff --check
 ```
 
 完整证据和未执行的人工检查见[M3 威胁检查清单](../security/m3-threat-checklist.md)。真实 Provider、真实 API Key、真实手机和国内浏览器检查不属于本地自动化门禁，保留到 M4 发布验证。
+
+## 9. M4 生产候选本地验证
+
+开发模式下 Vite 不注册 Service Worker；生产构建、安全响应头、缓存规则与发布配对必须针对构建产物验证：
+
+```powershell
+pnpm build
+pnpm generate:release
+pnpm check:web-budget
+pnpm check:production-headers
+pnpm e2e:production
+```
+
+组合命令 `pnpm verify:release-candidate` 依次执行构建、release 描述生成、首屏/应用壳预算门禁、生产头检查、集成测试（候选服务器路由/安全头/release 配对）与生产 E2E（无 AI 演示、缓存隐私枚举、发布更新、严格离线壳）。
+
+相关说明：
+
+- `pnpm serve:production-candidate` 以本地候选服务器提供 `apps/web/dist`（静态缓存规则 + SPA 回退排除 + 同源 `/ai/*` 代理到 `127.0.0.1:3000`），仅用于本地测试，不是第二个生产服务器；
+- `release.json` 由 `pnpm generate:release` 写入 `apps/web/dist`（仅含 releaseId、完整 commit、UTC 构建时间、IndexedDB 版本、case schema 版本与演示夹具 ID）；`/about` 在无该文件时诚实显示「发布编号尚未生成（开发构建）」；
+- 生产 E2E 以 `NODE_ENV=production` + `RELEASE_ID`（取自 release.json）+ `TRUSTED_PROXY_CIDRS=127.0.0.1` 启动 API，从而验证 Web/API 发布编号配对与生产失败封闭语义；
+- 生产配置要求 `TRUSTED_PROXY_CIDRS` 为显式列表，禁止 `true`、`*`、`0.0.0.0/0` 与 `::/0`；详见[公开演示部署指南](../deployment/public-demo.md)。

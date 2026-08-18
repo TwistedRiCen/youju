@@ -14,9 +14,9 @@ M1、M2 和 M3 已完成实现与自动化验收：
 - **M2 无 AI 核心闭环**：无需注册或配置 AI，即可在浏览器本地创建事件，导入、校验和分类材料，确认事实与时间线，查看规则缺口，编辑并确认陈述，导出材料包，以及核验式删除事件。
 - **M3 BYOK AI 副驾驶**：可选的材料分类、事实提取、时间线候选和陈述草稿；支持用户审核、编辑和确认候选，并通过无状态 Fastify 临时转发连接用户选择的 Provider。
 
-M4「公开演示与部署」的设计和详细计划已经确认，但实现尚未开始。当前仓库仍是本地开发版本，没有可以承诺稳定性或国内网络可达性的公开部署地址。M5 真实使用验证也尚未开始。
+M4「公开演示与部署」的实现与自动化门禁已完成（Task 1–13）：无需注册的公开演示（虚构身份、演示横幅、隐私/关于/反馈页）、提示式 PWA 更新与严格离线壳、路由级懒加载与构建预算门禁、生产 Fastify 边界加固（受信代理、同源策略、有界关闭、日志白名单）、同源生产打包与安全响应头（CSP/HSTS/缓存规则/Nginx 模板）、生产候选 E2E 与发布门禁，以及部署/运维/威胁/发布文档。真实设备矩阵、真实 Provider 与公开部署属于 Task 14/15，需要单独的人工授权，尚未执行。当前仓库没有可以承诺稳定性或国内网络可达性的公开部署地址。M5 真实使用验证也尚未开始。
 
-自动化测试覆盖桌面 Chromium、移动 Chromium 和移动 WebKit。真实手机、国内厂商浏览器、真实 Provider、生产 HTTPS 代理和公网可达性尚未验证，将在 M4 中处理。自动化测试只使用 Mock Provider 和完全虚构的数据，不调用真实付费模型。
+自动化测试覆盖桌面 Chromium、移动 Chromium 和移动 WebKit；生产候选验证在构建产物 + 本地候选服务器 + 生产配置 API 上运行。真实手机、国内厂商浏览器、真实 Provider、生产 HTTPS 代理和公网可达性尚未验证。自动化测试只使用 Mock Provider 和完全虚构的数据，不调用真实付费模型。
 
 ## 已实现能力
 
@@ -104,16 +104,21 @@ pnpm verify
 
 `pnpm verify` 依次运行 lint、类型检查、Vitest、fixture 校验、构建和桌面/移动浏览器 E2E。常用单项命令：
 
-| 命令                     | 用途                                          |
-| ------------------------ | --------------------------------------------- |
-| `pnpm lint`              | ESLint                                        |
-| `pnpm typecheck`         | 根项目和 workspace 类型检查                   |
-| `pnpm test`              | 全部 Vitest 测试                              |
-| `pnpm validate:fixtures` | 校验虚构黄金案例、二进制摘要和规则结果        |
-| `pnpm test:ai-contract`  | AI 契约测试                                   |
-| `pnpm eval:golden-case`  | 固定 Mock AI 黄金案例评测                     |
-| `pnpm build`             | 构建或检查所有 workspace                      |
-| `pnpm e2e`               | 桌面 Chromium、移动 Chromium、移动 WebKit E2E |
+| 命令                            | 用途                                                    |
+| ------------------------------- | ------------------------------------------------------- |
+| `pnpm lint`                     | ESLint                                                  |
+| `pnpm typecheck`                | 根项目和 workspace 类型检查                             |
+| `pnpm test`                     | 全部 Vitest 测试                                        |
+| `pnpm validate:fixtures`        | 校验虚构黄金案例、二进制摘要和规则结果                  |
+| `pnpm test:ai-contract`         | AI 契约测试                                             |
+| `pnpm eval:golden-case`         | 固定 Mock AI 黄金案例评测                               |
+| `pnpm build`                    | 构建或检查所有 workspace                                |
+| `pnpm e2e`                      | 桌面 Chromium、移动 Chromium、移动 WebKit E2E           |
+| `pnpm generate:release`         | 生成无密钥 `release.json` 发布描述（构建后运行）        |
+| `pnpm check:web-budget`         | 首屏（500 KiB）与应用壳预缓存（2 MiB）gzip 预算门禁     |
+| `pnpm check:production-headers` | 生产候选服务器安全头与缓存规则门禁                      |
+| `pnpm e2e:production`           | 生产候选 E2E（构建产物 + 候选服务器 + 生产配置 API）    |
+| `pnpm verify:release-candidate` | 构建 + release 描述 + 预算/头检查 + 集成测试 + 生产 E2E |
 
 ## 仓库结构
 
@@ -160,6 +165,10 @@ pnpm check:forbidden-content
 - [M3 威胁检查清单](docs/security/m3-threat-checklist.md)
 - [M4 公开演示与部署设计规格](docs/superpowers/specs/2026-08-13-youju-m4-public-demo-deployment-design.md)
 - [M4 Public Demo and Deployment Implementation Plan](docs/superpowers/plans/2026-08-13-youju-m4-public-demo-deployment-plan.md)
+- [M4 威胁检查清单](docs/security/m4-threat-checklist.md)
+- [M4 发布检查清单](docs/release/m4-release-checklist.md)
+- [公开演示部署指南](docs/deployment/public-demo.md)
+- [运维手册](docs/deployment/operations.md)
 - [里程碑与测试顺序](docs/development/roadmap-and-test-order.md)
 
 ## 参与与安全

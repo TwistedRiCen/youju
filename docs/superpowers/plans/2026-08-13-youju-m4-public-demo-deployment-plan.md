@@ -881,19 +881,19 @@ git commit -m "test: add M4 production release gates"
 - Threat checklist maps Service Worker leakage, stale update, demo confusion, proxy spoofing, CSP, static fallback, source maps, release mismatch and rollback to tests/code.
 - Release checklist has explicit columns for automated, device, Provider, domestic reachability and external deployment evidence.
 
-- [ ] **Step 1: RED not applicable; review actual implementation evidence**
+- [x] **Step 1: RED not applicable; review actual implementation evidence**
 
 Do not mark device, Provider, domestic network or public deployment checks complete in this Task.
 
-- [ ] **Step 2: Write operator and privacy guidance**
+- [x] **Step 2: Write operator and privacy guidance**
 
 State clearly that browser data has no server backup, export is user-controlled backup, Provider data is outside local deletion, and no AI is required.
 
-- [ ] **Step 3: Write M4 threat and release checklists**
+- [x] **Step 3: Write M4 threat and release checklists**
 
 Every automated claim must link to an actual file/test. Manual rows remain unchecked until Tasks 14/15.
 
-- [ ] **Step 4: Run Task 13 gates**
+- [x] **Step 4: Run Task 13 gates**
 
 ```powershell
 pnpm exec prettier --check README.md docs deploy
@@ -902,7 +902,7 @@ pnpm verify:release-candidate
 git diff --check
 ```
 
-- [ ] **Step 5: Commit and stop**
+- [x] **Step 5: Commit and stop**
 
 ```powershell
 git add README.md docs/development docs/deployment docs/security/m4-threat-checklist.md docs/release/m4-release-checklist.md docs/superpowers/plans/2026-08-13-youju-m4-public-demo-deployment-plan.md

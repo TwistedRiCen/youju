@@ -63,7 +63,7 @@ M4 方向设计和详细实施计划均已有用户批准证据。执行采用 `
 - 同日 `pnpm check:forbidden-content`、`pnpm test:ai-contract`（5 文件、34 测试）和 `pnpm eval:golden-case` 通过；评测使用虚构固定数据，未调用真实 Provider。
 - M4 设计方向已确认，D-01 至 D-06 有 2026-08-13 用户批准记录。依据：`docs/superpowers/specs/2026-08-13-youju-m4-public-demo-deployment-design.md`。
 - M4 详细实施计划已由用户于 2026-08-17 正式批准；该批准不改变冻结架构、Locked Implementation Parameters、Task 顺序或产品边界。
-- M4 Task 1–12 已完成实现与验证：领域模型与 IndexedDB v4 已支持显式演示身份、加载 journal 和低敏偏好；公开夹具使用 template token、四个虚构小型材料及严格校验；演示加载现具备同源读取、quota preflight、UUID 重写、OPFS/IndexedDB 分阶段持久化、逐字段 readback、幂等/并发隔离、可信恢复与仅演示事件重置；正式 PDF、CSV、HTML、ZIP、目录及下载文件名均按 `CaseEvent.dataOrigin` 确定性标记演示数据；首次引导与浏览器持久化请求现仅记录低敏偏好；公开首页、持久演示横幅、隐私/关于/反馈页及用户可达的全量本地删除已经完成；PWA 已改为提示式更新，具备显式 idle/offline_ready/update_available/updating 状态机、活动门控、10 秒激活/空闲回退与严格离线壳；路由级懒加载与 `check:web-budget` 门禁已落地（首屏 gzip 125.7 KiB、应用壳预缓存 765.6 KiB，均低于预算），生产构建不发布 sourcemap；生产 Fastify 边界已加固（显式受信代理 CIDR、同源策略、releaseId 健康响应、有界优雅关闭、日志白名单序列化）；同源生产打包与安全头已落地（release.json 描述、本地生产候选服务器、Nginx 模板与安全头 include 文件、CSP/HSTS/缓存规则、生产头检查门禁）；生产候选 E2E 与发布门禁已落地（双服务器 harness、缓存隐私枚举、发布更新数据保留/页面内存清空、release 配对、CI 验证步骤）。Task 13 及之后的隐私/部署/运维/发布文档尚未开始。
+- M4 Task 1–13 已完成实现与验证（Task 14/15 需人工授权）：领域模型与 IndexedDB v4 已支持显式演示身份、加载 journal 和低敏偏好；公开夹具使用 template token、四个虚构小型材料及严格校验；演示加载现具备同源读取、quota preflight、UUID 重写、OPFS/IndexedDB 分阶段持久化、逐字段 readback、幂等/并发隔离、可信恢复与仅演示事件重置；正式 PDF、CSV、HTML、ZIP、目录及下载文件名均按 `CaseEvent.dataOrigin` 确定性标记演示数据；首次引导与浏览器持久化请求现仅记录低敏偏好；公开首页、持久演示横幅、隐私/关于/反馈页及用户可达的全量本地删除已经完成；PWA 已改为提示式更新，具备显式 idle/offline_ready/update_available/updating 状态机、活动门控、10 秒激活/空闲回退与严格离线壳；路由级懒加载与 `check:web-budget` 门禁已落地（首屏 gzip 125.7 KiB、应用壳预缓存 765.6 KiB，均低于预算），生产构建不发布 sourcemap；生产 Fastify 边界已加固（显式受信代理 CIDR、同源策略、releaseId 健康响应、有界优雅关闭、日志白名单序列化）；同源生产打包与安全头已落地（release.json 描述、本地生产候选服务器、Nginx 模板与安全头/代理参数 include 文件、CSP/HSTS/缓存规则、生产头检查门禁）；生产候选 E2E 与发布门禁已落地（双服务器 harness、缓存隐私枚举、发布更新数据保留/页面内存清空、release 配对、CI 验证步骤）；隐私/部署/运维/威胁/发布文档已完成（部署指南、运维手册、M4 威胁清单、M4 发布清单）。真实设备矩阵、真实 Provider 与公开部署（Task 14/15）需要单独人工授权，尚未执行。
 - 当前工作分支在本文件创建前为干净的 `codex/m4-public-demo`，HEAD 为 `371bbd6082daa071f535c8113fbe9c5bf0c6596a`；其上游同名远端一致。`main` 为 `8a4c11852efc85e87cf67af7b82f7cc80312c0d0`，比当前分支多一个合并提交，但两者文件树相同。
 
 ## Design Assumptions
@@ -100,7 +100,7 @@ M4 方向设计和详细实施计划均已有用户批准证据。执行采用 `
 - M1 Foundation：`ACCEPTED`。已实现；历史完成计划、`v0.1.0-m1` 本地标签和当前全量验证提供证据。
 - M2 No-AI Core：`ACCEPTED`。已实现；无 AI 创建、导入、事实、时间线、规则、陈述、导出和核验删除在当前全量门禁通过。
 - M3 BYOK AI：`ACCEPTED`。已实现并通过当前自动化门禁；真实 Provider、真实设备和生产 HTTPS 不属于其自动化验收结论。
-- M4 Public Demo and Deployment：`IN PROGRESS`；readiness 为 `APPROVED / READY`。Task 1–12 已验收，生产真实环境验证和部署尚未开始。
+- M4 Public Demo and Deployment：`IN PROGRESS`；readiness 为 `APPROVED / READY`。Task 1–13 已验收；Task 14/15（真实设备/Provider/公开部署）需人工授权，生产真实环境验证和部署尚未开始。
 - M5 Validation：`BLOCKED`。只有 M4 发布证据完整后才能开始。
 
 ## Current Milestone
@@ -111,7 +111,7 @@ Canonical architecture evidence：`docs/superpowers/specs/2026-08-13-youju-m4-pu
 
 Approved implementation sequence：`docs/superpowers/plans/2026-08-13-youju-m4-public-demo-deployment-plan.md`。
 
-Next Action：M4 Task 13 — Write Privacy, Deployment, Operations, and Release Guidance。Task 12 已通过生产 E2E 6/6、verify:release-candidate、根级 e2e 130/14，并完成独立 Review（BLOCKER dev 配置未排除生产 spec 已修复）。
+Next Action：Hard Stop（Task 14/15 前置授权）——Task 14 需要真实设备/浏览器矩阵与真实 Provider 测试 Key 授权；Task 15 需要公开部署目标（供应商/区域/域名/DNS/证书/备案前提）与外部操作授权。在获得授权前不得执行真实 Provider 调用或任何生产部署。Task 13 已通过 prettier/forbidden/verify:release-candidate/diff-check 门禁与文档准确性独立 Review（2 MAJOR 已修复：提交 youju-proxy-params.conf、修正 T-07 证据表述与清单数字行）。
 
 ## Acceptance Criteria
 
@@ -136,7 +136,7 @@ Next Action：M4 Task 13 — Write Privacy, Deployment, Operations, and Release 
 
 ## Blockers
 
-- M4 Task 12 当前没有未解决的设计、计划或分支 readiness blocker；已知后置 MINOR 已记录（见下）。
+- M4 Task 13 当前没有未解决的设计、计划或分支 readiness blocker；Task 14/15 需要真实设备/Provider/部署授权（Hard Stop 条件）。
 - M4 Task 14/15：分别需要真实设备/Provider 授权和公开部署目标/外部操作授权。
 - M5：受 M4 完整验收与公开部署证据阻塞。
 
@@ -171,6 +171,7 @@ Next Action：M4 Task 13 — Write Privacy, Deployment, Operations, and Release 
 - 2026-08-18：M4 Task 10 完成。有效 RED 由缺失生产配置解析、同源策略与 releaseId 健康响应导致；实现 `parseProductionConfig`（RELEASE_ID 正则校验 + TRUSTED_PROXY_CIDRS 显式 IP/CIDR 校验，拒绝 true/通配/空/畸形/0.0.0.0/0、::/0）、`isSameOriginAiRequest`（sec-fetch-site cross-site 优先拒绝 + Origin 同源 URL 归一化比较，onRequest 阶段先于 body 校验）、`/health` 仅返回 status/releaseId、req 日志白名单序列化（去 raw IP 与完整 User-Agent，保留 requestId/taskType/providerPreset/statusClass/durationMs/errorCode）、SIGTERM/SIGINT 有界优雅关闭（10s 强制退出，信号在 listen 成功后注册）。API 11 文件 91/91、ai-contract 34/34、API/root typecheck、lint、forbidden-content 与 `git diff --check` 通过；安全侧重独立 Review PASS（无 BLOCKER/MAJOR），采纳 3 项加固（onRequest 提前、信号注册时机、边界测试），2 项结转 Task 13 部署文档。
 - 2026-08-18：M4 Task 11 完成。有效 RED 由缺失 release 描述、候选服务器与部署模板导致（2 个新集成测试失败）；实现 `generate-release-descriptor`（git rev-parse HEAD + 校验 releaseId=日期.短sha，仅六字段无密钥）、`serve-production-candidate`（node:http：安全头/CSP、/assets//demo/ 不可变、壳入口 no-cache、/ai*/health/错误 no-store、SPA 回退排除、同源 /ai 代理、路径穿越防护）、`check-production-headers`、Nginx 模板 + 安全头 include 文件（add_header 继承修复、error_page 404 no-store、limit_except POST、proxy_read_timeout 130s）。集成测试 6 文件 22/22（含既有回归，无构建时 skipIf 由发布门禁运行）、check:production-headers、check:web-budget、全量 vitest 424/424、typecheck/lint/forbidden/diff-check 通过；两轮独立 Review（首轮 FAIL：add_header 继承 BLOCKER、POSIX 路径、CI 顺序、超时不一致均已修复），re-check 全部闭环。偏差（Review 确认并记录）：vite.config.ts 计划列 Modify 实际无需改（Task 8/9 已覆盖）；case-service.ts 新增 `CASE_SCHEMA_VERSION` 导出供 release 描述引用。
 - 2026-08-18：M4 Task 12 完成。有效 RED 由 `e2e:production` 命令缺失导致；实现双 webServer 生产 harness（API 以生产配置 + release.json 的 releaseId 启动、候选服务器同源服务）、三个生产 spec（完整无 AI 演示 + release 配对；Cache Storage 全量枚举隐私断言；发布更新数据保留/页面内存清空）与 `e2e:production`/`verify:release-candidate` 脚本、CI release-candidate 步骤。生产 E2E 6/6、verify:release-candidate 全绿、根级 e2e 130/14、typecheck/lint/diff-check 通过；独立 Review 的 BLOCKER（dev 配置未排除生产 spec）已修复（playwright.config.ts testIgnore 增加 production-*.spec.ts），MINOR2（release.json 缺失报错指引）已修复，其余记录。
+- 2026-08-18：M4 Task 13 完成（文档任务，RED 不适用）。新增部署指南（前提/发布配对/Fastify 生产配置/Nginx/部署步骤/冒烟/回滚，不给法律结论）、运维手册（健康/告警/7 天日志保留/证书 DNS/访问控制/故障手册）、M4 威胁清单（12 项自动化威胁映射到文件/测试，6 项人工待授权）与 M4 发布清单（自动化/设备/Provider/国内可达性/部署显式列，人工行未勾选）；更新 README、本地开发指南与 roadmap（M4 状态与后续顺序）。prettier（含 5 个既有文档格式漂移修复）、forbidden-content、verify:release-candidate 与 `git diff --check` 通过；文档准确性独立 Review 的 2 个 MAJOR 已修复（提交 `deploy/nginx/youju-proxy-params.conf`、修正 T-07 证据表述与清单数字行）。
 
 ## Repository and Verification State
 
@@ -189,5 +190,6 @@ Next Action：M4 Task 13 — Write Privacy, Deployment, Operations, and Release 
 - Task 9 acceptance commit：`1805a76b308643a6f6facd8cd3163618168b75f1`，`perf: enforce M4 web build budgets`。
 - Task 10 acceptance commit：`becc870492de7d86290dd93d720229688239d82e`，`feat: harden M4 production API boundary`。
 - Task 11 acceptance commit：`138b3efe0123b74c729bad250faa60a670c5ca8f`，`build: add M4 production deployment contract`。
-- Task 12 acceptance commit：本次 `PLAN.md` 更新随 `test: add M4 production release gates` 提交；未 push、未部署。
+- Task 12 acceptance commit：`3bda582deca1ff55aef802f19ed7acf57821d2a8`，`test: add M4 production release gates`。
+- Task 13 acceptance commit：本次 `PLAN.md` 更新随 `docs: add M4 deployment and operations guidance` 提交；未 push、未部署。
 - 当前自动化证据：Task 1 相关 71 测试；Task 2 Web 97/97 与 Chromium 9/9；Task 3 相关 24/24 与四个公开资产 126688 bytes；Task 4 Web 129/129、目标 24/24、Chromium public-demo/verified-deletion/evidence-import 3/3；Task 5 document-export/Web 29/29 与 Chromium demo/user export 2/2；Task 6 Web 141/141、目标 13/13 与 Chromium first-use/storage 2/2；Task 7 Web 150/150、目标 10/10 与 Chromium public-demo/no-ai 3/3；Task 8 Web 169/169、目标 18/18 与生产 Chromium offline/update 2/2；Task 9 Web 172/172、目标 11/11 与预算（首屏 125.7 KiB / 应用壳 765.6 KiB）达标；Task 10 API 91/91 与 ai-contract 34/34；根级完整 `pnpm e2e` 130 通过 / 14 跳过，`pnpm verify` 全绿。

@@ -13,21 +13,7 @@
 - `${STATIC_ROOT}`：`apps/web/dist` 的部署路径；
 - `${UPSTREAM_HOST}` / `${UPSTREAM_PORT}`：Fastify 上游地址（通常 `127.0.0.1:3000`）。
 
-模板引用的 `youju-security-headers.conf`（安全头集合）与 `youju-proxy-params.conf`（代理参数）需与模板同目录提供。安全头集合见同目录文件；代理参数内容如下（并注意其中的客户端体上限必须与 `apps/api` 的 `MAX_REQUEST_BYTES`（32 MiB）一致，不得更大；读取超时必须覆盖 API 最长的任务预算 120s，避免边缘提前 504）：
-
-```nginx
-proxy_http_version 1.1;
-proxy_set_header Host $host;
-proxy_set_header X-Forwarded-For $remote_addr;
-proxy_set_header X-Forwarded-Proto $scheme;
-proxy_set_header X-Forwarded-Host $host;
-# 清除客户端伪造的转发头
-proxy_set_header X-Real-IP $remote_addr;
-client_max_body_size 32m;
-proxy_connect_timeout 5s;
-proxy_read_timeout 130s;
-proxy_send_timeout 60s;
-```
+模板引用的 `youju-security-headers.conf`（安全头集合）与 `youju-proxy-params.conf`（代理参数）已随本目录提供，部署时与模板一起复制到 `/etc/nginx/conf.d/`。`youju-proxy-params.conf` 的关键约束：客户端体上限必须与 `apps/api` 的 `MAX_REQUEST_BYTES`（32 MiB）一致，不得更大；读取超时（130s）必须覆盖 API 最长的任务预算（`draft_statement` 120s），避免边缘提前 504。
 
 注意：nginx 的 `add_header` 不跨层级继承，任何自带 `add_header` 的 location 都必须 `include youju-security-headers.conf`；模板已按此编写，自行修改时必须保持该约定。
 
