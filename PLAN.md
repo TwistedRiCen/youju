@@ -8,7 +8,37 @@
 
 `EXECUTION`
 
-M4 方向设计和详细实施计划均已有用户批准证据。执行继续受仓库单智能体、单 Task 明确授权和完成后 STOP 的规则约束。
+M4 方向设计和详细实施计划均已有用户批准证据。执行采用 `AUTONOMOUS WITH HARD GATES`，在批准边界内持续推进，直到 Goal Acceptance 完成或触发真正的 Hard Stop。
+
+## Execution Policy
+
+### Execution Mode
+
+`AUTONOMOUS WITH HARD GATES`
+
+- 在已批准的 M4 Goal、Architecture、Frozen Decisions、Implementation Plan 和 Acceptance Criteria 范围内自主执行。
+- Task 满足验收标准、相关验证通过、阻断性 Review finding 已解决且本文件已同步后，可以自动选择下一个 dependency-ready Task。
+- 普通测试失败、编译失败、局部实现修正、Review finding、可逆设计细节和回归修复由 Codex 自主诊断、修复并重新验证，不构成人工 checkpoint。
+- TDD、minimal correct change、root-cause、兼容性、安全、隐私和确定性工程纪律保持不变。
+
+### Delegation and Writers
+
+- 允许 bounded named subagents：`explorer`、`docs_researcher`、`test_analyst`、`reviewer`、`routine_worker`。
+- 默认模式为 Many Readers → Evidence Convergence → One Writer → Verification → Independent Review。
+- concurrent read-only agents 不超过 3；active writers 不超过 1；不得并行修改重叠核心文件。
+- Main Sol Thread 负责歧义高、架构或安全敏感、跨模块复杂实现；`routine_worker` 仅用于范围冻结、行为明确、文件面有界且无未决架构或安全决定的工作。
+- significant implementation 在主验证后由具名 `reviewer` 做独立只读 Review；BLOCKER / MAJOR finding 修复后重新验证，必要时重新 Review。
+
+### Commits and External Actions
+
+- 当前 M4 Goal 内 verified local commits 已获授权；每个完成并验收的 Task 保持独立提交，提交后无需人工 checkpoint 即可继续。
+- `PUSH / PR / MERGE / TAG / RELEASE / DEPLOY / PRODUCTION MUTATION = DENY`，首次真正需要时进入 Hard Stop 并请求授权。
+- `REAL PROVIDER CALL = REQUIRE EXPLICIT AUTHORIZATION`。
+- no worktree unless explicitly justified and authorized；不得为了 Multi-Agent 创建 worktree。
+
+### Policy Precedence
+
+根 `AGENTS.md` 与本节取代 M4 详细实施计划中历史性的“单智能体”“逐 Task 单独授权”“提交并停止”等执行节奏描述。M4 Task 顺序、依赖、文件范围、TDD 步骤、验证门禁、Frozen Decisions、Locked Implementation Parameters 和 Acceptance Criteria 仍保持批准状态，不因本次迁移而改变。
 
 ## Scope / Non-Goals
 
@@ -23,7 +53,7 @@ M4 方向设计和详细实施计划均已有用户批准证据。执行继续�
 - 不扩展到网购退款纠纷以外的场景。
 - 不增加账号、云同步、服务端业务数据持久化、共享 AI Key、自动投诉、法律结论、遥测、广告或用户画像。
 - 不把 M5 用户研究、匿名指标或第二场景设计并入 M4。
-- 本次 readiness checkpoint 不实现任何 M4 Task，不执行部署、发布、push 或 `/goal` 长期执行。
+- 本次 execution-policy migration 不实现任何 M4 Task，不修改生产代码，也不执行部署、发布或 push。
 
 ## Confirmed Facts
 
@@ -81,7 +111,7 @@ Canonical architecture evidence：`docs/superpowers/specs/2026-08-13-youju-m4-pu
 
 Approved implementation sequence：`docs/superpowers/plans/2026-08-13-youju-m4-public-demo-deployment-plan.md`。
 
-Next Action：M4 Task 1 — Establish Demo Identity and Load Operation Contracts。必须由用户单独授权后执行。
+Next Action：M4 Task 1 — Establish Demo Identity and Load Operation Contracts。当前策略迁移完成后，本轮按用户要求停止；后续 M4 Goal 执行可从 Task 1 开始，并在其验收后自主进入下一个 dependency-ready Task。
 
 ## Acceptance Criteria
 
@@ -105,7 +135,7 @@ Next Action：M4 Task 1 — Establish Demo Identity and Load Operation Contracts
 
 ## Blockers
 
-- M4 Task 1 当前没有未解决的设计、计划或分支 readiness blocker；仍需用户按仓库规则单独授权该 Task。
+- M4 Task 1 当前没有未解决的设计、计划或分支 readiness blocker。
 - M4 Task 14/15：分别需要真实设备/Provider 授权和公开部署目标/外部操作授权。
 - M5：受 M4 完整验收与公开部署证据阻塞。
 
@@ -119,3 +149,4 @@ Next Action：M4 Task 1 — Establish Demo Identity and Load Operation Contracts
 - 2026-08-17：初始化本文件；未复制 M4 设计或实施计划全文，二者继续作为 canonical evidence。
 - 2026-08-17：用户正式批准 M4 详细实施计划；Current Phase 转入 `EXECUTION`，M4 readiness 标记为 `APPROVED / READY`，实现保持 `NOT STARTED`。
 - 2026-08-17：完成 M4 Execution Readiness Checkpoint 的文档状态与无历史重写分支对齐；下一步固定为 M4 Task 1，尚未执行。
+- 2026-08-18：执行策略迁移为 `AUTONOMOUS WITH HARD GATES`；允许 bounded named subagents、保持 One Writer、允许 verified local commits 和 Task 验收后自动续行，外部操作与真实 Provider 调用继续受 Hard Stop 授权边界保护；未执行 M4 Task 1。
