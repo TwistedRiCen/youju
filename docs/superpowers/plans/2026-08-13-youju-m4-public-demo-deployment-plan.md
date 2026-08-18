@@ -227,7 +227,7 @@ git commit -m "feat: define M4 demo case identity"
 - Preference repository exposes `get`, `put`, and `clear`; it has no event or AI fields.
 - Full local-data deletion clears preferences; single-case deletion does not.
 
-- [ ] **Step 1: Write real-browser migration and deletion RED tests**
+- [x] **Step 1: Write real-browser migration and deletion RED tests**
 
 Seed a v3 database, open v4, assert legacy records survive with user origin, preferences round-trip, and full clearing removes all stores without touching unrelated browser origins.
 
@@ -237,15 +237,15 @@ pnpm exec playwright test tests/e2e/case-repository.spec.ts tests/e2e/app-prefer
 
 Expected RED: v4 store and backfill do not exist.
 
-- [ ] **Step 2: Implement v4 migration and preference repository**
+- [x] **Step 2: Implement v4 migration and preference repository**
 
 Migration must be additive and cursor-based. Any blocked or failed migration keeps current error semantics and must never delete the database.
 
-- [ ] **Step 3: Extend verified full deletion**
+- [x] **Step 3: Extend verified full deletion**
 
 Only the explicit “delete all local data” path clears app preferences. Preserve per-case verified deletion behavior.
 
-- [ ] **Step 4: Run Task 2 gates**
+- [x] **Step 4: Run Task 2 gates**
 
 ```powershell
 pnpm exec vitest run apps/web/tests/deletion.test.ts
@@ -254,7 +254,7 @@ pnpm --filter @youju/web typecheck
 git diff --check
 ```
 
-- [ ] **Step 5: Commit and stop**
+- [x] **Step 5: Commit and stop**
 
 ```powershell
 git add apps/web/src/storage apps/web/src/services/delete-case-service.ts apps/web/tests/deletion.test.ts tests/e2e/case-repository.spec.ts tests/e2e/app-preferences.spec.ts docs/superpowers/plans/2026-08-13-youju-m4-public-demo-deployment-plan.md

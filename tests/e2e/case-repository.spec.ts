@@ -23,23 +23,35 @@ interface BrowserCaseEvent {
   readonly status: 'draft'
   readonly requestedResolution: null
   readonly storageMode: 'local'
-  readonly schemaVersion: 1
+  readonly schemaVersion: 2
+  readonly dataOrigin: 'user_created'
+  readonly demoFixtureId: null
 }
 
 interface BrowserDatabase {
   readonly version: number
   readonly objectStoreNames: DOMStringList
+  get(storeName: 'cases', key: string): Promise<Record<string, unknown> | undefined>
   close(): void
 }
 
 interface BrowserStoredCase {
-  readonly caseEvent: { readonly id: string; readonly title: string }
+  readonly caseEvent: {
+    readonly id: string
+    readonly title: string
+    readonly dataOrigin: 'user_created' | 'fictional_demo'
+    readonly demoFixtureId: string | null
+  }
   readonly revision: number
   readonly lastWriterId: string
 }
 
 interface BrowserCaseAggregate extends BrowserStoredCase {
-  readonly factDrafts: readonly { readonly id: string; readonly fieldName: string; readonly value: string }[]
+  readonly factDrafts: readonly {
+    readonly id: string
+    readonly fieldName: string
+    readonly value: string
+  }[]
 }
 
 interface BrowserCaseRepository {
@@ -71,6 +83,7 @@ interface BrowserCaseRepository {
 }
 
 interface BrowserStorageModule {
+  readonly YOUJU_DATABASE_VERSION: number
   readonly DATABASE_MIGRATIONS: readonly DatabaseMigration[]
   openYoujuDatabase(migrations: readonly DatabaseMigration[]): Promise<BrowserDatabase>
   IndexedDbCaseRepository: new (database: BrowserDatabase) => BrowserCaseRepository
@@ -95,7 +108,9 @@ const caseEvent: BrowserCaseEvent = {
   status: 'draft',
   requestedResolution: null,
   storageMode: 'local',
-  schemaVersion: 1,
+  schemaVersion: 2,
+  dataOrigin: 'user_created',
+  demoFixtureId: null,
 }
 
 const drafts: readonly BrowserFactDraft[] = [
@@ -244,6 +259,7 @@ test('creates, loads, updates, and replaces drafts with revision checks', async 
     storeNames: [
       'aiCandidates',
       'analysisVersions',
+      'appPreferences',
       'cases',
       'confirmedFacts',
       'confirmedStatements',
@@ -280,11 +296,98 @@ test('survives closing and reopening the repository', async ({ page }) => {
   expect(result).toEqual({ title: '运输破损退款纠纷', draftCount: 6, revision: 1 })
 })
 
+test('migrates every version 3 case identity durably to version 4', async ({ page }) => {
+  await page.goto('/')
+  await page.evaluate(
+    async (payload) => {
+      const url = '/src/storage/index.ts'
+      const storage = (await import(url)) as BrowserStorageModule
+      const versionThree = await storage.openYoujuDatabase(storage.DATABASE_MIGRATIONS.slice(0, 3))
+      versionThree.close()
+
+      const {
+        dataOrigin: _dataOrigin,
+        demoFixtureId: _demoFixtureId,
+        ...legacyCase
+      } = payload.caseEvent
+      await new Promise<void>((resolve, reject) => {
+        const request = indexedDB.open('youju-local', 3)
+        request.onsuccess = () => {
+          const database = request.result
+          const transaction = database.transaction('cases', 'readwrite')
+          transaction
+            .objectStore('cases')
+            .put({ ...legacyCase, revision: 7, lastWriterId: 'legacy-v3-a' })
+          transaction.objectStore('cases').put({
+            ...legacyCase,
+            id: '00000000-0000-4000-8000-000000000002',
+            title: '第二个旧事件',
+            revision: 3,
+            lastWriterId: 'legacy-v3-b',
+          })
+          transaction.oncomplete = () => {
+            database.close()
+            resolve()
+          }
+          transaction.onerror = () => reject(transaction.error)
+        }
+        request.onerror = () => reject(request.error)
+      })
+    },
+    { caseEvent },
+  )
+
+  await openRepositoryInPage(page)
+
+  const migrated = await page.evaluate(async () => {
+    const host = window as unknown as BrowserWindow
+    const database = host.__youjuDatabase as BrowserDatabase
+    const repository = host.__youjuRepo as BrowserCaseRepository
+    const firstRaw = await database.get('cases', '00000000-0000-4000-8000-000000000001')
+    const secondRaw = await database.get('cases', '00000000-0000-4000-8000-000000000002')
+    const projected = await repository.listCases()
+
+    return {
+      version: database.version,
+      declaredVersion: host.__youjuStorage?.YOUJU_DATABASE_VERSION,
+      firstRaw,
+      secondRaw,
+      projected: projected.map(({ caseEvent, revision }) => ({
+        id: caseEvent.id,
+        dataOrigin: caseEvent.dataOrigin,
+        demoFixtureId: caseEvent.demoFixtureId,
+        revision,
+      })),
+    }
+  })
+
+  expect(migrated).toMatchObject({
+    version: 4,
+    declaredVersion: 4,
+    firstRaw: { dataOrigin: 'user_created', demoFixtureId: null, revision: 7 },
+    secondRaw: { dataOrigin: 'user_created', demoFixtureId: null, revision: 3 },
+    projected: [
+      {
+        id: '00000000-0000-4000-8000-000000000001',
+        dataOrigin: 'user_created',
+        demoFixtureId: null,
+        revision: 7,
+      },
+      {
+        id: '00000000-0000-4000-8000-000000000002',
+        dataOrigin: 'user_created',
+        demoFixtureId: null,
+        revision: 3,
+      },
+    ],
+  })
+})
+
 test('migrates a legacy version 1 database and preserves its case', async ({ page }) => {
   await page.goto('/')
   await page.evaluate(async (payload) => {
     const createLegacyV1Database = (
-      caseRecord: BrowserCaseEvent,
+      caseRecord: Record<string, unknown>,
       draft: BrowserFactDraft,
     ): Promise<void> =>
       new Promise<void>((resolve, reject) => {
@@ -310,10 +413,12 @@ test('migrates a legacy version 1 database and preserves its case', async ({ pag
             reject(transaction.error)
           }
         }
-        request.onerror = () => reject(request.error)
+          request.onerror = () => reject(request.error)
       })
 
-    await createLegacyV1Database(payload.caseEvent, payload.drafts[0]!)
+    const { dataOrigin: _dataOrigin, demoFixtureId: _demoFixtureId, ...legacyCase } =
+      payload.caseEvent
+    await createLegacyV1Database(legacyCase, payload.drafts[0]!)
   }, { caseEvent, drafts })
 
   await openRepositoryInPage(page)
@@ -326,10 +431,18 @@ test('migrates a legacy version 1 database and preserves its case', async ({ pag
       title: loaded?.caseEvent.title ?? null,
       draftCount: loaded?.factDrafts.length ?? 0,
       version: host.__youjuDatabase?.version ?? 0,
+      dataOrigin: loaded?.caseEvent.dataOrigin ?? null,
+      demoFixtureId: loaded?.caseEvent.demoFixtureId ?? null,
     }
   }, caseId)
 
-  expect(result).toEqual({ title: '运输破损退款纠纷', draftCount: 1, version: 3 })
+  expect(result).toMatchObject({
+    title: '运输破损退款纠纷',
+    draftCount: 1,
+    version: 4,
+    dataOrigin: 'user_created',
+    demoFixtureId: null,
+  })
 })
 
 test('aborts a failing migration and keeps version 1 data readable', async ({ page }) => {
@@ -417,7 +530,7 @@ test('refuses a newer unknown database version without deleting it', async ({ pa
   await page.goto('/')
   await page.evaluate(async () => {
     await new Promise<void>((resolve, reject) => {
-      const request = indexedDB.open('youju-local', 4)
+      const request = indexedDB.open('youju-local', 5)
       request.onupgradeneeded = () => {
         request.result.createObjectStore('futureStore', { keyPath: 'id' })
       }
@@ -455,7 +568,7 @@ test('refuses a newer unknown database version without deleting it', async ({ pa
     return { refusedCode, version }
   })
 
-  expect(refusal).toEqual({ refusedCode: 'storage_not_supported', version: 4 })
+  expect(refusal).toEqual({ refusedCode: 'storage_not_supported', version: 5 })
 })
 
 test('reports a low-sensitivity error when an upgrade is blocked', async ({ page }) => {
@@ -527,5 +640,5 @@ test('reports a low-sensitivity error when an upgrade is blocked', async ({ page
     }
   }, caseId)
 
-  expect(recovered).toEqual({ title: '运输破损退款纠纷', version: 3 })
+  expect(recovered).toEqual({ title: '运输破损退款纠纷', version: 4 })
 })

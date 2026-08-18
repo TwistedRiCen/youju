@@ -11,9 +11,14 @@ import type {
 } from '@youju/domain'
 import type { AiCandidate } from '@youju/ai-core'
 import type { AnalysisVersion } from '@youju/domain'
+import type { LocalAppPreferences } from './app-preferences-repository.js'
 
 export const YOUJU_DATABASE_NAME = 'youju-local'
-export const YOUJU_DATABASE_VERSION = 3
+export const YOUJU_DATABASE_VERSION = 4
+
+export type PersistedAppPreferences = LocalAppPreferences & {
+  readonly key: 'local-app-preferences'
+}
 
 export type PersistedCaseEvent = CaseEvent & {
   readonly revision: number
@@ -39,6 +44,7 @@ export interface YouJuDatabaseSchema extends DBSchema {
     value: AiCandidate
     indexes: { by_caseId: string; by_analysisVersionId: string }
   }
+  appPreferences: { key: string; value: PersistedAppPreferences }
 }
 
 export type DatabaseMigration = (database: IDBDatabase, transaction: IDBTransaction) => void
@@ -78,6 +84,26 @@ function migrateLegacyProvenance(
   }
 }
 
+function migrateLegacyCaseIdentity(transaction: IDBTransaction): void {
+  const request = transaction.objectStore(CASE_STORE).openCursor()
+  request.onsuccess = () => {
+    const cursor = request.result
+    if (cursor === null) {
+      return
+    }
+
+    const record = cursor.value as Record<string, unknown>
+    if (record.dataOrigin === undefined && record.demoFixtureId === undefined) {
+      cursor.update({
+        ...record,
+        dataOrigin: 'user_created',
+        demoFixtureId: null,
+      })
+    }
+    cursor.continue()
+  }
+}
+
 export const DATABASE_MIGRATIONS: readonly DatabaseMigration[] = [
   (database) => {
     database.createObjectStore(CASE_STORE, { keyPath: 'id' })
@@ -113,5 +139,9 @@ export const DATABASE_MIGRATIONS: readonly DatabaseMigration[] = [
     ] as const) {
       migrateLegacyProvenance(transaction, storeName)
     }
+  },
+  (database, transaction) => {
+    database.createObjectStore('appPreferences', { keyPath: 'key' })
+    migrateLegacyCaseIdentity(transaction)
   },
 ]

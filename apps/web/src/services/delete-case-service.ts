@@ -1,6 +1,8 @@
 import type { UtcTimestamp, UuidV4 } from '@youju/domain'
 import type { EvidenceBlobStore } from '@youju/evidence-store'
+import { evidenceStoragePath } from '@youju/evidence-store'
 import type { CaseRepository } from '../storage/index.js'
+import type { AppPreferencesRepository } from '../storage/index.js'
 
 export type DeleteCaseResult =
   | { readonly status: 'deleted' }
@@ -22,6 +24,18 @@ export interface DeleteCaseDependencies {
   readonly repository: CaseRepository
   readonly blobStore: EvidenceBlobStore
 }
+
+export interface DeleteAllLocalDataDependencies extends DeleteCaseDependencies {
+  readonly preferences: AppPreferencesRepository
+}
+
+export type DeleteAllLocalDataResult =
+  | { readonly status: 'deleted' }
+  | {
+      readonly status: 'failed'
+      readonly code: 'delete_verification_failed'
+      readonly remaining: readonly ('indexeddb' | 'opfs' | 'temporary' | 'preferences')[]
+    }
 
 async function verifyDeletion(
   caseId: UuidV4,
@@ -49,7 +63,9 @@ async function verifyDeletion(
     facts.length > 0 ||
     timeline.length > 0 ||
     statementDrafts.length > 0 ||
-    statements.length > 0 || aiRecords.length > 0 || aiCandidates.length > 0
+    statements.length > 0 ||
+    aiRecords.length > 0 ||
+    aiCandidates.length > 0
   ) {
     remaining.push('indexeddb')
   }
@@ -127,4 +143,65 @@ export async function resumeCaseDeletion(
   dependencies: DeleteCaseDependencies,
 ): Promise<DeleteCaseResult> {
   return runCaseDeletion(operationId, caseId, startedAt, dependencies)
+}
+
+export async function deleteAllLocalData(
+  dependencies: DeleteAllLocalDataDependencies,
+): Promise<DeleteAllLocalDataResult> {
+  const interruptedOperations = await dependencies.repository.listOperations()
+  try {
+    for (const entry of interruptedOperations) {
+      await dependencies.blobStore.deleteTemporary(entry.operationId)
+      if (entry.operationType === 'evidence_delete') {
+        await dependencies.blobStore.delete(entry.storageRef)
+      }
+      if (entry.operationType === 'evidence_import') {
+        await dependencies.blobStore.delete(evidenceStoragePath(entry.caseId, entry.evidenceId))
+      }
+      await dependencies.repository.deleteOperation(entry.operationId)
+    }
+  } catch {
+    return {
+      status: 'failed',
+      code: 'delete_verification_failed',
+      remaining: ['temporary'],
+    }
+  }
+
+  const cases = await dependencies.repository.listCases()
+  for (const storedCase of cases) {
+    const result = await runCaseDeletion(
+      crypto.randomUUID(),
+      storedCase.caseEvent.id,
+      new Date().toISOString(),
+      dependencies,
+    )
+    if (result.status === 'failed') {
+      return result
+    }
+  }
+
+  try {
+    await dependencies.preferences.clear()
+  } catch {
+    return {
+      status: 'failed',
+      code: 'delete_verification_failed',
+      remaining: ['preferences'],
+    }
+  }
+
+  const remaining: ('indexeddb' | 'temporary' | 'preferences')[] = []
+  if ((await dependencies.repository.listCases()).length > 0) {
+    remaining.push('indexeddb')
+  }
+  if ((await dependencies.repository.listOperations()).length > 0) {
+    remaining.push('indexeddb', 'temporary')
+  }
+  if ((await dependencies.preferences.get()) !== null) {
+    remaining.push('preferences')
+  }
+  return remaining.length === 0
+    ? { status: 'deleted' }
+    : { status: 'failed', code: 'delete_verification_failed', remaining }
 }
