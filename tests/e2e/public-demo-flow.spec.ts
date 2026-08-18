@@ -18,7 +18,11 @@ async function expectDemoBanner(page: Page): Promise<void> {
   await expect(page.getByText('仅用于体验有据，请勿作为真实材料提交。')).toBeVisible()
 }
 
-test('completes the public no-AI demo walkthrough, export, deletion, and readback', async ({ page }) => {
+test('completes the public no-AI demo walkthrough, export, deletion, and readback', async ({
+  page,
+  browserName,
+}) => {
+  test.skip(browserName === 'webkit', '此 WebKit 构建不支持 OPFS')
   test.setTimeout(90_000)
   const requests: string[] = []
   page.on('request', (request) => requests.push(request.url()))
@@ -121,7 +125,11 @@ test('completes the public no-AI demo walkthrough, export, deletion, and readbac
   expect(requests.some((url) => new URL(url).pathname.startsWith('/ai/'))).toBe(false)
 })
 
-test('exposes verified full local deletion and restores first-use guidance', async ({ page }) => {
+test('exposes verified full local deletion and restores first-use guidance', async ({
+  page,
+  browserName,
+}) => {
+  test.skip(browserName === 'webkit', '此 WebKit 构建不支持 OPFS')
   test.setTimeout(60_000)
   await page.goto('/')
   await dismissFirstUseGuide(page)

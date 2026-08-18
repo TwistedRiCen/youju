@@ -111,7 +111,7 @@ Canonical architecture evidence：`docs/superpowers/specs/2026-08-13-youju-m4-pu
 
 Approved implementation sequence：`docs/superpowers/plans/2026-08-13-youju-m4-public-demo-deployment-plan.md`。
 
-Next Action：修复 Task 6/7 引入的根级 e2e 门禁回归（首次引导对话框拦截旧 UI 测试、首页文案陈旧断言、应用首页持有 DB 连接破坏 legacy 播种/重置测试），随后进入 M4 Task 9 — Enforce Route-Level Loading and Web Build Budgets。Task 8 已通过提示式更新状态机单测、生产 Service Worker/离线/更新 E2E、Web 全包回归、开发 E2E 子集回归，并完成两轮独立 Review 与修复闭环。
+Next Action：M4 Task 9 — Enforce Route-Level Loading and Web Build Budgets。Task 8 已通过提示式更新状态机单测、生产 Service Worker/离线/更新 E2E、Web 全包回归、开发 E2E 子集回归，并完成两轮独立 Review 与修复闭环；Task 6/7 引入的根级 e2e 门禁回归已修复（引导对话框、陈旧文案断言、DB 连接持有三族问题，含 WebKit 能力 skip 惯例）。
 
 ## Acceptance Criteria
 
@@ -127,7 +127,6 @@ Next Action：修复 Task 6/7 引入的根级 e2e 门禁回归（首次引导对
 ## Risks
 
 - 当前入口 JS gzip 约 752 KiB，超过 M4 首屏 500 KiB 目标；构建也报告大块警告（Task 9 修复）。
-- 根级 `pnpm e2e` 门禁当前失败：Task 6 的首次引导对话框拦截旧 UI 测试点击、Task 7 首页文案变更遗留陈旧断言、应用首页持有 IndexedDB 连接破坏 legacy 版本播种/删除重置测试（共 6 个 spec 文件，2026-08-18 发现；属 Task 6/7 引入的既有回归，Task 8 门禁子集此前未暴露）。修复为独立 commit，先于 Task 9。
 - Playwright 离线仿真在 SW 服务的 reload 后 `navigator.onLine` 复位，生产 E2E 通过显式派发 offline 事件驱动控制器监听路径；真实断网场景由浏览器原生事件覆盖。
 - Fastify 默认不信任代理且使用 `request.ip` 做进程内保护；反向代理后需要显式受信 CIDR，直接设 `true` 会扩大伪造风险。
 - 当前开发服务器 E2E 不能证明生产 Service Worker、缓存头、安全头、HTTPS 代理或发布回滚。
@@ -164,7 +163,8 @@ Next Action：修复 Task 6/7 引入的根级 e2e 门禁回归（首次引导对
 - 2026-08-18：M4 Task 5 完成。有效 RED 以 PDF/CSV/HTML/ZIP/下载名缺少演示标记的 5 个目标失败证明行为未实现；新增单一 `CaseEvent.dataOrigin` 导出策略、PDF 每 section 与每页警示、CSV `数据性质`、HTML 三处警示、`DEMO-` ZIP/目录与 `DEMO-README.txt`，并保持真实事件既有命名和内容边界。document-export/Web 5 文件 29 测试、Chromium 演示与真实导出 2/2、root typecheck、lint 与 `git diff --check` 通过；独立 Review 的跨页警示及真实浏览器无污染 2 个 MAJOR 已修复并复审关闭。
 - 2026-08-18：M4 Task 6 完成。有效 RED 由缺失 persistence adapter/guide/notice 及 capability 字段导致；新增 `persisted()`/`persist()` 确定性适配、低敏结果保存、三步以内可跳过原生 modal 引导、诚实的 granted/denied/unsupported 状态与手动 denied retry。自动请求仅发生于真实事件创建或首个成功真实材料导入，空白首页、演示加载/导入、失败与重复材料均不触发；全量删除偏好后引导重现。Web 25 文件 141 测试、Task 目标 13/13、Chromium 2/2、Web typecheck、root lint 与 `git diff --check` 通过；独立 Review 的 unsupported 文案/无效 retry 与 modal 焦点管理 2 个 MAJOR 已修复并复审关闭。
 - 2026-08-18：M4 Task 7 完成。有效 RED 由公开页面、路由、演示横幅和当前版本入口缺失导致；新增无需注册/无需 AI 的双入口首页、显式打开/重置演示、按 `CaseEvent.dataOrigin` 持久显示的演示横幅、隐私/关于/本地反馈页面，以及要求精确确认并执行删除核验的用户可达全量本地删除。Task 目标单测 10/10、Web 27 文件 150/150、Chromium public-demo/no-ai 3/3、Web typecheck/build、root lint 与 `git diff --check` 通过；真实设备矩阵、真实 Provider 和发布编号均保持诚实未验证状态；独立 Review 未发现 BLOCKER 或 MAJOR。
-- 2026-08-18：M4 Task 8 完成。有效 RED 由 autoUpdate 配置、缺少 prompt 状态机/生产 PWA 测试装备导致；实现 prompt 注册与 idle/offline_ready/update_available/updating 状态机、模块级活动门控（导入/导出/AI 任务/未决 autosave 写入）、10 秒激活与空闲回退、dispose 全路径恢复、严格离线壳（应用壳 + 显式 demo allowlist 预缓存，`/ai/*`、`/health` 经 `navigateFallbackDenylist` 排除，运行时缓存为空）、离线/更新状态横幅与生产 Playwright 装备。目标单测 18/18、Web 28 文件 169/169、生产 Chromium E2E 2/2（3 次连跑稳定）、开发 E2E 子集 5/5、root typecheck/lint 与 `git diff --check` 通过；两轮独立 Review（首轮 FAIL 的 BLOCKER 孤儿计数与 MAJOR 挂起路径均已修复），re-check PASS 无未决 finding。偏差（受 Task 8 Interfaces 驱动的最小文件面扩展，已记录）：`workbox-window` 显式 devDependency、`tsconfig.json` types、`use-autosave.ts`/`MaterialsView.vue`/`ExportView.vue`/`AiAssistantView.vue` 活动上报、`FactsView.vue` dispose 补全、`playwright.config.ts` testIgnore。另发现并记录 Task 6/7 引入的根级 e2e 门禁回归（6 个 spec），修复排入独立 commit。
+- 2026-08-18：M4 Task 8 完成。有效 RED 由 autoUpdate 配置、缺少 prompt 状态机/生产 PWA 测试装备导致；实现 prompt 注册与 idle/offline_ready/update_available/updating 状态机、模块级活动门控（导入/导出/AI 任务/未决 autosave 写入）、10 秒激活与空闲回退、dispose 全路径恢复、严格离线壳（应用壳 + 显式 demo allowlist 预缓存，`/ai/*`、`/health` 经 `navigateFallbackDenylist` 排除，运行时缓存为空）、离线/更新状态横幅与生产 Playwright 装备。目标单测 18/18、Web 28 文件 169/169、生产 Chromium E2E 2/2（3 次连跑稳定）、开发 E2E 子集 5/5、root typecheck/lint 与 `git diff --check` 通过；两轮独立 Review（首轮 FAIL 的 BLOCKER 孤儿计数与 MAJOR 挂起路径均已修复），re-check PASS 无未决 finding。偏差（受 Task 8 Interfaces 驱动的最小文件面扩展，已记录）：`workbox-window` 显式 devDependency、`tsconfig.json` types、`use-autosave.ts`/`MaterialsView.vue`/`ExportView.vue`/`AiAssistantView.vue` 活动上报、`FactsView.vue` dispose 补全、`playwright.config.ts` testIgnore。
+- 2026-08-18：修复 Task 6/7 引入的根级 e2e 门禁回归（独立 commit，先于 Task 9）。三族根因：Task 6 首次引导对话框异步出现拦截旧 UI 测试点击（9 个 spec 增加确定性 dismiss helper：等待对话框可见→跳过→等待隐藏）；Task 7 首页文案变更遗留陈旧断言（home-and-diagnostics）；Task 6/7 应用在首页持有 IndexedDB 连接破坏 legacy 播种/删除重置（case-repository 5 个测试与 ai-repository 重置改在静态演示资产页执行，并修正 v3→v4 陈旧版本断言）。WebKit 构建无 OPFS/StorageManager persist 的 spec（public-demo-flow×2、public-demo-storage、first-use-and-storage×2）按仓库既有能力 skip 惯例标记。修复后完整 `pnpm e2e` 130 通过 / 14 跳过，`pnpm verify` 全绿。
 
 ## Repository and Verification State
 
@@ -178,5 +178,6 @@ Next Action：修复 Task 6/7 引入的根级 e2e 门禁回归（首次引导对
 - Task 5 acceptance commit：`5b0b9d5baf9b6e22f97fbb3563588a692c6871d9`，`feat: mark all fictional demo exports`。
 - Task 6 acceptance commit：`62524c17e83b74416e6475d467834f05203104ca`，`feat: explain first-use local storage`。
 - Task 7 acceptance commit：`5974ea9ed975e3af6f3ee019e3c497d1ca5e122`，`feat: add M4 public demo experience`。
-- Task 8 acceptance commit：本次 `PLAN.md` 更新随 `feat: add controlled PWA offline updates` 提交；未 push、未部署。
-- 当前自动化证据：Task 1 相关 71 测试；Task 2 Web 97/97 与 Chromium 9/9；Task 3 相关 24/24 与四个公开资产 126688 bytes；Task 4 Web 129/129、目标 24/24、Chromium public-demo/verified-deletion/evidence-import 3/3；Task 5 document-export/Web 29/29 与 Chromium demo/user export 2/2；Task 6 Web 141/141、目标 13/13 与 Chromium first-use/storage 2/2；Task 7 Web 150/150、目标 10/10 与 Chromium public-demo/no-ai 3/3；Task 8 Web 169/169、目标 18/18 与生产 Chromium offline/update 2/2；root typecheck、lint、fixture/public-demo/forbidden validator 持续通过；根级完整 `pnpm e2e` 当前因 Task 6/7 引入的既有回归失败，修复 commit 待办。
+- Task 8 acceptance commit：`c08dbcb222a245e4be8549831bf2b73655b2482e`，`feat: add controlled PWA offline updates`。
+- e2e 门禁修复 commit：本次 `PLAN.md` 更新随 `test: restore full e2e gate after public UX regressions` 提交；未 push、未部署。
+- 当前自动化证据：Task 1 相关 71 测试；Task 2 Web 97/97 与 Chromium 9/9；Task 3 相关 24/24 与四个公开资产 126688 bytes；Task 4 Web 129/129、目标 24/24、Chromium public-demo/verified-deletion/evidence-import 3/3；Task 5 document-export/Web 29/29 与 Chromium demo/user export 2/2；Task 6 Web 141/141、目标 13/13 与 Chromium first-use/storage 2/2；Task 7 Web 150/150、目标 10/10 与 Chromium public-demo/no-ai 3/3；Task 8 Web 169/169、目标 18/18 与生产 Chromium offline/update 2/2；根级完整 `pnpm e2e` 130 通过 / 14 跳过，`pnpm verify` 全绿。

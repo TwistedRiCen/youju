@@ -38,7 +38,9 @@ async function createCase(page: Page): Promise<void> {
 
 test('guides first use and requests persistence only after creating a real case', async ({
   page,
+  browserName,
 }) => {
+  test.skip(browserName === 'webkit', '此 WebKit 构建不支持 OPFS 与 StorageManager persist')
   const persistenceCalls = await installPersistenceStub(page, false)
   await page.goto('/')
 
@@ -92,7 +94,9 @@ test('guides first use and requests persistence only after creating a real case'
 
 test('requests after a successful real import but never for duplicate or demo data', async ({
   page,
+  browserName,
 }) => {
+  test.skip(browserName === 'webkit', '此 WebKit 构建不支持 OPFS 与 StorageManager persist')
   const persistenceCalls = await installPersistenceStub(page, false)
   await page.goto('/')
   await page.getByRole('dialog', { name: '首次使用有据' })

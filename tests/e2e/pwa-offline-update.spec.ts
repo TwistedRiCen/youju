@@ -6,12 +6,15 @@ import type { BrowserContext, Page } from '@playwright/test'
 const swPath = path.join(process.cwd(), 'apps/web/dist/sw.js')
 
 async function dismissFirstUseGuide(page: Page): Promise<void> {
-  const skip = page.getByRole('button', { name: '跳过' })
-  if (await skip.isVisible().catch(() => false)) {
-    await skip.click()
-    // Dismissal persists the seen version before closing; wait for the
-    // dialog to disappear so a following reload cannot lose the write.
-    await expect(page.locator('dialog.guide-dialog')).toBeHidden()
+  // The guide mounts asynchronously after preferences load; wait for the
+  // dialog or a short grace period, then dismiss it when present.
+  const dialog = page.locator('dialog.guide-dialog')
+  try {
+    await dialog.waitFor({ state: 'visible', timeout: 1500 })
+    await page.getByRole('button', { name: '跳过' }).click()
+    await dialog.waitFor({ state: 'hidden' })
+  } catch {
+    // Guide already dismissed in this profile.
   }
 }
 

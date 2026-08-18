@@ -1,6 +1,10 @@
 import { expect, test } from '@playwright/test'
 
-test('loads, persists, de-duplicates, and resets the same-origin public demo in real browser storage', async ({ page }) => {
+test('loads, persists, de-duplicates, and resets the same-origin public demo in real browser storage', async ({
+  page,
+  browserName,
+}) => {
+  test.skip(browserName === 'webkit', '此 WebKit 构建不支持 OPFS')
   const requests: string[] = []
   page.on('request', (request) => requests.push(request.url()))
   await page.goto('/')

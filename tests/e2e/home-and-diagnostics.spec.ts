@@ -14,7 +14,7 @@ test('home communicates the product boundary without login fields', async ({ pag
 
   await expect(page.getByRole('heading', { level: 1, name: '有据' })).toBeVisible()
   await expect(page.getByText('整理事实与材料，不替你作法律判断')).toBeVisible()
-  await expect(page.getByText('无需注册；不使用AI也能完成核心流程')).toBeVisible()
+  await expect(page.getByText('无需注册；无需 AI 也能完成核心流程')).toBeVisible()
   await expect(
     page.locator(
       'input[type="tel"], input[type="password"], input[autocomplete="tel"], input[autocomplete="username"]',

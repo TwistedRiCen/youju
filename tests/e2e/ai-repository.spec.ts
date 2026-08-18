@@ -117,7 +117,9 @@ const candidate = {
 const secondCandidate = { ...candidate, id: secondCandidateId }
 
 async function resetDatabase(page: Page): Promise<void> {
-  await page.goto('/')
+  // Reset from a static page so the app never holds an open connection
+  // that would block the database deletion.
+  await page.goto('/demo/m4-ecommerce-refund-demo-v1/manifest.json')
   await page.evaluate(
     () =>
       new Promise<void>((resolve, reject) => {
@@ -219,7 +221,7 @@ test('migrates M2 records and creates indexed AI stores', async ({ page }) => {
     }
   }, { caseId, evidenceId })
 
-  expect(result.version).toBe(3)
+  expect(result.version).toBe(4)
   expect(result.evidence).toMatchObject({ categoryOrigin: 'manual', categoryCandidateId: null })
   expect(result.timeline).toMatchObject({ contentOrigin: 'manual', derivedFromCandidateId: null })
   expect(result.statement).toMatchObject({ contentOrigin: 'manual', derivedFromCandidateId: null })

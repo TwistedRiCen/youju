@@ -297,7 +297,9 @@ test('survives closing and reopening the repository', async ({ page }) => {
 })
 
 test('migrates every version 3 case identity durably to version 4', async ({ page }) => {
-  await page.goto('/')
+  // Seed the legacy database from a static page so the app never opens a
+  // competing v4 connection before the v3 seed completes.
+  await page.goto('/demo/m4-ecommerce-refund-demo-v1/manifest.json')
   await page.evaluate(
     async (payload) => {
       const url = '/src/storage/index.ts'
@@ -382,7 +384,9 @@ test('migrates every version 3 case identity durably to version 4', async ({ pag
 })
 
 test('migrates a legacy version 1 database and preserves its case', async ({ page }) => {
-  await page.goto('/')
+  // Seed the legacy database from a static page so the app never opens a
+  // competing v4 connection before the v1 seed completes.
+  await page.goto('/demo/m4-ecommerce-refund-demo-v1/manifest.json')
   await page.evaluate(async (payload) => {
     const createLegacyV1Database = (
       caseRecord: Record<string, unknown>,
@@ -445,7 +449,7 @@ test('migrates a legacy version 1 database and preserves its case', async ({ pag
 })
 
 test('aborts a failing migration and keeps version 1 data readable', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('/demo/m4-ecommerce-refund-demo-v1/manifest.json')
   await page.evaluate(async (payload) => {
     const createLegacyV1Database = (draft: BrowserFactDraft): Promise<void> =>
       new Promise<void>((resolve, reject) => {
@@ -526,7 +530,9 @@ test('aborts a failing migration and keeps version 1 data readable', async ({ pa
 })
 
 test('refuses a newer unknown database version without deleting it', async ({ page }) => {
-  await page.goto('/')
+  // Seed the future database from a static page so the app never opens a
+  // competing connection that would block or fail the v5 seed.
+  await page.goto('/demo/m4-ecommerce-refund-demo-v1/manifest.json')
   await page.evaluate(async () => {
     await new Promise<void>((resolve, reject) => {
       const request = indexedDB.open('youju-local', 5)
@@ -571,7 +577,7 @@ test('refuses a newer unknown database version without deleting it', async ({ pa
 })
 
 test('reports a low-sensitivity error when an upgrade is blocked', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('/demo/m4-ecommerce-refund-demo-v1/manifest.json')
   await page.evaluate(async (payload) => {
     const createLegacyV1Database = (draft: BrowserFactDraft, keepOpen: boolean): Promise<void> =>
       new Promise<void>((resolve, reject) => {

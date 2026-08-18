@@ -15,8 +15,22 @@ const pdfBytes = [0x25, 0x50, 0x44, 0x46, 0x2d, 0x31, 0x2e, 0x34, 0x00, 0x01, 0x
 const hashOne = createHash('sha256').update(Buffer.from(pngOne)).digest('hex')
 const hashTwo = createHash('sha256').update(Buffer.from(pngTwo)).digest('hex')
 
+async function dismissFirstUseGuide(page: Page): Promise<void> {
+  // The guide mounts asynchronously after preferences load; wait for the
+  // dialog or a short grace period, then dismiss it when present.
+  const dialog = page.locator('dialog.guide-dialog')
+  try {
+    await dialog.waitFor({ state: 'visible', timeout: 1500 })
+    await page.getByRole('button', { name: '跳过' }).click()
+    await dialog.waitFor({ state: 'hidden' })
+  } catch {
+    // Guide already dismissed in this profile.
+  }
+}
+
 async function createCase(page: Page): Promise<void> {
   await page.goto('/')
+  await dismissFirstUseGuide(page)
   await page.getByRole('link', { name: '创建本地事件' }).click()
   await page.getByLabel('事件标题').fill('运输破损退款纠纷')
   await page.getByLabel('购买时间').fill('2026-07-01T12:16')

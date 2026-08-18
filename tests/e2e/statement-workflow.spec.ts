@@ -1,8 +1,22 @@
 import { expect, test } from '@playwright/test'
 import type { Page } from '@playwright/test'
 
+async function dismissFirstUseGuide(page: Page): Promise<void> {
+  // The guide mounts asynchronously after preferences load; wait for the
+  // dialog or a short grace period, then dismiss it when present.
+  const dialog = page.locator('dialog.guide-dialog')
+  try {
+    await dialog.waitFor({ state: 'visible', timeout: 1500 })
+    await page.getByRole('button', { name: '跳过' }).click()
+    await dialog.waitFor({ state: 'hidden' })
+  } catch {
+    // Guide already dismissed in this profile.
+  }
+}
+
 async function createCase(page: Page): Promise<void> {
   await page.goto('/')
+  await dismissFirstUseGuide(page)
   await page.getByRole('link', { name: '创建本地事件' }).click()
   await page.getByLabel('事件标题').fill('运输破损退款纠纷')
   await page.getByLabel('购买时间').fill('2026-07-01T12:16')
