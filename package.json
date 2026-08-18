@@ -17,6 +17,7 @@
     "check:forbidden-content": "tsx scripts/check-forbidden-content.ts",
     "validate:fixtures": "tsx scripts/validate-fixtures.ts",
     "validate:public-demo": "tsx scripts/validate-public-demo.ts",
+    "check:web-budget": "tsx scripts/check-web-build-budget.ts",
     "eval:golden-case": "tsx scripts/evaluate-ai-golden-case.ts",
     "build": "pnpm -r --if-present build",
     "e2e": "playwright test",

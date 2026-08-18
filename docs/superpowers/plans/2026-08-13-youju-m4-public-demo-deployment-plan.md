@@ -634,8 +634,8 @@ git commit -m "feat: add controlled PWA offline updates"
 **Files:**
 
 - Modify: `apps/web/src/router.ts`
-- Modify: `apps/web/src/services/export-service.ts`
-- Modify: `apps/web/src/ai/pdf-page-renderer.ts`
+- ~~Modify: `apps/web/src/services/export-service.ts`~~ 实际未修改：懒加载路由已将其移出入口链，再改属非必要 churn（Review 确认）
+- ~~Modify: `apps/web/src/ai/pdf-page-renderer.ts`~~ 实际未修改：同上
 - Modify: `apps/web/vite.config.ts`
 - Create: `scripts/check-web-build-budget.ts`
 - Modify: `package.json`
@@ -649,7 +649,7 @@ git commit -m "feat: add controlled PWA offline updates"
 - `check:web-budget` reads Vite manifest and SW precache entries, applies fixed compressed-size budgets, and fails with named assets.
 - Source maps are not published in production output.
 
-- [ ] **Step 1: Add budget script and observe valid RED**
+- [x] **Step 1: Add budget script and observe valid RED**
 
 ```powershell
 pnpm --filter @youju/web build
@@ -658,11 +658,11 @@ pnpm check:web-budget
 
 Expected RED: current main entry exceeds the approved first-screen budget or heavy modules remain in the entry graph.
 
-- [ ] **Step 2: Add import-boundary tests and minimal lazy loading**
+- [x] **Step 2: Add import-boundary tests and minimal lazy loading**
 
 Use Vue Router dynamic imports and action-local imports. Do not split tiny domain utilities or add a bundler abstraction.
 
-- [ ] **Step 3: Verify PWA budget and functional regressions**
+- [x] **Step 3: Verify PWA budget and functional regressions**
 
 ```powershell
 pnpm exec vitest run apps/web/tests/lazy-boundaries.test.ts apps/web/tests/export.test.ts apps/web/tests/ai-assistant.test.ts
@@ -672,10 +672,10 @@ pnpm exec playwright test tests/e2e/public-demo-flow.spec.ts --project=chromium-
 git diff --check
 ```
 
-- [ ] **Step 4: Commit and stop**
+- [x] **Step 4: Commit and stop**
 
 ```powershell
-git add apps/web/src/router.ts apps/web/src/services/export-service.ts apps/web/src/ai/pdf-page-renderer.ts apps/web/vite.config.ts scripts/check-web-build-budget.ts package.json apps/web/tests/lazy-boundaries.test.ts docs/superpowers/plans/2026-08-13-youju-m4-public-demo-deployment-plan.md
+git add apps/web/src/router.ts apps/web/vite.config.ts scripts/check-web-build-budget.ts package.json apps/web/tests/lazy-boundaries.test.ts docs/superpowers/plans/2026-08-13-youju-m4-public-demo-deployment-plan.md
 git commit -m "perf: enforce M4 web build budgets"
 ```
 

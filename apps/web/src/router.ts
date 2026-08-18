@@ -1,13 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 import type { UuidV4 } from '@youju/domain'
-import AiAssistantView from './views/AiAssistantView.vue'
-import AiReviewView from './views/AiReviewView.vue'
-import AiSettingsView from './views/AiSettingsView.vue'
 import CaseWorkspaceView from './views/CaseWorkspaceView.vue'
 import CreateCaseView from './views/CreateCaseView.vue'
 import DeleteCaseView from './views/DeleteCaseView.vue'
-import ExportView from './views/ExportView.vue'
 import FactsView from './views/FactsView.vue'
 import FindingsView from './views/FindingsView.vue'
 import HomeView from './views/HomeView.vue'
@@ -17,7 +13,7 @@ import TimelineView from './views/TimelineView.vue'
 import PrivacyView from './views/PrivacyView.vue'
 import AboutView from './views/AboutView.vue'
 
-const routes: RouteRecordRaw[] = [
+export const routes: RouteRecordRaw[] = [
   {
     path: '/',
     name: 'home',
@@ -71,23 +67,23 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'export',
         name: 'case-export',
-        component: ExportView,
+        component: () => import('./views/ExportView.vue'),
       },
       {
         path: 'ai-settings',
         name: 'case-ai-settings',
-        component: AiSettingsView,
+        component: () => import('./views/AiSettingsView.vue'),
       },
       {
         path: 'ai',
         name: 'case-ai',
-        component: AiAssistantView,
+        component: () => import('./views/AiAssistantView.vue'),
         props: (route) => ({ caseId: String(route.params.caseId) as UuidV4 }),
       },
       {
         path: 'ai-review',
         name: 'case-ai-review',
-        component: AiReviewView,
+        component: () => import('./views/AiReviewView.vue'),
         props: (route) => ({ caseId: String(route.params.caseId) as UuidV4 }),
       },
       {
