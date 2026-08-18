@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import type { EvidenceCategory, EvidenceFile, UuidV4 } from '@youju/domain'
+import type { CaseDataOrigin, EvidenceCategory, EvidenceFile, UuidV4 } from '@youju/domain'
 import { detectBrowserCapabilities } from '../browser/browser-capabilities.js'
+import { requestStoragePersistenceAfterUserAction } from '../browser/storage-persistence.js'
 import EvidenceImportField from '../components/EvidenceImportField.vue'
 import EvidenceList from '../components/EvidenceList.vue'
 import {
@@ -24,6 +25,7 @@ const { canWrite } = useCaseWriteAccess()
 const loading = ref(true)
 const importing = ref(false)
 const evidence = ref<readonly EvidenceFile[]>([])
+const caseDataOrigin = ref<CaseDataOrigin | null>(null)
 const messages = ref<readonly { fileName: string; text: string }[]>([])
 const deleteError = ref('')
 const referenceDetails = ref<string[]>([])
@@ -38,7 +40,13 @@ const errorTexts: Readonly<Record<string, string>> = {
 
 onMounted(async () => {
   try {
-    evidence.value = await listCaseEvidence(caseId)
+    const repository = await getCaseRepository()
+    const [items, storedCase] = await Promise.all([
+      listCaseEvidence(caseId),
+      repository.getCase(caseId),
+    ])
+    evidence.value = items
+    caseDataOrigin.value = storedCase?.caseEvent.dataOrigin ?? null
   } finally {
     loading.value = false
   }
@@ -54,6 +62,12 @@ async function importFiles(files: File[]): Promise<void> {
       fileName: outcome.fileName,
       text: outcomeText(outcome),
     }))
+    if (
+      caseDataOrigin.value === 'user_created' &&
+      outcomes.some((outcome) => outcome.outcome === 'imported')
+    ) {
+      await requestStoragePersistenceAfterUserAction().catch(() => undefined)
+    }
   } catch {
     messages.value = [{ fileName: '', text: '导入失败，请重试' }]
   } finally {
@@ -109,7 +123,7 @@ async function removeEvidenceItem(evidenceId: string): Promise<void> {
       当前浏览器不能可靠保存原始材料
     </p>
     <template v-else>
-      <EvidenceImportField :disabled="importing || !canWrite" @files="importFiles" />
+      <EvidenceImportField :disabled="loading || importing || !canWrite" @files="importFiles" />
       <p v-if="deleteError" class="delete-error">{{ deleteError }}</p>
       <ul v-if="referenceDetails.length > 0" class="delete-references">
         <li v-for="(detail, index) in referenceDetails" :key="index">{{ detail }}</li>

@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { createLocalCase, getCaseRepository } from '../services/case-service.js'
+import { requestStoragePersistenceAfterUserAction } from '../browser/storage-persistence.js'
 
 const router = useRouter()
 const title = ref('')
@@ -29,6 +30,7 @@ async function submit(): Promise<void> {
       paidAmountYuan: paidAmountYuan.value,
       requestedResolution: requestedResolution.value,
     })
+    await requestStoragePersistenceAfterUserAction().catch(() => undefined)
     await router.push({ name: 'case-workspace', params: { caseId: stored.caseEvent.id } })
   } catch {
     errorMessage.value = '创建失败，请重试。已填写内容仍保留在此页面。'

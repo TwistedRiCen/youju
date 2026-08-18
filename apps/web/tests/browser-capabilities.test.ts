@@ -7,6 +7,7 @@ describe('browser capability detection', () => {
   })
 
   it('reports every capability when the APIs are available', () => {
+    const persist = vi.fn().mockResolvedValue(true)
     vi.stubGlobal('indexedDB', {})
     vi.stubGlobal('crypto', { subtle: {} })
     vi.stubGlobal('BroadcastChannel', class {})
@@ -14,6 +15,7 @@ describe('browser capability detection', () => {
       storage: {
         getDirectory: () => Promise.resolve({}),
         estimate: () => Promise.resolve({}),
+        persist,
       },
       locks: {},
     })
@@ -25,7 +27,9 @@ describe('browser capability detection', () => {
       webLocks: true,
       broadcastChannel: true,
       quotaEstimate: true,
+      storagePersistence: true,
     })
+    expect(persist).not.toHaveBeenCalled()
   })
 
   it('reports missing capabilities when the APIs are absent', () => {
@@ -41,6 +45,7 @@ describe('browser capability detection', () => {
       webLocks: false,
       broadcastChannel: false,
       quotaEstimate: false,
+      storagePersistence: false,
     })
   })
 })

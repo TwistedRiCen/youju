@@ -1,9 +1,26 @@
 <script setup lang="ts">
+import { onMounted, shallowRef } from 'vue'
 import { RouterView } from 'vue-router'
+import FirstUseGuide from './components/FirstUseGuide.vue'
+import StoragePersistenceNotice from './components/StoragePersistenceNotice.vue'
+import { getAppPreferencesRepository } from './browser/storage-persistence.js'
+import type { AppPreferencesRepository } from './storage/index.js'
+
+const preferences = shallowRef<AppPreferencesRepository | null>(null)
+
+onMounted(async () => {
+  try {
+    preferences.value = await getAppPreferencesRepository()
+  } catch {
+    preferences.value = null
+  }
+})
 </script>
 
 <template>
+  <StoragePersistenceNotice v-if="preferences !== null" :preferences="preferences" />
   <RouterView />
+  <FirstUseGuide v-if="preferences !== null" :preferences="preferences" />
 </template>
 
 <style>

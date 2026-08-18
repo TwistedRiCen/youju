@@ -5,6 +5,7 @@ export interface BrowserCapabilities {
   readonly webLocks: boolean
   readonly broadcastChannel: boolean
   readonly quotaEstimate: boolean
+  readonly storagePersistence: boolean
 }
 
 export function detectBrowserCapabilities(): BrowserCapabilities {
@@ -24,5 +25,9 @@ export function detectBrowserCapabilities(): BrowserCapabilities {
       typeof navigator !== 'undefined' &&
       'storage' in navigator &&
       typeof navigator.storage?.estimate === 'function',
+    storagePersistence:
+      typeof navigator !== 'undefined' &&
+      'storage' in navigator &&
+      typeof navigator.storage?.persist === 'function',
   }
 }

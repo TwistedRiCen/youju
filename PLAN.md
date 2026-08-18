@@ -63,7 +63,7 @@ M4 方向设计和详细实施计划均已有用户批准证据。执行采用 `
 - 同日 `pnpm check:forbidden-content`、`pnpm test:ai-contract`（5 文件、34 测试）和 `pnpm eval:golden-case` 通过；评测使用虚构固定数据，未调用真实 Provider。
 - M4 设计方向已确认，D-01 至 D-06 有 2026-08-13 用户批准记录。依据：`docs/superpowers/specs/2026-08-13-youju-m4-public-demo-deployment-design.md`。
 - M4 详细实施计划已由用户于 2026-08-17 正式批准；该批准不改变冻结架构、Locked Implementation Parameters、Task 顺序或产品边界。
-- M4 Task 1–5 已完成实现与验证：领域模型与 IndexedDB v4 已支持显式演示身份、加载 journal 和低敏偏好；公开夹具使用 template token、四个虚构小型材料及严格校验；演示加载现具备同源读取、quota preflight、UUID 重写、OPFS/IndexedDB 分阶段持久化、逐字段 readback、幂等/并发隔离、可信恢复与仅演示事件重置；正式 PDF、CSV、HTML、ZIP、目录及下载文件名均按 `CaseEvent.dataOrigin` 确定性标记演示数据，并通过真实事件无污染回归。Task 6 及之后的首次引导、隐私/关于页、提示式更新、生产安全头与部署资产尚未开始。
+- M4 Task 1–6 已完成实现与验证：领域模型与 IndexedDB v4 已支持显式演示身份、加载 journal 和低敏偏好；公开夹具使用 template token、四个虚构小型材料及严格校验；演示加载现具备同源读取、quota preflight、UUID 重写、OPFS/IndexedDB 分阶段持久化、逐字段 readback、幂等/并发隔离、可信恢复与仅演示事件重置；正式 PDF、CSV、HTML、ZIP、目录及下载文件名均按 `CaseEvent.dataOrigin` 确定性标记演示数据；首次引导与浏览器持久化请求现仅记录低敏偏好，并严格隔离空白首页、失败/重复导入和演示数据。Task 7 及之后的公开首页、隐私/关于页、提示式更新、生产安全头与部署资产尚未开始。
 - 当前工作分支在本文件创建前为干净的 `codex/m4-public-demo`，HEAD 为 `371bbd6082daa071f535c8113fbe9c5bf0c6596a`；其上游同名远端一致。`main` 为 `8a4c11852efc85e87cf67af7b82f7cc80312c0d0`，比当前分支多一个合并提交，但两者文件树相同。
 
 ## Design Assumptions
@@ -100,7 +100,7 @@ M4 方向设计和详细实施计划均已有用户批准证据。执行采用 `
 - M1 Foundation：`ACCEPTED`。已实现；历史完成计划、`v0.1.0-m1` 本地标签和当前全量验证提供证据。
 - M2 No-AI Core：`ACCEPTED`。已实现；无 AI 创建、导入、事实、时间线、规则、陈述、导出和核验删除在当前全量门禁通过。
 - M3 BYOK AI：`ACCEPTED`。已实现并通过当前自动化门禁；真实 Provider、真实设备和生产 HTTPS 不属于其自动化验收结论。
-- M4 Public Demo and Deployment：`IN PROGRESS`；readiness 为 `APPROVED / READY`。Task 1–5 已验收，生产真实环境验证和部署尚未开始。
+- M4 Public Demo and Deployment：`IN PROGRESS`；readiness 为 `APPROVED / READY`。Task 1–6 已验收，生产真实环境验证和部署尚未开始。
 - M5 Validation：`BLOCKED`。只有 M4 发布证据完整后才能开始。
 
 ## Current Milestone
@@ -111,7 +111,7 @@ Canonical architecture evidence：`docs/superpowers/specs/2026-08-13-youju-m4-pu
 
 Approved implementation sequence：`docs/superpowers/plans/2026-08-13-youju-m4-public-demo-deployment-plan.md`。
 
-Next Action：M4 Task 6 — Add First-Use Guidance and Persistent Storage Status。Task 5 已通过跨格式单测、PDF 逐页文本提取、真实 Chromium 演示导出及标题含 `DEMO` 的真实事件无污染回归，并完成独立 Review repair。
+Next Action：M4 Task 7 — Build the Public Home, Privacy, About, Feedback, and Demo UI。Task 6 已通过 capability/adapter/guide 单测、Web 全包回归、真实 Chromium 创建/导入/演示隔离/全量删除回归，并完成独立 Review repair。
 
 ## Acceptance Criteria
 
@@ -136,7 +136,7 @@ Next Action：M4 Task 6 — Add First-Use Guidance and Persistent Storage Status
 
 ## Blockers
 
-- M4 Task 5 当前没有未解决的设计、计划或分支 readiness blocker。
+- M4 Task 6 当前没有未解决的设计、计划或分支 readiness blocker。
 - M4 Task 14/15：分别需要真实设备/Provider 授权和公开部署目标/外部操作授权。
 - M5：受 M4 完整验收与公开部署证据阻塞。
 
@@ -156,6 +156,7 @@ Next Action：M4 Task 6 — Add First-Use Guidance and Persistent Storage Status
 - 2026-08-18：M4 Task 3 完成。有效 RED 证明公开 parser、校验脚本、命令与资产缺失；新增精确 `m4-ecommerce-refund-demo-v1` manifest、四个共 126688 bytes 的虚构材料、template token 引用闭包、手工确认事实/时间线/陈述、路径与全目录 allowlist、SHA-256/size/预算校验及公共演示隐私扫描。相关 Vitest 3 文件 24 测试、fixture/public-demo/forbidden validator、Web build、root typecheck、lint 与 `git diff --check` 通过；独立 Review 的 3 个 MAJOR 与 1 个 MINOR 已修复并最终 PASS。
 - 2026-08-18：M4 Task 4 完成。有效 RED 由缺失 demo service/loader 模块导致；实现固定同源 fixture 读取、quota preflight、全实体 UUID v4/token 引用重写、journal 驱动的 OPFS/IndexedDB 写入、逐实体逐字段及 blob 闭包 readback、顺序与并发幂等、可信中断清理和仅匹配演示事件的 verified reset。Web 23 文件 129 测试、Task 目标 24/24、Chromium public-demo/verified-deletion/evidence-import 3/3、root typecheck、lint、public-demo/forbidden validator 与 `git diff --check` 通过；独立 Review 的 3 个 MAJOR 已修复并复审关闭。
 - 2026-08-18：M4 Task 5 完成。有效 RED 以 PDF/CSV/HTML/ZIP/下载名缺少演示标记的 5 个目标失败证明行为未实现；新增单一 `CaseEvent.dataOrigin` 导出策略、PDF 每 section 与每页警示、CSV `数据性质`、HTML 三处警示、`DEMO-` ZIP/目录与 `DEMO-README.txt`，并保持真实事件既有命名和内容边界。document-export/Web 5 文件 29 测试、Chromium 演示与真实导出 2/2、root typecheck、lint 与 `git diff --check` 通过；独立 Review 的跨页警示及真实浏览器无污染 2 个 MAJOR 已修复并复审关闭。
+- 2026-08-18：M4 Task 6 完成。有效 RED 由缺失 persistence adapter/guide/notice 及 capability 字段导致；新增 `persisted()`/`persist()` 确定性适配、低敏结果保存、三步以内可跳过原生 modal 引导、诚实的 granted/denied/unsupported 状态与手动 denied retry。自动请求仅发生于真实事件创建或首个成功真实材料导入，空白首页、演示加载/导入、失败与重复材料均不触发；全量删除偏好后引导重现。Web 25 文件 141 测试、Task 目标 13/13、Chromium 2/2、Web typecheck、root lint 与 `git diff --check` 通过；独立 Review 的 unsupported 文案/无效 retry 与 modal 焦点管理 2 个 MAJOR 已修复并复审关闭。
 
 ## Repository and Verification State
 
@@ -166,5 +167,6 @@ Next Action：M4 Task 6 — Add First-Use Guidance and Persistent Storage Status
 - Task 2 lint repair commit：`908b02ad5e9930761b2c0b771125e072ef12de21`，`test: keep legacy migration fixtures lint-clean`；Chromium case repository 7/7、root typecheck、lint 通过。
 - Task 3 acceptance commit：`01e3af2e69a97a66671aa129fed558741e6dece7`，`feat: add validated public demo fixture`。
 - Task 4 acceptance commit：`94d5fb7d68dd1259aed18605ed9b09f6b06410fd`，`feat: load and reset fictional demo cases`。
-- Task 5 acceptance commit：本次 `PLAN.md` 更新随 `feat: mark all fictional demo exports` 提交；未 push、未部署。
-- 当前自动化证据：Task 1 相关 71 测试；Task 2 Web 97/97 与 Chromium 9/9；Task 3 相关 24/24 与四个公开资产 126688 bytes；Task 4 Web 129/129、目标 24/24、Chromium public-demo/verified-deletion/evidence-import 3/3；Task 5 document-export/Web 29/29 与 Chromium demo/user export 2/2；root typecheck、lint、fixture/public-demo/forbidden validator 持续通过。
+- Task 5 acceptance commit：`5b0b9d5baf9b6e22f97fbb3563588a692c6871d9`，`feat: mark all fictional demo exports`。
+- Task 6 acceptance commit：本次 `PLAN.md` 更新随 `feat: explain first-use local storage` 提交；未 push、未部署。
+- 当前自动化证据：Task 1 相关 71 测试；Task 2 Web 97/97 与 Chromium 9/9；Task 3 相关 24/24 与四个公开资产 126688 bytes；Task 4 Web 129/129、目标 24/24、Chromium public-demo/verified-deletion/evidence-import 3/3；Task 5 document-export/Web 29/29 与 Chromium demo/user export 2/2；Task 6 Web 141/141、目标 13/13 与 Chromium first-use/storage 2/2；root typecheck、lint、fixture/public-demo/forbidden validator 持续通过。

@@ -470,7 +470,7 @@ git commit -m "feat: mark all fictional demo exports"
 - Persistence request occurs after user-created case creation or first real material import, never on blank landing page or demo load.
 - Denied/unsupported shows export-backup advice; granted never claims cloud backup.
 
-- [ ] **Step 1: Write capability, permission and guide RED tests**
+- [x] **Step 1: Write capability, permission and guide RED tests**
 
 Cover absent APIs, granted/denied/rejected promise, no request on demo load, skip/reopen behavior and full local-data clear.
 
@@ -480,15 +480,15 @@ pnpm exec vitest run apps/web/tests/storage-persistence.test.ts apps/web/tests/f
 
 Expected RED: persistence adapter and guide do not exist.
 
-- [ ] **Step 2: Implement adapters and accessible guide**
+- [x] **Step 2: Implement adapters and accessible guide**
 
 Use native dialog semantics or an accessible in-page pattern with focus management, Escape/close behavior and keyboard controls.
 
-- [ ] **Step 3: Connect only approved user actions**
+- [x] **Step 3: Connect only approved user actions**
 
 Do not repeatedly prompt after denied result; provide a manual retry in storage notice.
 
-- [ ] **Step 4: Run Task 6 gates**
+- [x] **Step 4: Run Task 6 gates**
 
 ```powershell
 pnpm exec vitest run apps/web/tests/storage-persistence.test.ts apps/web/tests/first-use-guide.test.ts apps/web/tests/browser-capabilities.test.ts
@@ -497,7 +497,7 @@ pnpm --filter @youju/web typecheck
 git diff --check
 ```
 
-- [ ] **Step 5: Commit and stop**
+- [x] **Step 5: Commit and stop**
 
 ```powershell
 git add apps/web/src/browser apps/web/src/components/FirstUseGuide.vue apps/web/src/components/StoragePersistenceNotice.vue apps/web/src/App.vue apps/web/src/views/CreateCaseView.vue apps/web/src/components/EvidenceImportField.vue apps/web/tests tests/e2e/first-use-and-storage.spec.ts docs/superpowers/plans/2026-08-13-youju-m4-public-demo-deployment-plan.md
