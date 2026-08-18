@@ -165,7 +165,7 @@ Expected: 两个文档都已存在于当前提交，状态无输出，分支创�
 - Normal case creation always produces `user_created` and `demoFixtureId: null`.
 - Golden fixture is explicitly fictional and uses `m4-ecommerce-refund-demo-v1`.
 
-- [ ] **Step 1: Write contract and creation RED tests**
+- [x] **Step 1: Write contract and creation RED tests**
 
 Add tests rejecting missing/invalid origin combinations, accepting both valid variants, validating the new operation type, and asserting normal creation uses `user_created`.
 
@@ -175,15 +175,15 @@ pnpm exec vitest run packages/domain/tests/schemas.test.ts apps/web/tests/create
 
 Expected RED: current `CaseEventSchema` has no origin fields and normal creation does not produce them.
 
-- [ ] **Step 2: Implement minimal domain contracts and creators**
+- [x] **Step 2: Implement minimal domain contracts and creators**
 
 Do not infer demo origin from title, fixture path or UUID. Keep `additionalProperties: false` and existing UUID/timestamp rules. Update every typed test fixture and repository projection that constructs `CaseEvent`; the temporary read projection may normalize absent legacy fields, while Task 2 performs the durable v4 backfill.
 
-- [ ] **Step 3: Update fictional fixture and validator**
+- [x] **Step 3: Update fictional fixture and validator**
 
 The validator must enforce exact fixture ID and reject a fictional fixture without explicit origin. Do not add public Web assets yet.
 
-- [ ] **Step 4: Run Task 1 gates**
+- [x] **Step 4: Run Task 1 gates**
 
 ```powershell
 pnpm exec vitest run packages/domain/tests apps/web/tests/create-case.test.ts
@@ -194,7 +194,7 @@ git diff --check
 
 Expected: all pass; status contains only Task 1 files and this plan checkbox update.
 
-- [ ] **Step 5: Commit and stop**
+- [x] **Step 5: Commit and stop**
 
 ```powershell
 git add packages/domain packages/document-export/tests apps/web/src/services/case-service.ts apps/web/src/storage/indexeddb-case-repository.ts apps/web/src/views/CreateCaseView.vue apps/web/tests/create-case.test.ts fixtures packages/test-support/src/fixture-schema.ts scripts/validate-fixtures.ts docs/superpowers/plans/2026-08-13-youju-m4-public-demo-deployment-plan.md

@@ -24,8 +24,36 @@ import type {
 } from './case-repository.js'
 import type { PersistedCaseEvent, YouJuDatabaseSchema } from './database-schema.js'
 
+interface PersistedCaseIdentity {
+  readonly dataOrigin?: unknown
+  readonly demoFixtureId?: unknown
+}
+
+type CaseIdentity =
+  | { readonly dataOrigin: 'user_created'; readonly demoFixtureId: null }
+  | { readonly dataOrigin: 'fictional_demo'; readonly demoFixtureId: string }
+
+export function normalizePersistedCaseIdentity(
+  record: PersistedCaseIdentity,
+): CaseIdentity {
+  if (record.dataOrigin === undefined && record.demoFixtureId === undefined) {
+    return { dataOrigin: 'user_created', demoFixtureId: null }
+  }
+  if (record.dataOrigin === 'user_created' && record.demoFixtureId === null) {
+    return { dataOrigin: 'user_created', demoFixtureId: null }
+  }
+  if (
+    record.dataOrigin === 'fictional_demo' &&
+    typeof record.demoFixtureId === 'string' &&
+    record.demoFixtureId.length > 0
+  ) {
+    return { dataOrigin: 'fictional_demo', demoFixtureId: record.demoFixtureId }
+  }
+  throw new CaseRepositoryError('storage_unavailable', '本地事件来源身份无效')
+}
+
 function toCaseEvent(record: PersistedCaseEvent): CaseEvent {
-  return {
+  const common = {
     id: record.id,
     scenarioType: record.scenarioType,
     title: record.title,
@@ -35,6 +63,11 @@ function toCaseEvent(record: PersistedCaseEvent): CaseEvent {
     requestedResolution: record.requestedResolution,
     storageMode: record.storageMode,
     schemaVersion: record.schemaVersion,
+  }
+
+  return {
+    ...common,
+    ...normalizePersistedCaseIdentity(record),
   }
 }
 

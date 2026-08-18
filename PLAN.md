@@ -63,7 +63,7 @@ M4 方向设计和详细实施计划均已有用户批准证据。执行采用 `
 - 同日 `pnpm check:forbidden-content`、`pnpm test:ai-contract`（5 文件、34 测试）和 `pnpm eval:golden-case` 通过；评测使用虚构固定数据，未调用真实 Provider。
 - M4 设计方向已确认，D-01 至 D-06 有 2026-08-13 用户批准记录。依据：`docs/superpowers/specs/2026-08-13-youju-m4-public-demo-deployment-design.md`。
 - M4 详细实施计划已由用户于 2026-08-17 正式批准；该批准不改变冻结架构、Locked Implementation Parameters、Task 顺序或产品边界。
-- M4 生产实现尚未开始：当前仍使用 PWA `autoUpdate`；领域模型没有 `dataOrigin` / `demoFixtureId`；没有公开演示资产、首次引导、隐私/关于页、提示式更新控制器、显式 `trustProxy`、生产安全头、部署资产、生产 PWA 配置或 M4 专项测试。
+- M4 Task 1 已完成实现与验证：领域模型已有显式 `dataOrigin` / `demoFixtureId` 组合不变量、`demo_case_load` 操作契约、普通事件默认身份及黄金夹具精确演示身份；Task 2 及之后的 IndexedDB v4、公开演示资产、首次引导、隐私/关于页、提示式更新、生产安全头与部署资产尚未开始。
 - 当前工作分支在本文件创建前为干净的 `codex/m4-public-demo`，HEAD 为 `371bbd6082daa071f535c8113fbe9c5bf0c6596a`；其上游同名远端一致。`main` 为 `8a4c11852efc85e87cf67af7b82f7cc80312c0d0`，比当前分支多一个合并提交，但两者文件树相同。
 
 ## Design Assumptions
@@ -100,18 +100,18 @@ M4 方向设计和详细实施计划均已有用户批准证据。执行采用 `
 - M1 Foundation：`ACCEPTED`。已实现；历史完成计划、`v0.1.0-m1` 本地标签和当前全量验证提供证据。
 - M2 No-AI Core：`ACCEPTED`。已实现；无 AI 创建、导入、事实、时间线、规则、陈述、导出和核验删除在当前全量门禁通过。
 - M3 BYOK AI：`ACCEPTED`。已实现并通过当前自动化门禁；真实 Provider、真实设备和生产 HTTPS 不属于其自动化验收结论。
-- M4 Public Demo and Deployment：`NOT STARTED`；readiness 为 `APPROVED / READY`。设计方向与详细计划均已批准；实现、生产验证和部署尚未开始。
+- M4 Public Demo and Deployment：`IN PROGRESS`；readiness 为 `APPROVED / READY`。Task 1 已验收，生产真实环境验证和部署尚未开始。
 - M5 Validation：`BLOCKED`。只有 M4 发布证据完整后才能开始。
 
 ## Current Milestone
 
-M4 Public Demo and Deployment — `NOT STARTED`；`APPROVED / READY`
+M4 Public Demo and Deployment — `IN PROGRESS`；`APPROVED / READY`
 
 Canonical architecture evidence：`docs/superpowers/specs/2026-08-13-youju-m4-public-demo-deployment-design.md`。
 
 Approved implementation sequence：`docs/superpowers/plans/2026-08-13-youju-m4-public-demo-deployment-plan.md`。
 
-Next Action：M4 Task 1 — Establish Demo Identity and Load Operation Contracts。当前策略迁移完成后，本轮按用户要求停止；后续 M4 Goal 执行可从 Task 1 开始，并在其验收后自主进入下一个 dependency-ready Task。
+Next Action：M4 Task 2 — Migrate IndexedDB v4 and Add Local App Preferences。Task 1 已通过有效 RED、目标与交叉包回归、fixture 验证、全量 typecheck 及独立 Review；原 MAJOR finding 已修复并复审。
 
 ## Acceptance Criteria
 
@@ -135,7 +135,7 @@ Next Action：M4 Task 1 — Establish Demo Identity and Load Operation Contracts
 
 ## Blockers
 
-- M4 Task 1 当前没有未解决的设计、计划或分支 readiness blocker。
+- M4 Task 2 当前没有未解决的设计、计划或分支 readiness blocker。
 - M4 Task 14/15：分别需要真实设备/Provider 授权和公开部署目标/外部操作授权。
 - M5：受 M4 完整验收与公开部署证据阻塞。
 
@@ -150,3 +150,11 @@ Next Action：M4 Task 1 — Establish Demo Identity and Load Operation Contracts
 - 2026-08-17：用户正式批准 M4 详细实施计划；Current Phase 转入 `EXECUTION`，M4 readiness 标记为 `APPROVED / READY`，实现保持 `NOT STARTED`。
 - 2026-08-17：完成 M4 Execution Readiness Checkpoint 的文档状态与无历史重写分支对齐；下一步固定为 M4 Task 1，尚未执行。
 - 2026-08-18：执行策略迁移为 `AUTONOMOUS WITH HARD GATES`；允许 bounded named subagents、保持 One Writer、允许 verified local commits 和 Task 验收后自动续行，外部操作与真实 Provider 调用继续受 Hard Stop 授权边界保护；未执行 M4 Task 1。
+- 2026-08-18：M4 Task 1 完成。有效 RED 证明旧 Schema、操作日志与普通创建缺少演示身份契约；实现 `CaseEvent` 判别身份、`demo_case_load`、schema v2 普通创建、仅对完整缺失字段的 legacy 读投影兼容，以及精确黄金演示夹具校验。相关 Vitest 11 文件 71 测试、`pnpm validate:fixtures`、`pnpm typecheck` 与 `git diff --check` 通过；独立 Review 的显式损坏演示记录静默降级 MAJOR 已修复。
+
+## Repository and Verification State
+
+- Branch：`codex/m4-public-demo`。
+- Task 1 起始 baseline：`69a9ab20830f757e1feda46339f43cd77a0083b5`。
+- Task 1 acceptance commit：包含本次 `PLAN.md` 更新并使用提交信息 `feat: define M4 demo case identity`；未 push、未部署。
+- 当前自动化证据：Task 1 目标与受影响回归 11 个 Vitest 文件、71 个测试通过；fixture validator 与全量 typecheck 通过。

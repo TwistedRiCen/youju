@@ -23,6 +23,8 @@ const caseEvent: CaseEvent = {
   requestedResolution: '退货并退还已支付金额89900分',
   storageMode: 'local',
   schemaVersion: 1,
+  dataOrigin: 'user_created',
+  demoFixtureId: null,
 }
 
 function confirmedFact(

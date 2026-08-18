@@ -26,6 +26,8 @@ const caseEvent: CaseEvent = {
   requestedResolution: '退货退款',
   storageMode: 'local',
   schemaVersion: 1,
+  dataOrigin: 'user_created',
+  demoFixtureId: null,
 }
 
 function confirmedFact(

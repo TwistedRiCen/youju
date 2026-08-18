@@ -9,6 +9,8 @@
     "status": "in_progress",
     "requestedResolution": "退货并退还已支付金额89900分",
     "storageMode": "local",
-    "schemaVersion": 1
+    "schemaVersion": 2,
+    "dataOrigin": "fictional_demo",
+    "demoFixtureId": "m4-ecommerce-refund-demo-v1"
   }
 }

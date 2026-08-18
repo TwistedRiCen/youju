@@ -10,6 +10,7 @@ import { evaluateGoldenCase } from './evaluate-ai-golden-case.js'
 const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const fixtureRoot = join(repositoryRoot, 'fixtures', 'ecommerce-refund')
 const rulePath = join(repositoryRoot, 'rules', 'consumer', 'ecommerce-refund.v1.yaml')
+const EXPECTED_DEMO_FIXTURE_ID = 'm4-ecommerce-refund-demo-v1'
 
 const forbiddenFixturePatterns = [
   /(?<!\d)1[3-9]\d{9}(?!\d)/,
@@ -55,6 +56,12 @@ async function main(): Promise<void> {
   for (const directoryName of fixtureDirectories) {
     try {
       const fixture = await loadGoldenCase(join(fixtureRoot, directoryName))
+      if (
+        fixture.case.dataOrigin !== 'fictional_demo' ||
+        fixture.case.demoFixtureId !== EXPECTED_DEMO_FIXTURE_ID
+      ) {
+        throw new Error('Golden case must declare the approved fictional demo identity')
+      }
       const actualFindings = evaluateRule(rule, {
         confirmedFactFields: fixture.expected.confirmedFactFields,
         evidence: fixture.evidence.map(({ id, category }) => ({ id, category })),

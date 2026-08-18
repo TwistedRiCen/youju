@@ -23,6 +23,10 @@ export const CaseStatusSchema = Type.Union([
   Type.Literal('ready_to_export'),
   Type.Literal('exported'),
 ])
+export const CaseDataOriginSchema = Type.Union([
+  Type.Literal('user_created'),
+  Type.Literal('fictional_demo'),
+])
 export const ReviewStatusSchema = Type.Union([
   Type.Literal('pending'),
   Type.Literal('confirmed'),
@@ -105,20 +109,36 @@ export const SourceReferenceSchema = Type.Object(
   { additionalProperties: false },
 )
 
-export const CaseEventSchema = Type.Object(
-  {
-    id: UuidV4Schema,
-    scenarioType: ScenarioTypeSchema,
-    title: Type.String({ minLength: 1 }),
-    createdAt: UtcTimestampSchema,
-    updatedAt: UtcTimestampSchema,
-    status: CaseStatusSchema,
-    requestedResolution: Type.Union([Type.String(), Type.Null()]),
-    storageMode: Type.Literal('local'),
-    schemaVersion: SchemaVersionSchema,
-  },
-  { additionalProperties: false },
-)
+const caseEventCommonProperties = {
+  id: UuidV4Schema,
+  scenarioType: ScenarioTypeSchema,
+  title: Type.String({ minLength: 1 }),
+  createdAt: UtcTimestampSchema,
+  updatedAt: UtcTimestampSchema,
+  status: CaseStatusSchema,
+  requestedResolution: Type.Union([Type.String(), Type.Null()]),
+  storageMode: Type.Literal('local'),
+  schemaVersion: SchemaVersionSchema,
+}
+
+export const CaseEventSchema = Type.Union([
+  Type.Object(
+    {
+      ...caseEventCommonProperties,
+      dataOrigin: Type.Literal('user_created'),
+      demoFixtureId: Type.Null(),
+    },
+    { additionalProperties: false },
+  ),
+  Type.Object(
+    {
+      ...caseEventCommonProperties,
+      dataOrigin: Type.Literal('fictional_demo'),
+      demoFixtureId: Type.String({ minLength: 1 }),
+    },
+    { additionalProperties: false },
+  ),
+])
 
 export const EvidenceFileSchema = Type.Object(
   {
@@ -435,6 +455,12 @@ export const ExportOperationStageSchema = Type.Union([
   Type.Literal('finalizing'),
   Type.Literal('failed'),
 ])
+export const DemoCaseLoadOperationStageSchema = Type.Union([
+  Type.Literal('validating'),
+  Type.Literal('writing'),
+  Type.Literal('verifying'),
+  Type.Literal('failed'),
+])
 
 const operationCommonProperties = {
   operationId: UuidV4Schema,
@@ -478,6 +504,15 @@ export const OperationJournalEntrySchema = Type.Union([
       operationType: Type.Literal('package_export'),
       stage: ExportOperationStageSchema,
       temporaryStorageRef: Type.String({ minLength: 1 }),
+    },
+    { additionalProperties: false },
+  ),
+  Type.Object(
+    {
+      ...operationCommonProperties,
+      operationType: Type.Literal('demo_case_load'),
+      stage: DemoCaseLoadOperationStageSchema,
+      demoFixtureId: Type.String({ minLength: 1 }),
     },
     { additionalProperties: false },
   ),
@@ -582,6 +617,7 @@ export type FactOrigin = Static<typeof FactOriginSchema>
 export type FormalContentOrigin = Static<typeof FormalContentOriginSchema>
 export type SourceReference = Static<typeof SourceReferenceSchema>
 export type CaseEvent = Static<typeof CaseEventSchema>
+export type CaseDataOrigin = Static<typeof CaseDataOriginSchema>
 export type EvidenceFile = Static<typeof EvidenceFileSchema>
 export type FactCandidate = Static<typeof FactCandidateSchema>
 export type ConfirmationMethod = Static<typeof ConfirmationMethodSchema>
@@ -593,6 +629,7 @@ export type M2ErrorCode = Static<typeof M2ErrorCodeSchema>
 export type ImportOperationStage = Static<typeof ImportOperationStageSchema>
 export type DeleteOperationStage = Static<typeof DeleteOperationStageSchema>
 export type ExportOperationStage = Static<typeof ExportOperationStageSchema>
+export type DemoCaseLoadOperationStage = Static<typeof DemoCaseLoadOperationStageSchema>
 export type OperationJournalEntry = Static<typeof OperationJournalEntrySchema>
 export type TimelineStatus = Static<typeof TimelineStatusSchema>
 export type TimelineEntry = Static<typeof TimelineEntrySchema>

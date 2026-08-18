@@ -69,7 +69,9 @@ export async function createLocalCase(
     status: 'draft',
     requestedResolution: value.requestedResolution,
     storageMode: 'local',
-    schemaVersion: 1,
+    schemaVersion: 2,
+    dataOrigin: 'user_created',
+    demoFixtureId: null,
   }
   const drafts: FactDraft[] = [
     {

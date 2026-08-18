@@ -29,6 +29,8 @@ const validCase = {
   requestedResolution: null,
   storageMode: 'local',
   schemaVersion: validSchemaVersion,
+  dataOrigin: 'user_created',
+  demoFixtureId: null,
 }
 
 const validCandidate = {
@@ -63,6 +65,25 @@ const validConfirmedFact = {
 describe('domain schemas', () => {
   it('accepts a valid ecommerce refund case', () => {
     expect(Value.Check(CaseEventSchema, validCase)).toBe(true)
+  })
+
+  it('requires an explicit case data origin and matching demo fixture identity', () => {
+    const fictionalDemo = {
+      ...validCase,
+      dataOrigin: 'fictional_demo',
+      demoFixtureId: 'm4-ecommerce-refund-demo-v1',
+    }
+
+    expect(Value.Check(CaseEventSchema, fictionalDemo)).toBe(true)
+    expect(Value.Check(CaseEventSchema, { ...validCase, dataOrigin: undefined })).toBe(false)
+    expect(
+      Value.Check(CaseEventSchema, {
+        ...validCase,
+        demoFixtureId: 'm4-ecommerce-refund-demo-v1',
+      }),
+    ).toBe(false)
+    expect(Value.Check(CaseEventSchema, { ...fictionalDemo, demoFixtureId: null })).toBe(false)
+    expect(Value.Check(CaseEventSchema, { ...fictionalDemo, dataOrigin: 'imported' })).toBe(false)
   })
 
   it('validates evidence identity, timestamps, hashes, and supported categories', () => {
@@ -460,11 +481,23 @@ describe('domain schemas', () => {
       startedAt: '2026-07-31T02:07:00.000Z',
       errorCode: null,
     }
+    const demoLoadOperation = {
+      operationId: '00000000-0000-4000-8000-000000000805',
+      caseId: validCase.id,
+      operationType: 'demo_case_load',
+      stage: 'validating',
+      demoFixtureId: 'm4-ecommerce-refund-demo-v1',
+      startedAt: '2026-07-31T02:08:00.000Z',
+      errorCode: null,
+    }
 
     expect(Value.Check(OperationJournalEntrySchema, importOperation)).toBe(true)
     expect(Value.Check(OperationJournalEntrySchema, deleteOperation)).toBe(true)
     expect(Value.Check(OperationJournalEntrySchema, caseDeleteOperation)).toBe(true)
     expect(Value.Check(OperationJournalEntrySchema, exportOperation)).toBe(true)
+    for (const stage of ['validating', 'writing', 'verifying', 'failed']) {
+      expect(Value.Check(OperationJournalEntrySchema, { ...demoLoadOperation, stage })).toBe(true)
+    }
 
     expect(
       Value.Check(OperationJournalEntrySchema, { ...importOperation, stage: 'preparing' }),
@@ -480,6 +513,12 @@ describe('domain schemas', () => {
     ).toBe(false)
     expect(
       Value.Check(OperationJournalEntrySchema, { ...exportOperation, errorCode: 'unknown_error' }),
+    ).toBe(false)
+    expect(
+      Value.Check(OperationJournalEntrySchema, { ...demoLoadOperation, stage: 'committing' }),
+    ).toBe(false)
+    expect(
+      Value.Check(OperationJournalEntrySchema, { ...demoLoadOperation, demoFixtureId: '' }),
     ).toBe(false)
   })
 
