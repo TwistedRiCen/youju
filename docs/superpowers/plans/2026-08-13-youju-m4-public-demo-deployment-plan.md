@@ -591,7 +591,7 @@ git commit -m "feat: add M4 public demo experience"
 - Update waits while import/export/AI or pending local writes are active; confirmation explains page-memory Key clearing.
 - Offline status is advisory; actual failed requests retain their own errors and are never queued.
 
-- [ ] **Step 1: Write update-state and production SW RED tests**
+- [x] **Step 1: Write update-state and production SW RED tests**
 
 Build production output, install SW, inspect Cache Storage, go offline, reopen shell, simulate update, and assert no automatic reload.
 
@@ -603,15 +603,15 @@ pnpm exec playwright test --config=playwright.production.config.ts tests/e2e/pwa
 
 Expected RED: current config auto-updates and no production PWA harness or prompt controller exists.
 
-- [ ] **Step 2: Implement strict Workbox allowlist and update controller**
+- [x] **Step 2: Implement strict Workbox allowlist and update controller**
 
 Do not add background sync, push, periodic sync or runtime Provider caching.
 
-- [ ] **Step 3: Implement accessible global status banner**
+- [x] **Step 3: Implement accessible global status banner**
 
 Preserve API Key in memory while merely offline; clear it only through existing refresh/disable/session lifecycle.
 
-- [ ] **Step 4: Run Task 8 gates**
+- [x] **Step 4: Run Task 8 gates**
 
 ```powershell
 pnpm exec vitest run apps/web/tests/pwa-update-controller.test.ts apps/web/tests/ai-session.test.ts
@@ -620,7 +620,7 @@ pnpm exec playwright test --config=playwright.production.config.ts tests/e2e/pwa
 git diff --check
 ```
 
-- [ ] **Step 5: Commit and stop**
+- [x] **Step 5: Commit and stop**
 
 ```powershell
 git add apps/web/vite.config.ts apps/web/src/main.ts apps/web/src/App.vue apps/web/src/pwa apps/web/src/components/AppStatusBanner.vue apps/web/tests/pwa-update-controller.test.ts playwright.production.config.ts tests/e2e/pwa-offline-update.spec.ts docs/superpowers/plans/2026-08-13-youju-m4-public-demo-deployment-plan.md

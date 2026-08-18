@@ -63,7 +63,7 @@ M4 方向设计和详细实施计划均已有用户批准证据。执行采用 `
 - 同日 `pnpm check:forbidden-content`、`pnpm test:ai-contract`（5 文件、34 测试）和 `pnpm eval:golden-case` 通过；评测使用虚构固定数据，未调用真实 Provider。
 - M4 设计方向已确认，D-01 至 D-06 有 2026-08-13 用户批准记录。依据：`docs/superpowers/specs/2026-08-13-youju-m4-public-demo-deployment-design.md`。
 - M4 详细实施计划已由用户于 2026-08-17 正式批准；该批准不改变冻结架构、Locked Implementation Parameters、Task 顺序或产品边界。
-- M4 Task 1–7 已完成实现与验证：领域模型与 IndexedDB v4 已支持显式演示身份、加载 journal 和低敏偏好；公开夹具使用 template token、四个虚构小型材料及严格校验；演示加载现具备同源读取、quota preflight、UUID 重写、OPFS/IndexedDB 分阶段持久化、逐字段 readback、幂等/并发隔离、可信恢复与仅演示事件重置；正式 PDF、CSV、HTML、ZIP、目录及下载文件名均按 `CaseEvent.dataOrigin` 确定性标记演示数据；首次引导与浏览器持久化请求现仅记录低敏偏好；公开首页、持久演示横幅、隐私/关于/反馈页及用户可达的全量本地删除已经完成。Task 8 及之后的提示式更新、生产安全头与部署资产尚未开始。
+- M4 Task 1–8 已完成实现与验证：领域模型与 IndexedDB v4 已支持显式演示身份、加载 journal 和低敏偏好；公开夹具使用 template token、四个虚构小型材料及严格校验；演示加载现具备同源读取、quota preflight、UUID 重写、OPFS/IndexedDB 分阶段持久化、逐字段 readback、幂等/并发隔离、可信恢复与仅演示事件重置；正式 PDF、CSV、HTML、ZIP、目录及下载文件名均按 `CaseEvent.dataOrigin` 确定性标记演示数据；首次引导与浏览器持久化请求现仅记录低敏偏好；公开首页、持久演示横幅、隐私/关于/反馈页及用户可达的全量本地删除已经完成；PWA 已改为提示式更新，具备显式 idle/offline_ready/update_available/updating 状态机、活动门控（导入/导出/AI/未决本地写入）、10 秒激活/空闲回退、严格离线壳（应用壳 + 显式演示 allowlist 预缓存，`/ai/*`、`/health` 排除于导航回退与缓存）与生产 Service Worker E2E。Task 9 及之后的首屏/包体预算、生产安全头与部署资产尚未开始。
 - 当前工作分支在本文件创建前为干净的 `codex/m4-public-demo`，HEAD 为 `371bbd6082daa071f535c8113fbe9c5bf0c6596a`；其上游同名远端一致。`main` 为 `8a4c11852efc85e87cf67af7b82f7cc80312c0d0`，比当前分支多一个合并提交，但两者文件树相同。
 
 ## Design Assumptions
@@ -100,7 +100,7 @@ M4 方向设计和详细实施计划均已有用户批准证据。执行采用 `
 - M1 Foundation：`ACCEPTED`。已实现；历史完成计划、`v0.1.0-m1` 本地标签和当前全量验证提供证据。
 - M2 No-AI Core：`ACCEPTED`。已实现；无 AI 创建、导入、事实、时间线、规则、陈述、导出和核验删除在当前全量门禁通过。
 - M3 BYOK AI：`ACCEPTED`。已实现并通过当前自动化门禁；真实 Provider、真实设备和生产 HTTPS 不属于其自动化验收结论。
-- M4 Public Demo and Deployment：`IN PROGRESS`；readiness 为 `APPROVED / READY`。Task 1–7 已验收，生产真实环境验证和部署尚未开始。
+- M4 Public Demo and Deployment：`IN PROGRESS`；readiness 为 `APPROVED / READY`。Task 1–8 已验收，生产真实环境验证和部署尚未开始。
 - M5 Validation：`BLOCKED`。只有 M4 发布证据完整后才能开始。
 
 ## Current Milestone
@@ -111,7 +111,7 @@ Canonical architecture evidence：`docs/superpowers/specs/2026-08-13-youju-m4-pu
 
 Approved implementation sequence：`docs/superpowers/plans/2026-08-13-youju-m4-public-demo-deployment-plan.md`。
 
-Next Action：M4 Task 8 — Add Prompted PWA Updates and a Strict Offline Shell。Task 7 已通过公开 UX 单测、Web 全包回归、真实 Chromium 无 AI 演示/导出/删除及既有 no-AI 主流程回归，并完成独立 Review。
+Next Action：修复 Task 6/7 引入的根级 e2e 门禁回归（首次引导对话框拦截旧 UI 测试、首页文案陈旧断言、应用首页持有 DB 连接破坏 legacy 播种/重置测试），随后进入 M4 Task 9 — Enforce Route-Level Loading and Web Build Budgets。Task 8 已通过提示式更新状态机单测、生产 Service Worker/离线/更新 E2E、Web 全包回归、开发 E2E 子集回归，并完成两轮独立 Review 与修复闭环。
 
 ## Acceptance Criteria
 
@@ -126,8 +126,9 @@ Next Action：M4 Task 8 — Add Prompted PWA Updates and a Strict Offline Shell�
 
 ## Risks
 
-- 当前入口 JS gzip 约 763 KiB，超过 M4 首屏 500 KiB 目标；构建也报告大块警告。
-- 当前 PWA `autoUpdate` 可能在刷新时清除页面会话 API Key，并缺少用户可控更新状态。
+- 当前入口 JS gzip 约 752 KiB，超过 M4 首屏 500 KiB 目标；构建也报告大块警告（Task 9 修复）。
+- 根级 `pnpm e2e` 门禁当前失败：Task 6 的首次引导对话框拦截旧 UI 测试点击、Task 7 首页文案变更遗留陈旧断言、应用首页持有 IndexedDB 连接破坏 legacy 版本播种/删除重置测试（共 6 个 spec 文件，2026-08-18 发现；属 Task 6/7 引入的既有回归，Task 8 门禁子集此前未暴露）。修复为独立 commit，先于 Task 9。
+- Playwright 离线仿真在 SW 服务的 reload 后 `navigator.onLine` 复位，生产 E2E 通过显式派发 offline 事件驱动控制器监听路径；真实断网场景由浏览器原生事件覆盖。
 - Fastify 默认不信任代理且使用 `request.ip` 做进程内保护；反向代理后需要显式受信 CIDR，直接设 `true` 会扩大伪造风险。
 - 当前开发服务器 E2E 不能证明生产 Service Worker、缓存头、安全头、HTTPS 代理或发布回滚。
 - 真实设备、国产浏览器、Provider、国内网络与运营合规条件尚未验证，不能由代码或历史计划替代。
@@ -136,9 +137,14 @@ Next Action：M4 Task 8 — Add Prompted PWA Updates and a Strict Offline Shell�
 
 ## Blockers
 
-- M4 Task 7 当前没有未解决的设计、计划或分支 readiness blocker。
+- M4 Task 8 当前没有未解决的设计、计划或分支 readiness blocker；已知后置 MINOR 已记录（见下）。
 - M4 Task 14/15：分别需要真实设备/Provider 授权和公开部署目标/外部操作授权。
 - M5：受 M4 完整验收与公开部署证据阻塞。
+
+## Known Deferred Findings
+
+- Task 7 独立 Review 5 条 MINOR（后置）：`PrivacyView.vue:24` 失败提示的英文残留标记未中文化；全局页脚裸 `<a>` 全量刷新且与首页导航重复；`no-ai-core.spec.ts:45` 未显式断言引导可见；`FeedbackTemplate.vue` 消毒保留 C1 控制字符且 slice 可能切断代理对；`HomeView.vue` `openDemo` 缺 busy 防重（幂等）。
+- Task 8 Review：`endActivity` 的 `Math.max(0, …)` 钳制是防御性设计（接受）；`waiting === null` 时直接 reload 已论证安全并有测试覆盖（接受）。
 
 ## Verified Progress
 
@@ -158,6 +164,7 @@ Next Action：M4 Task 8 — Add Prompted PWA Updates and a Strict Offline Shell�
 - 2026-08-18：M4 Task 5 完成。有效 RED 以 PDF/CSV/HTML/ZIP/下载名缺少演示标记的 5 个目标失败证明行为未实现；新增单一 `CaseEvent.dataOrigin` 导出策略、PDF 每 section 与每页警示、CSV `数据性质`、HTML 三处警示、`DEMO-` ZIP/目录与 `DEMO-README.txt`，并保持真实事件既有命名和内容边界。document-export/Web 5 文件 29 测试、Chromium 演示与真实导出 2/2、root typecheck、lint 与 `git diff --check` 通过；独立 Review 的跨页警示及真实浏览器无污染 2 个 MAJOR 已修复并复审关闭。
 - 2026-08-18：M4 Task 6 完成。有效 RED 由缺失 persistence adapter/guide/notice 及 capability 字段导致；新增 `persisted()`/`persist()` 确定性适配、低敏结果保存、三步以内可跳过原生 modal 引导、诚实的 granted/denied/unsupported 状态与手动 denied retry。自动请求仅发生于真实事件创建或首个成功真实材料导入，空白首页、演示加载/导入、失败与重复材料均不触发；全量删除偏好后引导重现。Web 25 文件 141 测试、Task 目标 13/13、Chromium 2/2、Web typecheck、root lint 与 `git diff --check` 通过；独立 Review 的 unsupported 文案/无效 retry 与 modal 焦点管理 2 个 MAJOR 已修复并复审关闭。
 - 2026-08-18：M4 Task 7 完成。有效 RED 由公开页面、路由、演示横幅和当前版本入口缺失导致；新增无需注册/无需 AI 的双入口首页、显式打开/重置演示、按 `CaseEvent.dataOrigin` 持久显示的演示横幅、隐私/关于/本地反馈页面，以及要求精确确认并执行删除核验的用户可达全量本地删除。Task 目标单测 10/10、Web 27 文件 150/150、Chromium public-demo/no-ai 3/3、Web typecheck/build、root lint 与 `git diff --check` 通过；真实设备矩阵、真实 Provider 和发布编号均保持诚实未验证状态；独立 Review 未发现 BLOCKER 或 MAJOR。
+- 2026-08-18：M4 Task 8 完成。有效 RED 由 autoUpdate 配置、缺少 prompt 状态机/生产 PWA 测试装备导致；实现 prompt 注册与 idle/offline_ready/update_available/updating 状态机、模块级活动门控（导入/导出/AI 任务/未决 autosave 写入）、10 秒激活与空闲回退、dispose 全路径恢复、严格离线壳（应用壳 + 显式 demo allowlist 预缓存，`/ai/*`、`/health` 经 `navigateFallbackDenylist` 排除，运行时缓存为空）、离线/更新状态横幅与生产 Playwright 装备。目标单测 18/18、Web 28 文件 169/169、生产 Chromium E2E 2/2（3 次连跑稳定）、开发 E2E 子集 5/5、root typecheck/lint 与 `git diff --check` 通过；两轮独立 Review（首轮 FAIL 的 BLOCKER 孤儿计数与 MAJOR 挂起路径均已修复），re-check PASS 无未决 finding。偏差（受 Task 8 Interfaces 驱动的最小文件面扩展，已记录）：`workbox-window` 显式 devDependency、`tsconfig.json` types、`use-autosave.ts`/`MaterialsView.vue`/`ExportView.vue`/`AiAssistantView.vue` 活动上报、`FactsView.vue` dispose 补全、`playwright.config.ts` testIgnore。另发现并记录 Task 6/7 引入的根级 e2e 门禁回归（6 个 spec），修复排入独立 commit。
 
 ## Repository and Verification State
 
@@ -170,5 +177,6 @@ Next Action：M4 Task 8 — Add Prompted PWA Updates and a Strict Offline Shell�
 - Task 4 acceptance commit：`94d5fb7d68dd1259aed18605ed9b09f6b06410fd`，`feat: load and reset fictional demo cases`。
 - Task 5 acceptance commit：`5b0b9d5baf9b6e22f97fbb3563588a692c6871d9`，`feat: mark all fictional demo exports`。
 - Task 6 acceptance commit：`62524c17e83b74416e6475d467834f05203104ca`，`feat: explain first-use local storage`。
-- Task 7 acceptance commit：本次 `PLAN.md` 更新随 `feat: add M4 public demo experience` 提交；未 push、未部署。
-- 当前自动化证据：Task 1 相关 71 测试；Task 2 Web 97/97 与 Chromium 9/9；Task 3 相关 24/24 与四个公开资产 126688 bytes；Task 4 Web 129/129、目标 24/24、Chromium public-demo/verified-deletion/evidence-import 3/3；Task 5 document-export/Web 29/29 与 Chromium demo/user export 2/2；Task 6 Web 141/141、目标 13/13 与 Chromium first-use/storage 2/2；Task 7 Web 150/150、目标 10/10 与 Chromium public-demo/no-ai 3/3；root typecheck、lint、fixture/public-demo/forbidden validator 持续通过。
+- Task 7 acceptance commit：`5974ea9ed975e3af6f3ee019e3c497d1ca5e122`，`feat: add M4 public demo experience`。
+- Task 8 acceptance commit：本次 `PLAN.md` 更新随 `feat: add controlled PWA offline updates` 提交；未 push、未部署。
+- 当前自动化证据：Task 1 相关 71 测试；Task 2 Web 97/97 与 Chromium 9/9；Task 3 相关 24/24 与四个公开资产 126688 bytes；Task 4 Web 129/129、目标 24/24、Chromium public-demo/verified-deletion/evidence-import 3/3；Task 5 document-export/Web 29/29 与 Chromium demo/user export 2/2；Task 6 Web 141/141、目标 13/13 与 Chromium first-use/storage 2/2；Task 7 Web 150/150、目标 10/10 与 Chromium public-demo/no-ai 3/3；Task 8 Web 169/169、目标 18/18 与生产 Chromium offline/update 2/2；root typecheck、lint、fixture/public-demo/forbidden validator 持续通过；根级完整 `pnpm e2e` 当前因 Task 6/7 引入的既有回归失败，修复 commit 待办。

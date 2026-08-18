@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, reactive, ref, shallowRef } from 'vue'
+import { onMounted, onUnmounted, reactive, ref, shallowRef } from 'vue'
 import { useRoute } from 'vue-router'
 import type {
   ConfirmedFact,
@@ -270,6 +270,13 @@ onMounted(async () => {
     })
   } finally {
     loading.value = false
+  }
+})
+
+onUnmounted(() => {
+  if (autosave !== null) {
+    void autosave.dispose()
+    autosave = null
   }
 })
 </script>

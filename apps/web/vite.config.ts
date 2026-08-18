@@ -6,7 +6,8 @@ export default defineConfig({
   plugins: [
     vue(),
     VitePWA({
-      registerType: 'autoUpdate',
+      registerType: 'prompt',
+      injectRegister: null,
       manifest: {
         name: '有据 YouJu',
         short_name: '有据',
@@ -18,8 +19,12 @@ export default defineConfig({
         theme_color: '#173f35',
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,png,ico,webmanifest}'],
+        globPatterns: [
+          '**/*.{js,css,html,svg,ico,webmanifest}',
+          'demo/m4-ecommerce-refund-demo-v1/**/*.{json,pdf,png}',
+        ],
         runtimeCaching: [],
+        navigateFallbackDenylist: [/^\/ai(?:\?|\/|$)/, /^\/health(?:\?|\/|$)/],
       },
     }),
   ],

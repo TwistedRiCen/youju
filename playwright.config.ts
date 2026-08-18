@@ -5,6 +5,9 @@ const baseURL = `http://127.0.0.1:${webPort}`
 
 export default defineConfig({
   testDir: './tests/e2e',
+  // The production Service Worker spec requires the built app served by
+  // vite preview; it runs only via playwright.production.config.ts.
+  testIgnore: '**/pwa-offline-update.spec.ts',
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 1 : 0,

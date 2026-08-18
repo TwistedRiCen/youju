@@ -5,6 +5,7 @@ import type { ExportPreflightResult } from '@youju/document-export'
 import type { UuidV4 } from '@youju/domain'
 import { loadExportState, prepareExportBundle } from '../services/export-service.js'
 import { useCaseWriteAccess } from '../composables/use-case-write-access.js'
+import { beginActivity, endActivity } from '../pwa/update-controller.js'
 
 const route = useRoute()
 const caseId = String(route.params.caseId ?? '') as UuidV4
@@ -71,6 +72,7 @@ async function refresh(): Promise<void> {
 async function generate(): Promise<void> {
   exporting.value = true
   message.value = ''
+  beginActivity()
   try {
     await cleanupPendingDownload()
     const bundle = await prepareExportBundle(caseId)
@@ -88,6 +90,7 @@ async function generate(): Promise<void> {
     message.value = '生成材料包失败，请检查缺口后重试。'
   } finally {
     exporting.value = false
+    endActivity()
   }
 }
 

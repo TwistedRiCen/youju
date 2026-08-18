@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createAutosave } from '../src/composables/use-autosave.js'
 import { CaseRepositoryError } from '../src/storage/index.js'
+import { activeActivityCount, endActivity } from '../src/pwa/update-controller.js'
 
 describe('autosave controller', () => {
   beforeEach(() => {
@@ -8,6 +9,13 @@ describe('autosave controller', () => {
   })
 
   afterEach(() => {
+    try {
+      expect(activeActivityCount()).toBe(0)
+    } finally {
+      endActivity()
+      endActivity()
+      endActivity()
+    }
     vi.useRealTimers()
   })
 
@@ -109,5 +117,39 @@ describe('autosave controller', () => {
     await controller.dispose()
 
     expect(persist).toHaveBeenCalledWith('late')
+  })
+
+  it('keeps the newer draft and balanced activity when an in-flight persist fails', async () => {
+    let release: (() => void) | undefined
+    const gate = new Promise<void>((resolve) => {
+      release = resolve
+    })
+    const persisted: string[] = []
+    const persist = vi.fn(async (value: string) => {
+      persisted.push(value)
+      await gate
+      if (value === 'v1') {
+        throw new Error('storage down')
+      }
+    })
+    const controller = createAutosave({ persist, debounceMs: 1 })
+
+    controller.schedule('v1')
+    await vi.advanceTimersByTimeAsync(1)
+    await Promise.resolve()
+    expect(persisted).toEqual(['v1'])
+
+    controller.schedule('v2')
+    release?.()
+    await Promise.resolve()
+    await vi.advanceTimersByTimeAsync(1)
+    await Promise.resolve()
+    await Promise.resolve()
+
+    expect(persisted).toEqual(['v1', 'v2'])
+    expect(controller.status.value).toBe('saved')
+    expect(activeActivityCount()).toBe(0)
+
+    await controller.dispose()
   })
 })

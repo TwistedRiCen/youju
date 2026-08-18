@@ -7,6 +7,7 @@ import { AiApiClientError } from '../ai/ai-api-client.js'
 import type { AiTaskRunner, RunAiTaskCommand, RunAiTaskResult } from '../ai/ai-task-runner.js'
 import { AiTaskRunnerError } from '../ai/ai-task-runner.js'
 import AiTaskProgress from '../components/AiTaskProgress.vue'
+import { beginActivity, endActivity } from '../pwa/update-controller.js'
 
 const props = defineProps<{
   readonly caseId: UuidV4
@@ -63,6 +64,7 @@ async function runTask(taskType: AiTaskType): Promise<void> {
   activeTask.value = taskType
   running.value = true
   progressVisible.value = true
+  beginActivity()
   try {
     latestResult.value = await props.runner.runTask({
       ...(await props.taskFactory(taskType)),
@@ -72,6 +74,7 @@ async function runTask(taskType: AiTaskType): Promise<void> {
     message.value = errorText(error)
   } finally {
     running.value = false
+    endActivity()
   }
 }
 
@@ -89,6 +92,7 @@ async function runQuickAnalysis(): Promise<void> {
   activeTask.value = 'classify_evidence'
   running.value = true
   progressVisible.value = true
+  beginActivity()
   try {
     const results = await props.runner.runQuickAnalysis({
       caseId: activeCaseId.value,
@@ -100,6 +104,7 @@ async function runQuickAnalysis(): Promise<void> {
     message.value = errorText(error)
   } finally {
     running.value = false
+    endActivity()
   }
 }
 

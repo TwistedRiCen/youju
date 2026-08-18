@@ -16,6 +16,7 @@ import { getCaseRepository } from '../services/case-service.js'
 import { deleteEvidence } from '../services/reference-service.js'
 import { EvidenceReferencedError } from '../services/reference-service.js'
 import { useCaseWriteAccess } from '../composables/use-case-write-access.js'
+import { beginActivity, endActivity } from '../pwa/update-controller.js'
 
 const route = useRoute()
 const caseId = String(route.params.caseId ?? '') as UuidV4
@@ -55,6 +56,7 @@ onMounted(async () => {
 async function importFiles(files: File[]): Promise<void> {
   importing.value = true
   messages.value = []
+  beginActivity()
   try {
     const outcomes = await importEvidenceFiles(caseId, files, 'other')
     evidence.value = await listCaseEvidence(caseId)
@@ -72,6 +74,7 @@ async function importFiles(files: File[]): Promise<void> {
     messages.value = [{ fileName: '', text: '导入失败，请重试' }]
   } finally {
     importing.value = false
+    endActivity()
   }
 }
 

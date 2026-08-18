@@ -3,10 +3,13 @@ import { onMounted, shallowRef } from 'vue'
 import { RouterView } from 'vue-router'
 import FirstUseGuide from './components/FirstUseGuide.vue'
 import StoragePersistenceNotice from './components/StoragePersistenceNotice.vue'
+import AppStatusBanner from './components/AppStatusBanner.vue'
 import { getAppPreferencesRepository } from './browser/storage-persistence.js'
+import { getPwaUpdateController } from './pwa/update-controller.js'
 import type { AppPreferencesRepository } from './storage/index.js'
 
 const preferences = shallowRef<AppPreferencesRepository | null>(null)
+const pwaController = getPwaUpdateController()
 
 onMounted(async () => {
   try {
@@ -18,6 +21,7 @@ onMounted(async () => {
 </script>
 
 <template>
+  <AppStatusBanner v-if="pwaController !== null" :controller="pwaController" />
   <StoragePersistenceNotice v-if="preferences !== null" :preferences="preferences" />
   <RouterView />
   <footer class="public-footer">

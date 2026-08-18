@@ -1,6 +1,7 @@
 import { ref } from 'vue'
 import type { Ref } from 'vue'
 import { CaseRepositoryError } from '../storage/index.js'
+import { beginActivity, endActivity } from '../pwa/update-controller.js'
 
 export type AutosaveStatus = 'idle' | 'saving' | 'saved' | 'conflict' | 'failed'
 
@@ -38,6 +39,8 @@ export function createAutosave<T>(options: AutosaveOptions<T>): AutosaveControll
     }
     const value = pendingValue
     pendingValue = null
+    endActivity()
+    beginActivity()
     status.value = 'saving'
 
     try {
@@ -46,7 +49,15 @@ export function createAutosave<T>(options: AutosaveOptions<T>): AutosaveControll
         status.value = 'saved'
       }
     } catch (error) {
-      pendingValue = value
+      if (pendingValue === null) {
+        // Re-queue the failed draft only when no newer value arrived while
+        // the write was in flight; otherwise the newer value stays pending
+        // and the activity accounting remains balanced.
+        pendingValue = value
+        if (!disposed) {
+          beginActivity()
+        }
+      }
       if (isConflict(error)) {
         blocked = true
         status.value = 'conflict'
@@ -54,6 +65,8 @@ export function createAutosave<T>(options: AutosaveOptions<T>): AutosaveControll
       } else {
         status.value = 'failed'
       }
+    } finally {
+      endActivity()
     }
   }
 
@@ -66,6 +79,9 @@ export function createAutosave<T>(options: AutosaveOptions<T>): AutosaveControll
     schedule(value: T): void {
       if (disposed || blocked) {
         return
+      }
+      if (pendingValue === null) {
+        beginActivity()
       }
       pendingValue = value
       status.value = 'saving'
@@ -103,6 +119,9 @@ export function createAutosave<T>(options: AutosaveOptions<T>): AutosaveControll
       if (!blocked && pendingValue !== null) {
         enqueuePersist()
         await writeChain
+      } else if (pendingValue !== null) {
+        pendingValue = null
+        endActivity()
       }
     },
   }
