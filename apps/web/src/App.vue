@@ -20,6 +20,11 @@ onMounted(async () => {
 <template>
   <StoragePersistenceNotice v-if="preferences !== null" :preferences="preferences" />
   <RouterView />
+  <footer class="public-footer">
+    <a href="/">首页</a>
+    <a href="/privacy">隐私与数据边界</a>
+    <a href="/about">关于、版本与反馈</a>
+  </footer>
   <FirstUseGuide v-if="preferences !== null" :preferences="preferences" />
 </template>
 
@@ -54,5 +59,19 @@ input,
 textarea,
 select {
   font: inherit;
+}
+
+.public-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  border-top: 1px solid #d3d7ce;
+}
+
+.public-footer a {
+  color: #31564c;
+  font-weight: 700;
 }
 </style>

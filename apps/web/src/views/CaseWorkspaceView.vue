@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, reactive, ref, shallowRef } from 'vue'
 import { RouterView, useRoute } from 'vue-router'
-import type { FactDraft, UuidV4 } from '@youju/domain'
+import type { CaseEvent, FactDraft, UuidV4 } from '@youju/domain'
 import { detectBrowserCapabilities } from '../browser/browser-capabilities.js'
 import type { BrowserCapabilities } from '../browser/browser-capabilities.js'
 import { createAutosave } from '../composables/use-autosave.js'
@@ -17,6 +17,7 @@ import {
   yuanToFen,
 } from '../services/case-service.js'
 import type { CaseRepository } from '../storage/index.js'
+import DemoCaseBanner from '../components/DemoCaseBanner.vue'
 
 const route = useRoute()
 const caseId = String(route.params.caseId ?? '') as UuidV4
@@ -31,6 +32,7 @@ const loading = ref(true)
 const notFound = ref(false)
 const loadError = ref('')
 const caseTitle = ref('')
+const caseEvent = shallowRef<CaseEvent | null>(null)
 const drafts = shallowRef<readonly FactDraft[]>([])
 const values = reactive<Record<string, string>>({})
 
@@ -161,6 +163,7 @@ onMounted(async () => {
       return
     }
     caseTitle.value = aggregate.caseEvent.title
+    caseEvent.value = aggregate.caseEvent
     expectedRevision = aggregate.revision
     drafts.value = aggregate.factDrafts
     for (const draft of aggregate.factDrafts) {
@@ -200,6 +203,7 @@ onUnmounted(() => {
 </script>
 
 <template>
+  <DemoCaseBanner v-if="caseEvent !== null" :case-event="caseEvent" />
   <template v-if="isOverview">
     <main class="workspace-shell">
     <a class="back" href="/">返回首页</a>

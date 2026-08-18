@@ -533,7 +533,7 @@ git commit -m "feat: explain first-use local storage"
 - `/about` shows release ID, browser/Provider verification state and product boundary.
 - Feedback copies a sanitized template containing only release ID and user-entered text; optional repository URL must be build-time validated HTTPS GitHub/Gitee.
 
-- [ ] **Step 1: Write public UX RED tests**
+- [x] **Step 1: Write public UX RED tests**
 
 Test stale milestone copy removal, no-account/no-AI claims, demo loading states, persistent banner, all privacy topics, feedback sanitization and absent external link when unconfigured.
 
@@ -543,15 +543,15 @@ pnpm exec vitest run apps/web/tests/home.test.ts apps/web/tests/public-informati
 
 Expected RED: routes, pages, banner and current-version content are absent.
 
-- [ ] **Step 2: Implement public pages and demo actions**
+- [x] **Step 2: Implement public pages and demo actions**
 
 All text must remain factual and avoid legal conclusions, Provider availability promises or “server backup” implications.
 
-- [ ] **Step 3: Add complete no-AI demo E2E**
+- [x] **Step 3: Add complete no-AI demo E2E**
 
 From a fresh profile: skip/complete guide, load demo, inspect materials/facts/timeline/statement, export and delete without opening AI settings or making `/ai` requests.
 
-- [ ] **Step 4: Run Task 7 gates**
+- [x] **Step 4: Run Task 7 gates**
 
 ```powershell
 pnpm exec vitest run apps/web/tests/home.test.ts apps/web/tests/public-information.test.ts apps/web/tests/demo-case-banner.test.ts
@@ -560,7 +560,7 @@ pnpm --filter @youju/web typecheck
 git diff --check
 ```
 
-- [ ] **Step 5: Commit and stop**
+- [x] **Step 5: Commit and stop**
 
 ```powershell
 git add apps/web/src/views apps/web/src/components/DemoCaseBanner.vue apps/web/src/components/FeedbackTemplate.vue apps/web/src/router.ts apps/web/src/App.vue apps/web/tests tests/e2e/public-demo-flow.spec.ts docs/superpowers/plans/2026-08-13-youju-m4-public-demo-deployment-plan.md

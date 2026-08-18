@@ -42,6 +42,7 @@ const timelineEntries = [
 
 async function createCase(page: Page): Promise<void> {
   await page.goto('/')
+  await page.getByRole('button', { name: '跳过' }).click()
   await page.getByRole('link', { name: '创建本地事件' }).click()
   await page.getByLabel('事件标题').fill('运输破损退款纠纷')
   await page.getByLabel('购买时间').fill('2026-07-01T12:16')
