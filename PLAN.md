@@ -8,7 +8,7 @@
 
 `EXECUTION` → 已执行到 Hard Stop 边界
 
-M4 Task 1–13 全部验收并提交；Task 14/15 需要真实设备/Provider 与公开部署授权（当前授权信封 `REAL_PROVIDER_CALLS = NO`、`PRODUCTION_DEPLOYMENT = NO`、`PUSH = NO`），构成真实 Hard Stop。自动化可验证部分已全部完成；M4 完整 `ACCEPTED` 需要用户在 Task 14/15 授权后的真实环境证据。
+M4 Task 1–13 全部验收并提交；Task 14 于 2026-08-18 完成部分真实环境验证（Windows Chrome/Edge 真实浏览器、Provider 端点网络探针）并提交证据，但 Android/iOS/微信设备与 Provider 专用低额度测试 Key 当前不可用，Task 14 未完整验收，仍处于 Hard Stop；Task 15 公开部署继续需要部署目标授权。自动化可验证部分已全部完成；M4 完整 `ACCEPTED` 需要用户在 Task 14/15 授权后的真实环境证据。
 
 ## Execution Policy
 
@@ -63,7 +63,7 @@ M4 Task 1–13 全部验收并提交；Task 14/15 需要真实设备/Provider �
 - 同日 `pnpm check:forbidden-content`、`pnpm test:ai-contract`（5 文件、34 测试）和 `pnpm eval:golden-case` 通过；评测使用虚构固定数据，未调用真实 Provider。
 - M4 设计方向已确认，D-01 至 D-06 有 2026-08-13 用户批准记录。依据：`docs/superpowers/specs/2026-08-13-youju-m4-public-demo-deployment-design.md`。
 - M4 详细实施计划已由用户于 2026-08-17 正式批准；该批准不改变冻结架构、Locked Implementation Parameters、Task 顺序或产品边界。
-- M4 Task 1–13 已完成实现与验证（Task 14/15 需人工授权）：领域模型与 IndexedDB v4 已支持显式演示身份、加载 journal 和低敏偏好；公开夹具使用 template token、四个虚构小型材料及严格校验；演示加载现具备同源读取、quota preflight、UUID 重写、OPFS/IndexedDB 分阶段持久化、逐字段 readback、幂等/并发隔离、可信恢复与仅演示事件重置；正式 PDF、CSV、HTML、ZIP、目录及下载文件名均按 `CaseEvent.dataOrigin` 确定性标记演示数据；首次引导与浏览器持久化请求现仅记录低敏偏好；公开首页、持久演示横幅、隐私/关于/反馈页及用户可达的全量本地删除已经完成；PWA 已改为提示式更新，具备显式 idle/offline_ready/update_available/updating 状态机、活动门控、10 秒激活/空闲回退与严格离线壳；路由级懒加载与 `check:web-budget` 门禁已落地（首屏 gzip 125.7 KiB、应用壳预缓存 765.6 KiB，均低于预算），生产构建不发布 sourcemap；生产 Fastify 边界已加固（显式受信代理 CIDR、同源策略、releaseId 健康响应、有界优雅关闭、日志白名单序列化）；同源生产打包与安全头已落地（release.json 描述、本地生产候选服务器、Nginx 模板与安全头/代理参数 include 文件、CSP/HSTS/缓存规则、生产头检查门禁）；生产候选 E2E 与发布门禁已落地（双服务器 harness、缓存隐私枚举、发布更新数据保留/页面内存清空、release 配对、CI 验证步骤）；隐私/部署/运维/威胁/发布文档已完成（部署指南、运维手册、M4 威胁清单、M4 发布清单）。真实设备矩阵、真实 Provider 与公开部署（Task 14/15）需要单独人工授权，尚未执行。
+- M4 Task 1–13 已完成实现与验证（Task 14/15 需人工授权）：领域模型与 IndexedDB v4 已支持显式演示身份、加载 journal 和低敏偏好；公开夹具使用 template token、四个虚构小型材料及严格校验；演示加载现具备同源读取、quota preflight、UUID 重写、OPFS/IndexedDB 分阶段持久化、逐字段 readback、幂等/并发隔离、可信恢复与仅演示事件重置；正式 PDF、CSV、HTML、ZIP、目录及下载文件名均按 `CaseEvent.dataOrigin` 确定性标记演示数据；首次引导与浏览器持久化请求现仅记录低敏偏好；公开首页、持久演示横幅、隐私/关于/反馈页及用户可达的全量本地删除已经完成；PWA 已改为提示式更新，具备显式 idle/offline_ready/update_available/updating 状态机、活动门控、10 秒激活/空闲回退与严格离线壳；路由级懒加载与 `check:web-budget` 门禁已落地（首屏 gzip 125.7 KiB、应用壳预缓存 765.6 KiB，均低于预算），生产构建不发布 sourcemap；生产 Fastify 边界已加固（显式受信代理 CIDR、同源策略、releaseId 健康响应、有界优雅关闭、日志白名单序列化）；同源生产打包与安全头已落地（release.json 描述、本地生产候选服务器、Nginx 模板与安全头/代理参数 include 文件、CSP/HSTS/缓存规则、生产头检查门禁）；生产候选 E2E 与发布门禁已落地（双服务器 harness、缓存隐私枚举、发布更新数据保留/页面内存清空、release 配对、CI 验证步骤）；隐私/部署/运维/威胁/发布文档已完成（部署指南、运维手册、M4 威胁清单、M4 发布清单）。真实设备矩阵（部分：Windows Chrome/Edge 已于 2026-08-18 真实验证）、真实 Provider 与公开部署（Task 14 剩余项/15）仍需用户提供外部条件或单独授权，尚未完成。
 - 当前工作分支在本文件创建前为干净的 `codex/m4-public-demo`，HEAD 为 `371bbd6082daa071f535c8113fbe9c5bf0c6596a`；其上游同名远端一致。`main` 为 `8a4c11852efc85e87cf67af7b82f7cc80312c0d0`，比当前分支多一个合并提交，但两者文件树相同。
 
 ## Design Assumptions
@@ -80,7 +80,7 @@ M4 Task 1–13 全部验收并提交；Task 14/15 需要真实设备/Provider �
 - P-01 `RESOLVED`（2026-08-17）：用户正式批准当前 M4 详细实施计划；计划状态与 README 语义现已一致，且实现仍未开始。
 - P-02 `RESOLVED`（2026-08-17）：保留现有 `codex/m4-public-demo`，在 readiness commit 后通过 `git merge --ff-only main` 对齐最新批准 baseline；不删除分支、不重写历史、不创建替代分支。
 - P-03（Task 15 前）：公开供应商、区域、域名、DNS、证书、受信代理 CIDR、访问方式及适用备案/合规前提尚未选择或确认。
-- P-04（Task 14 前）：可用真实设备/浏览器矩阵及任何真实 Provider 测试 Key/条款核对尚未授权；无法验证的 Provider 必须诚实标记。
+- P-04 `PARTIAL`（2026-08-18）：Windows Chrome/Edge 真实浏览器已验证并记录；Android/iOS/微信设备矩阵与真实 Provider 专用低额度测试 Key 仍不可用，Task 14 完整验收与 Provider 真实核对需用户提供设备矩阵与 Key。
 
 ## Frozen Decisions
 
@@ -100,7 +100,7 @@ M4 Task 1–13 全部验收并提交；Task 14/15 需要真实设备/Provider �
 - M1 Foundation：`ACCEPTED`。已实现；历史完成计划、`v0.1.0-m1` 本地标签和当前全量验证提供证据。
 - M2 No-AI Core：`ACCEPTED`。已实现；无 AI 创建、导入、事实、时间线、规则、陈述、导出和核验删除在当前全量门禁通过。
 - M3 BYOK AI：`ACCEPTED`。已实现并通过当前自动化门禁；真实 Provider、真实设备和生产 HTTPS 不属于其自动化验收结论。
-- M4 Public Demo and Deployment：`IN PROGRESS`；readiness 为 `APPROVED / READY`。Task 1–13 已验收；Task 14/15（真实设备/Provider/公开部署）需人工授权，生产真实环境验证和部署尚未开始。
+- M4 Public Demo and Deployment：`IN PROGRESS`；readiness 为 `APPROVED / READY`。Task 1–13 已验收；Task 14 于 2026-08-18 记录部分真实环境证据（Windows Chrome/Edge 真实浏览器、Provider 端点网络探针）但未完整验收（Android/iOS/微信设备与 Provider 测试 Key 不可用）；Task 15 尚未开始。
 - M5 Validation：`BLOCKED`。只有 M4 发布证据完整后才能开始。
 
 ## Current Milestone
@@ -111,7 +111,7 @@ Canonical architecture evidence：`docs/superpowers/specs/2026-08-13-youju-m4-pu
 
 Approved implementation sequence：`docs/superpowers/plans/2026-08-13-youju-m4-public-demo-deployment-plan.md`。
 
-Next Action：Hard Stop（Task 14/15 前置授权）——Task 14 需要真实设备/浏览器矩阵与真实 Provider 测试 Key 授权；Task 15 需要公开部署目标（供应商/区域/域名/DNS/证书/备案前提）与外部操作授权。在获得授权前不得执行真实 Provider 调用或任何生产部署。Task 13 已通过 prettier/forbidden/verify:release-candidate/diff-check 门禁与文档准确性独立 Review（2 MAJOR 已修复：提交 youju-proxy-params.conf、修正 T-07 证据表述与清单数字行）。
+Next Action：Hard Stop（Task 14/15 前置授权）——Task 14 仍需用户提供 Android/iOS/微信可用设备（或批准豁免范围）与可选专用低额度 Provider 测试 Key 及条款核对；Task 15 需要公开部署目标（供应商/区域/域名/DNS/证书/备案前提）与外部操作授权。2026-08-18 已提交 Task 14 部分真实环境证据（Windows Chrome/Edge 生产套件 12/12、真实 Chrome 补充 9/9、Provider 端点 TLS 探针）与回归门禁证据，Task 14 未完整验收。Task 13 已通过 prettier/forbidden/verify:release-candidate/diff-check 门禁与文档准确性独立 Review（2 MAJOR 已修复：提交 youju-proxy-params.conf、修正 T-07 证据表述与清单数字行）。
 
 ## Acceptance Criteria
 
@@ -136,9 +136,9 @@ Next Action：Hard Stop（Task 14/15 前置授权）——Task 14 需要真实�
 
 ## Blockers
 
-- M4 Task 14/15：分别需要真实设备/Provider 授权和公开部署目标/外部操作授权（Hard Stop，当前授权信封不允许执行）。
+- M4 Task 14/15：Task 14 部分执行（2026-08-18：Windows Chrome/Edge 真实浏览器已验证、Provider 端点网络探针已记录），仍需 Android/iOS/微信可用设备与专用低额度 Provider 测试 Key 才能完整验收；Task 15 需要公开部署目标/外部操作授权（Hard Stop，当前授权信封不允许执行）。
 - M5：受 M4 完整验收与公开部署证据阻塞。
-- Hard Stop 记录（2026-08-18）：Task 1–13 完成后，按批准计划 Task 14 的 Preconditions（用户显式授权设备/浏览器矩阵与专用低额度 Provider 测试 Key）与 Task 15 的 Preconditions（用户显式授权部署目标并确认备案/合规前提），以及本会话授权信封（REAL_PROVIDER_CALLS=NO、PRODUCTION_DEPLOYMENT=NO、PUSH=NO），自动执行在 Task 14 停止。停止前未执行任何真实 Provider 调用、真实设备检查、公开部署、push、PR、tag 或 release。
+- Hard Stop 记录（2026-08-18）：Task 1–13 完成后，按批准计划 Task 14 的 Preconditions（用户显式授权设备/浏览器矩阵与专用低额度 Provider 测试 Key）与 Task 15 的 Preconditions（用户显式授权部署目标并确认备案/合规前提）执行。本轮用户授权（2026-08-18 任务提示，证据：本轮会话指令）：`REAL_PROVIDER_CALLS=YES`（仅限 Task 14 验证所必需的最小调用）、`NETWORK_ACCESS=YES`、`MODIFY_FILES/RUN_TESTS/RUN_BUILD=YES`、`COMMIT=YES_AFTER_REVIEW`；`PRODUCTION_DEPLOYMENT=NO`、`PUSH=NO`。由于环境中无任何 Provider Key 且用户未提供专用低额度测试 Key，未执行任何真实 Provider 调用（仅做无 Key TLS 连通性探针）；真实设备矩阵仅本机 Windows Chrome/Edge 可执行并已完成（Playwright channel: chrome/msedge，生产套件 12/12、补充检查 9/9），Android/iOS/微信缺设备未执行；回归门禁全绿（已提交）。未执行任何公开部署、push、PR、tag 或 release；Task 14 未完整验收。
 
 ## Known Deferred Findings
 
@@ -173,6 +173,7 @@ Next Action：Hard Stop（Task 14/15 前置授权）——Task 14 需要真实�
 - 2026-08-18：M4 Task 12 完成。有效 RED 由 `e2e:production` 命令缺失导致；实现双 webServer 生产 harness（API 以生产配置 + release.json 的 releaseId 启动、候选服务器同源服务）、三个生产 spec（完整无 AI 演示 + release 配对；Cache Storage 全量枚举隐私断言；发布更新数据保留/页面内存清空）与 `e2e:production`/`verify:release-candidate` 脚本、CI release-candidate 步骤。生产 E2E 6/6、verify:release-candidate 全绿、根级 e2e 130/14、typecheck/lint/diff-check 通过；独立 Review 的 BLOCKER（dev 配置未排除生产 spec）已修复（playwright.config.ts testIgnore 增加 production-*.spec.ts），MINOR2（release.json 缺失报错指引）已修复，其余记录。
 - 2026-08-18：M4 Task 13 完成（文档任务，RED 不适用）。新增部署指南（前提/发布配对/Fastify 生产配置/Nginx/部署步骤/冒烟/回滚，不给法律结论）、运维手册（健康/告警/7 天日志保留/证书 DNS/访问控制/故障手册）、M4 威胁清单（12 项自动化威胁映射到文件/测试，6 项人工待授权）与 M4 发布清单（自动化/设备/Provider/国内可达性/部署显式列，人工行未勾选）；更新 README、本地开发指南与 roadmap（M4 状态与后续顺序）。prettier（含 5 个既有文档格式漂移修复）、forbidden-content、verify:release-candidate 与 `git diff --check` 通过；文档准确性独立 Review 的 2 个 MAJOR 已修复（提交 `deploy/nginx/youju-proxy-params.conf`、修正 T-07 证据表述与清单数字行）。
 - 2026-08-18：M4 最终系统验证：完整 `pnpm verify` 全绿（lint、typecheck、vitest 全项目、fixture、build、三浏览器 e2e 130 通过/14 跳过）；`pnpm verify:release-candidate` 全绿（生产 E2E 6/6）。M4 Acceptance 评估：AC-03/04/05/06 `VERIFIED`；AC-01/02/07/08 的自动化部分已验证、真实环境部分保持 `OPEN`（Task 14/15）。命中真实 Hard Stop：Task 14/15 需要用户授权，未执行任何真实 Provider/设备/部署/外部 Git 操作。
+- 2026-08-18：M4 Task 14 部分真实环境验证（证据 commit `test: record M4 real environment checks`）。冻结发布候选 `2026.08.18-cf2201c`（commit `cf2201c20e0028960f2de8367261f93321f87148`，构建时间 2026-08-18T07:47:38Z，首屏 gzip 125.7 KiB、应用壳 765.6 KiB，记录于 release checklist 头部）；真实 Windows Chrome/Edge：Playwright（channel: chrome/msedge）驱动本机真实安装的浏览器二进制跑生产套件 12/12 通过（缓存隐私、完整无 AI 演示+发布配对、发布更新数据保留、离线壳、提示式更新），真实 Chrome 补充检查 9/9（直接访问/演示加载/材料导入/OPFS/刷新持久/SW 注册+控制/manifest、无页面错误）；Provider 端点本机 TLS 探针（openai 401、aliyun_bailian 404、deepseek 401、siliconflow 404，主机均可达；无 Key、无数据、无调用）；回归门禁 `pnpm verify:release-candidate` 全绿（集成 11/11、生产 E2E 6/6）、`pnpm check:forbidden-content` PASS、`git diff --check` 通过。无 Android/iOS/微信设备与 Provider 专用低额度测试 Key，Task 14 未完整验收（Hard Stop）；未执行真实 Provider 调用、公开部署、push、PR、tag 或 release。
 
 ## Repository and Verification State
 
@@ -193,5 +194,6 @@ Next Action：Hard Stop（Task 14/15 前置授权）——Task 14 需要真实�
 - Task 11 acceptance commit：`138b3efe0123b74c729bad250faa60a670c5ca8f`，`build: add M4 production deployment contract`。
 - Task 12 acceptance commit：`3bda582deca1ff55aef802f19ed7acf57821d2a8`，`test: add M4 production release gates`。
 - Task 13 acceptance commit：`8212fb526d4e5eda82721e96d444861d0fb9e6e3`，`docs: add M4 deployment and operations guidance`。
-- M4 Hard Stop 记录 commit：本次 `PLAN.md` 更新随 `docs: record M4 hard stop at task 14` 提交；未 push、未部署。
+- M4 Hard Stop 记录 commit：`cf2201c20e0028960f2de8367261f93321f87148`，`docs: record M4 hard stop at task 14`；未 push、未部署。
+- Task 14 evidence commit：`a505f16283021c191b89d8b32abf80f93d1a3d8e`，`test: record M4 real environment checks`（release/threat checklist + M4 计划 Task 14 复选框；临时验证装备未入库）。
 - 当前自动化证据：Task 1 相关 71 测试；Task 2 Web 97/97 与 Chromium 9/9；Task 3 相关 24/24 与四个公开资产 126688 bytes；Task 4 Web 129/129、目标 24/24、Chromium public-demo/verified-deletion/evidence-import 3/3；Task 5 document-export/Web 29/29 与 Chromium demo/user export 2/2；Task 6 Web 141/141、目标 13/13 与 Chromium first-use/storage 2/2；Task 7 Web 150/150、目标 10/10 与 Chromium public-demo/no-ai 3/3；Task 8 Web 169/169、目标 18/18 与生产 Chromium offline/update 2/2；Task 9 Web 172/172、目标 11/11 与预算（首屏 125.7 KiB / 应用壳 765.6 KiB）达标；Task 10 API 91/91 与 ai-contract 34/34；根级完整 `pnpm e2e` 130 通过 / 14 跳过，`pnpm verify` 全绿。
