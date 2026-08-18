@@ -1,4 +1,4 @@
-import type { UtcTimestamp, UuidV4 } from '@youju/domain'
+import type { CaseEvent, OperationJournalEntry, UtcTimestamp, UuidV4 } from '@youju/domain'
 import type { EvidenceBlobStore } from '@youju/evidence-store'
 import { evidenceStoragePath } from '@youju/evidence-store'
 import type { CaseRepository } from '../storage/index.js'
@@ -55,7 +55,7 @@ async function verifyDeletion(
   const aiRecords = await repository.listAnalyses(caseId)
   const aiCandidates = await repository.listCandidates(caseId)
   const operations = (await repository.listOperations()).filter(
-    (entry) => entry.operationId !== operationId,
+    (entry) => entry.operationId !== operationId && entry.caseId === caseId,
   )
   if (
     caseRecord !== null ||
@@ -143,6 +143,54 @@ export async function resumeCaseDeletion(
   dependencies: DeleteCaseDependencies,
 ): Promise<DeleteCaseResult> {
   return runCaseDeletion(operationId, caseId, startedAt, dependencies)
+}
+
+export async function deleteDemoCasePermanently(
+  caseEvent: CaseEvent,
+  fixtureId: string,
+  dependencies: DeleteCaseDependencies,
+): Promise<DeleteCaseResult> {
+  if (
+    caseEvent.dataOrigin !== 'fictional_demo' ||
+    caseEvent.demoFixtureId !== fixtureId
+  ) {
+    throw new Error('demo_identity_mismatch')
+  }
+  return runCaseDeletion(
+    crypto.randomUUID(),
+    caseEvent.id,
+    new Date().toISOString(),
+    dependencies,
+  )
+}
+
+export async function cleanupInterruptedDemoCaseLoad(
+  entry: Extract<OperationJournalEntry, { operationType: 'demo_case_load' }>,
+  dependencies: DeleteCaseDependencies,
+): Promise<'cleaned' | 'protected' | 'incomplete'> {
+  await dependencies.blobStore.deleteTemporary(entry.operationId)
+  const stored = await dependencies.repository.getCase(entry.caseId)
+  if (stored !== null) {
+    if (
+      stored.caseEvent.dataOrigin !== 'fictional_demo' ||
+      stored.caseEvent.demoFixtureId !== entry.demoFixtureId
+    ) {
+      await dependencies.repository.deleteOperation(entry.operationId)
+      return 'protected'
+    }
+    await dependencies.blobStore.deleteCase(entry.caseId)
+    await dependencies.repository.deleteAllCaseRecords(entry.caseId)
+  } else {
+    await dependencies.blobStore.deleteCase(entry.caseId)
+  }
+
+  const recordsGone = (await dependencies.repository.getCase(entry.caseId)) === null
+  const blobsGone = (await dependencies.blobStore.listCaseStorageRefs(entry.caseId)).length === 0
+  if (recordsGone && blobsGone) {
+    await dependencies.repository.deleteOperation(entry.operationId)
+    return 'cleaned'
+  }
+  return 'incomplete'
 }
 
 export async function deleteAllLocalData(

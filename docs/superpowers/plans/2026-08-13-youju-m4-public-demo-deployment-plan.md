@@ -345,7 +345,7 @@ git commit -m "feat: add validated public demo fixture"
 - Interrupted `demo_case_load` recovery removes partial structured records and staged blobs, never a `user_created` case.
 - Loading performs no AI call, feedback call or external fetch outside same-origin demo assets.
 
-- [ ] **Step 1: Write loader/recovery RED tests**
+- [x] **Step 1: Write loader/recovery RED tests**
 
 Cover fresh load, duplicate load, UUID rewriting, source integrity, OPFS unavailable, quota failure, interruption at each stage, retry and user-case isolation.
 
@@ -356,15 +356,15 @@ pnpm exec playwright test tests/e2e/public-demo-storage.spec.ts --project=chromi
 
 Expected RED: no demo loader or operation recovery exists.
 
-- [ ] **Step 2: Implement minimal loader and idempotent service**
+- [x] **Step 2: Implement minimal loader and idempotent service**
 
 Use existing repositories, `EvidenceBlobStore`, operation journal, SHA-256 verification and delete service. Do not directly manipulate unrelated object stores.
 
-- [ ] **Step 3: Implement interruption recovery and verified reset**
+- [x] **Step 3: Implement interruption recovery and verified reset**
 
 No path may report success before all structured records and blobs are readable and summaries match the manifest.
 
-- [ ] **Step 4: Run Task 4 gates**
+- [x] **Step 4: Run Task 4 gates**
 
 ```powershell
 pnpm exec vitest run apps/web/tests/demo-case-loader.test.ts apps/web/tests/deletion.test.ts
@@ -373,7 +373,7 @@ pnpm --filter @youju/web typecheck
 git diff --check
 ```
 
-- [ ] **Step 5: Commit and stop**
+- [x] **Step 5: Commit and stop**
 
 ```powershell
 git add apps/web/src/demo apps/web/src/services/recover-local-operations.ts apps/web/src/services/delete-case-service.ts apps/web/tests/demo-case-loader.test.ts apps/web/tests/deletion.test.ts tests/e2e/public-demo-storage.spec.ts docs/superpowers/plans/2026-08-13-youju-m4-public-demo-deployment-plan.md

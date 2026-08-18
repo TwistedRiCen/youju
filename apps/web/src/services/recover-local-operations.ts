@@ -2,7 +2,10 @@ import { evidenceStoragePath } from '@youju/evidence-store'
 import type { EvidenceBlobStore } from '@youju/evidence-store'
 import type { CaseRepository } from '../storage/index.js'
 import type { AiRepository } from '../storage/ai-repository.js'
-import { resumeCaseDeletion } from './delete-case-service.js'
+import {
+  cleanupInterruptedDemoCaseLoad,
+  resumeCaseDeletion,
+} from './delete-case-service.js'
 
 export interface LocalOperationRecoveryDependencies {
   readonly repository: CaseRepository
@@ -23,6 +26,14 @@ export async function recoverLocalOperations(
   const entries = await dependencies.repository.listOperations()
 
   for (const entry of entries) {
+    if (entry.operationType === 'demo_case_load') {
+      const result = await cleanupInterruptedDemoCaseLoad(entry, dependencies)
+      if (result === 'incomplete') {
+        throw new Error('demo_recovery_incomplete')
+      }
+      cleaned.push(entry.operationId)
+      continue
+    }
     if (entry.operationType === 'evidence_delete') {
       const metadata = (await dependencies.repository.listEvidence(entry.caseId)).find(
         (item) => item.id === entry.evidenceId,

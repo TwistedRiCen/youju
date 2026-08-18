@@ -63,7 +63,7 @@ M4 方向设计和详细实施计划均已有用户批准证据。执行采用 `
 - 同日 `pnpm check:forbidden-content`、`pnpm test:ai-contract`（5 文件、34 测试）和 `pnpm eval:golden-case` 通过；评测使用虚构固定数据，未调用真实 Provider。
 - M4 设计方向已确认，D-01 至 D-06 有 2026-08-13 用户批准记录。依据：`docs/superpowers/specs/2026-08-13-youju-m4-public-demo-deployment-design.md`。
 - M4 详细实施计划已由用户于 2026-08-17 正式批准；该批准不改变冻结架构、Locked Implementation Parameters、Task 顺序或产品边界。
-- M4 Task 1–3 已完成实现与验证：领域模型已有显式演示身份与加载操作契约；IndexedDB v4 已持久回填旧事件身份，低敏 `appPreferences` 使用单例存储和运行时校验；公开演示夹具使用非持久化 template token、四个虚构小型材料、严格引用/路径/隐私校验和逐字节摘要验证。Task 4 及之后的演示加载、首次引导、隐私/关于页、提示式更新、生产安全头与部署资产尚未开始。
+- M4 Task 1–4 已完成实现与验证：领域模型与 IndexedDB v4 已支持显式演示身份、加载 journal 和低敏偏好；公开夹具使用 template token、四个虚构小型材料及严格校验；演示加载现具备同源读取、quota preflight、UUID 重写、OPFS/IndexedDB 分阶段持久化、逐字段 readback、幂等/并发隔离、可信恢复与仅演示事件重置。Task 5 及之后的导出演示标记、首次引导、隐私/关于页、提示式更新、生产安全头与部署资产尚未开始。
 - 当前工作分支在本文件创建前为干净的 `codex/m4-public-demo`，HEAD 为 `371bbd6082daa071f535c8113fbe9c5bf0c6596a`；其上游同名远端一致。`main` 为 `8a4c11852efc85e87cf67af7b82f7cc80312c0d0`，比当前分支多一个合并提交，但两者文件树相同。
 
 ## Design Assumptions
@@ -111,7 +111,7 @@ Canonical architecture evidence：`docs/superpowers/specs/2026-08-13-youju-m4-pu
 
 Approved implementation sequence：`docs/superpowers/plans/2026-08-13-youju-m4-public-demo-deployment-plan.md`。
 
-Next Action：M4 Task 4 — Load, Recover, and Reset the Demo Case Safely。Task 3 已通过公开夹具 parser、完整公开文件 allowlist、二进制摘要、禁止内容、构建与独立 Review。
+Next Action：M4 Task 5 — Mark Demo Cases in Every Formal Export。Task 4 已通过 loader/recovery/reset 单测、真实 Chromium IndexedDB/OPFS/同源加载与删除回归，并完成独立 Review repair。
 
 ## Acceptance Criteria
 
@@ -154,6 +154,7 @@ Next Action：M4 Task 4 — Load, Recover, and Reset the Demo Case Safely。Task
 - 2026-08-18：M4 Task 1 完成。有效 RED 证明旧 Schema、操作日志与普通创建缺少演示身份契约；实现 `CaseEvent` 判别身份、`demo_case_load`、schema v2 普通创建、仅对完整缺失字段的 legacy 读投影兼容，以及精确黄金演示夹具校验。相关 Vitest 11 文件 71 测试、`pnpm validate:fixtures`、`pnpm typecheck` 与 `git diff --check` 通过；独立 Review 的显式损坏演示记录静默降级 MAJOR 已修复。
 - 2026-08-18：M4 Task 2 完成。真实 Chromium RED 以缺少 v4 store、durable backfill 与偏好 repository 的 5 个目标失败证明行为未实现；新增 IndexedDB v4 cursor migration、严格单例偏好 repository、显式全量删除和单事件隔离。Vitest 删除测试 9/9、Chromium 迁移/偏好/删除 9/9、Web package 测试 97/97、Web typecheck 和 forbidden-content 检查通过；独立 Review 的 3 个 MAJOR 已修复并复审关闭。
 - 2026-08-18：M4 Task 3 完成。有效 RED 证明公开 parser、校验脚本、命令与资产缺失；新增精确 `m4-ecommerce-refund-demo-v1` manifest、四个共 126688 bytes 的虚构材料、template token 引用闭包、手工确认事实/时间线/陈述、路径与全目录 allowlist、SHA-256/size/预算校验及公共演示隐私扫描。相关 Vitest 3 文件 24 测试、fixture/public-demo/forbidden validator、Web build、root typecheck、lint 与 `git diff --check` 通过；独立 Review 的 3 个 MAJOR 与 1 个 MINOR 已修复并最终 PASS。
+- 2026-08-18：M4 Task 4 完成。有效 RED 由缺失 demo service/loader 模块导致；实现固定同源 fixture 读取、quota preflight、全实体 UUID v4/token 引用重写、journal 驱动的 OPFS/IndexedDB 写入、逐实体逐字段及 blob 闭包 readback、顺序与并发幂等、可信中断清理和仅匹配演示事件的 verified reset。Web 23 文件 129 测试、Task 目标 24/24、Chromium public-demo/verified-deletion/evidence-import 3/3、root typecheck、lint、public-demo/forbidden validator 与 `git diff --check` 通过；独立 Review 的 3 个 MAJOR 已修复并复审关闭。
 
 ## Repository and Verification State
 
@@ -162,5 +163,6 @@ Next Action：M4 Task 4 — Load, Recover, and Reset the Demo Case Safely。Task
 - Task 1 acceptance commit：`c1c2a62fb94416f5f3da82c27a0f780e31fcb756`，`feat: define M4 demo case identity`。
 - Task 2 acceptance commit：`d8a9f7078686a58789d91425d7008ddae316bdc8`，`feat: migrate M4 local preferences`。
 - Task 2 lint repair commit：`908b02ad5e9930761b2c0b771125e072ef12de21`，`test: keep legacy migration fixtures lint-clean`；Chromium case repository 7/7、root typecheck、lint 通过。
-- Task 3 acceptance commit：本次 `PLAN.md` 更新随 `feat: add validated public demo fixture` 提交；未 push、未部署。
-- 当前自动化证据：Task 1 目标与受影响回归 11 个 Vitest 文件、71 个测试通过；Task 2 Web 测试 97/97、Chromium 迁移/偏好/删除 9/9；Task 3 相关 Vitest 24/24、公开资产 4 个共 126688 bytes、fixture/public-demo/forbidden validator、Web build、root typecheck 与 lint 通过。
+- Task 3 acceptance commit：`01e3af2e69a97a66671aa129fed558741e6dece7`，`feat: add validated public demo fixture`。
+- Task 4 acceptance commit：本次 `PLAN.md` 更新随 `feat: load and reset fictional demo cases` 提交；未 push、未部署。
+- 当前自动化证据：Task 1 相关 71 测试；Task 2 Web 97/97 与 Chromium 9/9；Task 3 相关 24/24 与四个公开资产 126688 bytes；Task 4 Web 129/129、目标 24/24、Chromium public-demo/verified-deletion/evidence-import 3/3；root typecheck、lint、fixture/public-demo/forbidden validator 持续通过。

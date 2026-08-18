@@ -155,8 +155,10 @@ class FakeRepository {
       this.aiCandidates = []
     }
   }
-  async getCase(): Promise<null> {
-    return null
+  async getCase(): Promise<StoredCase | null> {
+    return this.caseEvent === null
+      ? null
+      : { caseEvent: this.caseEvent, revision: 1, lastWriterId: 'test' }
   }
   async listCaseStorageRefs(): Promise<readonly string[]> {
     return []
@@ -328,6 +330,41 @@ describe('evidence reference protection', () => {
 })
 
 describe('verified whole-case deletion', () => {
+  it('never deletes a user-created case referenced by a demo load journal', async () => {
+    const repository = new FakeRepository()
+    repository.caseEvent = {
+      id: caseId,
+      scenarioType: 'ecommerce_refund',
+      title: '用户事件',
+      createdAt: '2026-07-31T12:00:00.000Z',
+      updatedAt: '2026-07-31T12:00:00.000Z',
+      status: 'draft',
+      requestedResolution: null,
+      storageMode: 'local',
+      schemaVersion: 2,
+      dataOrigin: 'user_created',
+      demoFixtureId: null,
+    }
+    repository.operations = [{
+      operationId: '00000000-0000-4000-8000-000000000905',
+      caseId,
+      operationType: 'demo_case_load',
+      stage: 'failed',
+      demoFixtureId: 'm4-ecommerce-refund-demo-v1',
+      startedAt: '2026-07-31T13:00:00.000Z',
+      errorCode: null,
+    }]
+
+    await recoverLocalOperations({
+      repository: repository as unknown as CaseRepository,
+      blobStore: new FakeBlobStore() as unknown as EvidenceBlobStore,
+    })
+
+    expect(repository.caseEvent?.dataOrigin).toBe('user_created')
+    expect(repository.calls.deleteAllCaseRecords).not.toHaveBeenCalled()
+    expect(repository.operations).toEqual([])
+  })
+
   it('does not clear app preferences during a single-case deletion', async () => {
     const preferences = new FakePreferencesRepository()
     const dependencies = {
@@ -350,6 +387,34 @@ describe('verified whole-case deletion', () => {
     ).resolves.toEqual({ status: 'deleted' })
     expect(preferences.calls.clear).not.toHaveBeenCalled()
     expect(await preferences.get()).not.toBeNull()
+  })
+
+  it('does not treat another case operation as residue of the deleted case', async () => {
+    const repository = new FakeRepository()
+    const unrelatedOperationId = '00000000-0000-4000-8000-000000000906'
+    repository.operations = [{
+      operationId: unrelatedOperationId,
+      caseId: '00000000-0000-4000-8000-000000000002',
+      operationType: 'package_export',
+      stage: 'writing',
+      temporaryStorageRef: `temporary/${unrelatedOperationId}`,
+      startedAt: '2026-07-31T13:00:00.000Z',
+      errorCode: null,
+    }]
+
+    await expect(deleteCasePermanently({
+      caseId,
+      operationId: '00000000-0000-4000-8000-000000000907',
+      expectedTitle: '运输破损退款纠纷',
+      enteredTitle: '运输破损退款纠纷',
+      startedAt: '2026-07-31T13:01:00.000Z',
+    }, {
+      repository: repository as unknown as CaseRepository,
+      blobStore: new FakeBlobStore() as unknown as EvidenceBlobStore,
+    })).resolves.toEqual({ status: 'deleted' })
+    expect(repository.operations).toEqual([
+      expect.objectContaining({ operationId: unrelatedOperationId }),
+    ])
   })
 
   it('clears preferences only through explicit full local-data deletion', async () => {
