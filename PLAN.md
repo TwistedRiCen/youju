@@ -195,5 +195,5 @@ Next Action：Hard Stop（Task 14/15 前置授权）——Task 14 仍需用户�
 - Task 12 acceptance commit：`3bda582deca1ff55aef802f19ed7acf57821d2a8`，`test: add M4 production release gates`。
 - Task 13 acceptance commit：`8212fb526d4e5eda82721e96d444861d0fb9e6e3`，`docs: add M4 deployment and operations guidance`。
 - M4 Hard Stop 记录 commit：`cf2201c20e0028960f2de8367261f93321f87148`，`docs: record M4 hard stop at task 14`；未 push、未部署。
-- Task 14 evidence commit：`a505f16283021c191b89d8b32abf80f93d1a3d8e`，`test: record M4 real environment checks`（release/threat checklist + M4 计划 Task 14 复选框；临时验证装备未入库）。
+- Task 14 evidence commit：`a505f164f224ad562de3c37e50235f8f8e6f766d`，`test: record M4 real environment checks`（release/threat checklist + M4 计划 Task 14 复选框；临时验证装备未入库）。
 - 当前自动化证据：Task 1 相关 71 测试；Task 2 Web 97/97 与 Chromium 9/9；Task 3 相关 24/24 与四个公开资产 126688 bytes；Task 4 Web 129/129、目标 24/24、Chromium public-demo/verified-deletion/evidence-import 3/3；Task 5 document-export/Web 29/29 与 Chromium demo/user export 2/2；Task 6 Web 141/141、目标 13/13 与 Chromium first-use/storage 2/2；Task 7 Web 150/150、目标 10/10 与 Chromium public-demo/no-ai 3/3；Task 8 Web 169/169、目标 18/18 与生产 Chromium offline/update 2/2；Task 9 Web 172/172、目标 11/11 与预算（首屏 125.7 KiB / 应用壳 765.6 KiB）达标；Task 10 API 91/91 与 ai-contract 34/34；根级完整 `pnpm e2e` 130 通过 / 14 跳过，`pnpm verify` 全绿。
