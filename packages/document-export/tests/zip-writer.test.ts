@@ -237,4 +237,33 @@ describe('submission package ZIP writer', () => {
     expect(collected.state.aborted).toBe(true)
     expect(collected.state.closed).toBe(false)
   })
+
+  it('marks every demo package surface without contaminating real exports', async () => {
+    const collected = collectSink()
+    const real = snapshot()
+    const demoSnapshot = {
+      ...real,
+      caseEvent: {
+        ...real.caseEvent,
+        dataOrigin: 'fictional_demo' as const,
+        demoFixtureId: 'm4-ecommerce-refund-demo-v1',
+      },
+    }
+    await writeSubmissionPackage({
+      snapshot: demoSnapshot,
+      pdfs: { statement: new Uint8Array([1]), timeline: new Uint8Array([2]), evidenceList: new Uint8Array([3]) },
+      openEvidence: async (evidence) => new Blob([evidence.id === orderEvidenceId ? orderBytes : paymentBytes]),
+      sink: collected.sink,
+    })
+
+    const archive = unzipSync(Buffer.concat(collected.state.chunks))
+    const names = Object.keys(archive)
+    expect(names.every((name) => name.startsWith('DEMO-'))).toBe(true)
+    const readme = names.find((name) => name.endsWith('/DEMO-README.txt'))!
+    expect(new TextDecoder().decode(archive[readme])).toContain('完全虚构演示数据，请勿作为真实材料提交')
+    const csv = names.find((name) => name.endsWith('.csv'))!
+    expect(new TextDecoder().decode(archive[csv])).toContain('完全虚构演示数据')
+    const html = names.find((name) => name.endsWith('.html'))!
+    expect(new TextDecoder().decode(archive[html])).toContain('完全虚构演示数据，请勿作为真实材料提交')
+  })
 })

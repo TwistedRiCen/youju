@@ -18,7 +18,7 @@ const paymentHash = createHash('sha256').update(Buffer.from(paymentBytes)).diges
 async function createCase(page: Page): Promise<void> {
   await page.goto('/')
   await page.getByRole('link', { name: '创建本地事件' }).click()
-  await page.getByLabel('事件标题').fill('运输破损退款纠纷')
+  await page.getByLabel('事件标题').fill('DEMO 运输破损退款纠纷')
   await page.getByLabel('购买时间').fill('2026-07-01T12:16')
   await page.getByLabel('商家名称').fill('晴川生活示例店')
   await page.getByLabel('商品名称').fill('便携折叠桌（虚构商品）')
@@ -92,6 +92,7 @@ test('exports a complete submission package with verified attachments', async ({
   expect(downloadPath).not.toBeNull()
   const suggestedName = download.suggestedFilename()
   expect(suggestedName.endsWith('.zip')).toBe(true)
+  expect(suggestedName.startsWith('DEMO-')).toBe(false)
   const directory = suggestedName.slice(0, -4)
   const archive = unzipSync(new Uint8Array(readFileSync(downloadPath!)))
   const entryNames = Object.keys(archive).sort()
@@ -117,4 +118,12 @@ test('exports a complete submission package with verified attachments', async ({
 
   const statementPdf = new Uint8Array(archive[`${directory}/01_事件说明.pdf`]!)
   expect(statementPdf.length).toBeGreaterThan(1000)
+
+  const csv = new TextDecoder().decode(archive[`${directory}/04_材料摘要校验表.csv`]!)
+  expect(csv).toContain('附件相对路径,大小,媒体类型,SHA-256,数据性质')
+  expect(csv).toContain('用户事件')
+  expect(csv).not.toContain('完全虚构演示数据')
+
+  const html = new TextDecoder().decode(archive[`${directory}/05_附件索引.html`]!)
+  expect(html).not.toContain('完全虚构演示数据，请勿作为真实材料提交')
 })

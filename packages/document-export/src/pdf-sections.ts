@@ -1,5 +1,6 @@
 import type { ExportSnapshot } from './export-model.js'
 import type { EvidenceFile, TimePrecision } from '@youju/domain'
+import { getDemoExportPolicy } from './export-model.js'
 
 export interface PdfSection {
   readonly title: string
@@ -104,9 +105,11 @@ export function buildPdfSections(snapshot: ExportSnapshot): SubmissionPdfSection
     },
   ]
 
-  return {
-    statement: statementSections,
-    timeline: timelineSections,
-    evidenceList: evidenceSections,
-  }
+  const warning = getDemoExportPolicy(snapshot.caseEvent).warning
+  const mark = (sections: readonly PdfSection[]) =>
+    warning === null
+      ? sections
+      : sections.map((section) => ({ ...section, lines: [warning, ...section.lines] }))
+
+  return { statement: mark(statementSections), timeline: mark(timelineSections), evidenceList: mark(evidenceSections) }
 }

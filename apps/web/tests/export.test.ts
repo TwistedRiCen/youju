@@ -11,6 +11,15 @@ describe('export helpers', () => {
     )
   })
 
+  it('prefixes only demo package names', () => {
+    expect(buildPackageDirectoryName('2026-07-31T12:00:00.000Z', 'fictional_demo')).toBe(
+      'DEMO-有据_事件材料包_20260731_1200',
+    )
+    expect(buildPackageDirectoryName('2026-07-31T12:00:00.000Z', 'user_created')).toBe(
+      '有据_事件材料包_20260731_1200',
+    )
+  })
+
   it('reuses the staged ZIP blob without materializing a second full copy', () => {
     const stagedFile = new Blob([new Uint8Array([1, 2, 3])], { type: 'application/zip' })
 

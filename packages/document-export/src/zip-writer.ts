@@ -4,6 +4,7 @@ import type { ExportSnapshot } from './export-model.js'
 import { buildAttachmentIndexHtml } from './attachment-index.js'
 import { buildDigestCsv } from './digest-csv.js'
 import { uniqueAttachmentNames } from './file-names.js'
+import { DEMO_EXPORT_WARNING, getDemoExportPolicy } from './export-model.js'
 
 export interface ZipChunkSink {
   write(chunk: Uint8Array): Promise<void>
@@ -13,10 +14,13 @@ export interface ZipChunkSink {
 
 export const ZIP_CHUNK_BOUND = 64 * 1024
 
-export function buildPackageDirectoryName(generatedAt: string): string {
+export function buildPackageDirectoryName(
+  generatedAt: string,
+  dataOrigin: 'user_created' | 'fictional_demo' = 'user_created',
+): string {
   const date = generatedAt.slice(0, 10).replace(/-/g, '')
   const time = generatedAt.slice(11, 16).replace(':', '')
-  return `有据_事件材料包_${date}_${time}`
+  return `${dataOrigin === 'fictional_demo' ? 'DEMO-' : ''}有据_事件材料包_${date}_${time}`
 }
 
 export interface WriteSubmissionPackageInput {
@@ -34,7 +38,11 @@ export async function writeSubmissionPackage(
   input: WriteSubmissionPackageInput,
 ): Promise<void> {
   return new Promise<void>((resolve, reject) => {
-    const directory = buildPackageDirectoryName(input.snapshot.generatedAt)
+    const policy = getDemoExportPolicy(input.snapshot.caseEvent)
+    const directory = buildPackageDirectoryName(
+      input.snapshot.generatedAt,
+      input.snapshot.caseEvent.dataOrigin,
+    )
     const mtime = new Date(input.snapshot.generatedAt)
     let chain: Promise<void> = Promise.resolve()
     let finished = false
@@ -94,7 +102,10 @@ export async function writeSubmissionPackage(
       mediaType: item.metadata.mediaType,
       sha256: item.metadata.sha256,
     }))
-    addText(`${directory}/04_材料摘要校验表.csv`, buildDigestCsv(digestRows))
+    addText(
+      `${directory}/04_材料摘要校验表.csv`,
+      buildDigestCsv(digestRows, input.snapshot.caseEvent.dataOrigin),
+    )
     addText(
       `${directory}/05_附件索引.html`,
       buildAttachmentIndexHtml(
@@ -104,8 +115,15 @@ export async function writeSubmissionPackage(
           size: row.size,
           sha256: row.sha256,
         })),
+        input.snapshot.caseEvent.dataOrigin,
       ),
     )
+    if (policy.isDemo) {
+      addText(
+        `${directory}/DEMO-README.txt`,
+        `${DEMO_EXPORT_WARNING}\n\n本材料包及其中全部材料均为完全虚构的公开演示内容。\n`,
+      )
+    }
 
     const writeAttachment = async (
       evidence: EvidenceFile,

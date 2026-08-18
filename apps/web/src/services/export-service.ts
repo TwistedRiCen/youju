@@ -220,7 +220,7 @@ export async function prepareExportBundle(caseId: UuidV4): Promise<ExportBundle>
       await repository.deleteOperation(operationId).catch(() => undefined)
     }
     return createExportBundle(
-      `${buildPackageDirectoryName(snapshot.generatedAt)}.zip`,
+      `${buildPackageDirectoryName(snapshot.generatedAt, snapshot.caseEvent.dataOrigin)}.zip`,
       stagedFile,
       cleanup,
     )

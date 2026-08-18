@@ -1,7 +1,8 @@
 import { readFile } from 'node:fs/promises'
 import { PDFDocument } from 'pdf-lib'
+import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs'
 import { describe, expect, it } from 'vitest'
-import { renderSubmissionPdfs } from '../src/index.js'
+import { buildPdfSections, renderSubmissionPdfs } from '../src/index.js'
 import type { ExportSnapshot } from '../src/index.js'
 import type {
   CaseEvent,
@@ -154,6 +155,30 @@ function snapshot(): ExportSnapshot {
   }
 }
 
+async function extractPageText(bytes: Uint8Array): Promise<readonly string[]> {
+  const loadingTask = getDocument({
+    data: bytes,
+    disableAutoFetch: true,
+    disableFontFace: true,
+    disableRange: true,
+    disableStream: true,
+    useSystemFonts: false,
+    useWorkerFetch: false,
+  })
+  const document = await loadingTask.promise
+  try {
+    const pages: string[] = []
+    for (let pageNumber = 1; pageNumber <= document.numPages; pageNumber += 1) {
+      const page = await document.getPage(pageNumber)
+      const text = await page.getTextContent()
+      pages.push(text.items.map((item) => ('str' in item ? item.str : '')).join(''))
+    }
+    return pages
+  } finally {
+    await loadingTask.destroy()
+  }
+}
+
 describe('submission PDF rendering', () => {
   it('produces three loadable PDFs with titles and a paginated statement', async () => {
     const pdfs = await renderSubmissionPdfs(snapshot(), new Uint8Array(fontBytes))
@@ -178,5 +203,40 @@ describe('submission PDF rendering', () => {
     expect(second.statement).toEqual(first.statement)
     expect(second.timeline).toEqual(first.timeline)
     expect(second.evidenceList).toEqual(first.evidenceList)
+  })
+
+  it('adds the demo warning to every PDF section only for demo cases', () => {
+    const real = snapshot()
+    const demo = {
+      ...real,
+      caseEvent: { ...real.caseEvent, dataOrigin: 'fictional_demo' as const, demoFixtureId: 'm4-ecommerce-refund-demo-v1' },
+    }
+
+    const sections = buildPdfSections(demo)
+    expect([...sections.statement, ...sections.timeline, ...sections.evidenceList].every(
+      (section) => section.lines.includes('完全虚构演示数据，请勿作为真实材料提交'),
+    )).toBe(true)
+    expect(buildPdfSections(real).statement.flatMap(({ lines }) => lines)).not.toContain(
+      '完全虚构演示数据，请勿作为真实材料提交',
+    )
+  })
+
+  it('renders the demo warning on every page of a multi-page PDF', async () => {
+    const real = snapshot()
+    const demo = {
+      ...real,
+      caseEvent: {
+        ...real.caseEvent,
+        dataOrigin: 'fictional_demo' as const,
+        demoFixtureId: 'm4-ecommerce-refund-demo-v1',
+      },
+    }
+    const pdfs = await renderSubmissionPdfs(demo, new Uint8Array(fontBytes))
+    const pages = await extractPageText(pdfs.statement)
+
+    expect(pages.length).toBeGreaterThanOrEqual(3)
+    expect(
+      pages.every((text) => text.includes('完全虚构演示数据，请勿作为真实材料提交')),
+    ).toBe(true)
   })
 })

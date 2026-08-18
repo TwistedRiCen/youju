@@ -16,7 +16,11 @@ export interface AttachmentIndexItem {
 
 export function buildAttachmentIndexHtml(
   items: readonly AttachmentIndexItem[],
+  dataOrigin: 'user_created' | 'fictional_demo' = 'user_created',
 ): string {
+  const warning = dataOrigin === 'fictional_demo'
+    ? '完全虚构演示数据，请勿作为真实材料提交'
+    : null
   const rows = items
     .map(
       (item) => `    <tr>
@@ -32,10 +36,11 @@ export function buildAttachmentIndexHtml(
 <html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
-    <title>材料包附件索引</title>
+    <title>${warning ?? '材料包附件索引'}</title>
   </head>
   <body>
-    <h1>材料包附件索引</h1>
+    <h1>${warning ?? '材料包附件索引'}</h1>
+    ${warning === null ? '' : `<p>${warning}</p>`}
     <p>本索引仅用于离线查看，不包含脚本或外部资源。</p>
     <table>
       <thead>

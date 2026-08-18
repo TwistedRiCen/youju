@@ -56,6 +56,9 @@ importers:
       pdf-lib:
         specifier: 1.17.1
         version: 1.17.1
+      pdfjs-dist:
+        specifier: 6.2.108
+        version: 6.2.108
       prettier:
         specifier: ^3.0.0
         version: 3.9.6

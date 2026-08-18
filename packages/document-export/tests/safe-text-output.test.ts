@@ -30,7 +30,8 @@ describe('CSV output safety', () => {
     ])
 
     expect(csv.startsWith('\uFEFF')).toBe(true)
-    expect(csv).toContain('附件相对路径,大小,媒体类型,SHA-256')
+    expect(csv).toContain('附件相对路径,大小,媒体类型,SHA-256,数据性质')
+    expect(csv).toContain('用户事件')
     expect(csv).toContain("'=订单.png")
   })
 })
@@ -61,6 +62,13 @@ describe('HTML output safety', () => {
     expect(html).not.toContain('https://')
     expect(html).not.toContain('<form')
     expect(html).toContain('&lt;订单&gt;.png')
+  })
+
+  it('marks demo HTML in its title, heading, and body', () => {
+    const html = buildAttachmentIndexHtml([], 'fictional_demo')
+
+    expect(html.match(/完全虚构演示数据，请勿作为真实材料提交/g)).toHaveLength(3)
+    expect(html).not.toContain('<script')
   })
 })
 

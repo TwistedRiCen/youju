@@ -2,6 +2,7 @@ import fontkit from '@pdf-lib/fontkit'
 import { PDFDocument, rgb } from 'pdf-lib'
 import type { PDFFont } from 'pdf-lib'
 import type { ExportSnapshot } from './export-model.js'
+import { getDemoExportPolicy } from './export-model.js'
 import { buildPdfSections } from './pdf-sections.js'
 import type { PdfSection } from './pdf-sections.js'
 
@@ -35,6 +36,7 @@ async function renderPdf(
   sections: readonly PdfSection[],
   fontBytes: Uint8Array,
   generatedAt: string,
+  demoWarning: string | null,
 ): Promise<Uint8Array> {
   const document = await PDFDocument.create()
   document.registerFontkit(fontkit)
@@ -50,10 +52,27 @@ async function renderPdf(
   const maxWidth = PAGE_WIDTH - MARGIN * 2
   const dark = rgb(0.09, 0.2, 0.16)
 
+  const markPage = (): void => {
+    if (demoWarning === null) {
+      return
+    }
+    page.drawText(demoWarning, {
+      x: MARGIN,
+      y,
+      size: BODY_SIZE,
+      font,
+      color: rgb(0.72, 0.08, 0.08),
+    })
+    y -= BODY_SIZE + LINE_GAP * 2
+  }
+
+  markPage()
+
   const ensureSpace = (needed: number): void => {
     if (y - needed < MARGIN) {
       page = document.addPage([PAGE_WIDTH, PAGE_HEIGHT])
       y = PAGE_HEIGHT - MARGIN
+      markPage()
     }
   }
 
@@ -91,9 +110,28 @@ export async function renderSubmissionPdfs(
   fontBytes: Uint8Array,
 ): Promise<SubmissionPdfs> {
   const sections = buildPdfSections(snapshot)
+  const warning = getDemoExportPolicy(snapshot.caseEvent).warning
   return {
-    statement: await renderPdf('有据事件说明', sections.statement, fontBytes, snapshot.generatedAt),
-    timeline: await renderPdf('有据事件时间线', sections.timeline, fontBytes, snapshot.generatedAt),
-    evidenceList: await renderPdf('有据证据材料清单', sections.evidenceList, fontBytes, snapshot.generatedAt),
+    statement: await renderPdf(
+      '有据事件说明',
+      sections.statement,
+      fontBytes,
+      snapshot.generatedAt,
+      warning,
+    ),
+    timeline: await renderPdf(
+      '有据事件时间线',
+      sections.timeline,
+      fontBytes,
+      snapshot.generatedAt,
+      warning,
+    ),
+    evidenceList: await renderPdf(
+      '有据证据材料清单',
+      sections.evidenceList,
+      fontBytes,
+      snapshot.generatedAt,
+      warning,
+    ),
   }
 }

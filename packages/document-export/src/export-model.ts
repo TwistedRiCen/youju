@@ -12,6 +12,18 @@ import type {
 import type { RuleFinding } from '@youju/rule-engine'
 import type { TimelineConflict } from '@youju/timeline'
 
+export const DEMO_EXPORT_WARNING = '完全虚构演示数据，请勿作为真实材料提交'
+
+export function getDemoExportPolicy(caseEvent: CaseEvent) {
+  const isDemo = caseEvent.dataOrigin === 'fictional_demo'
+  return {
+    isDemo,
+    warning: isDemo ? DEMO_EXPORT_WARNING : null,
+    dataNature: isDemo ? '完全虚构演示数据' as const : '用户事件' as const,
+    directoryPrefix: isDemo ? 'DEMO-' : '',
+  }
+}
+
 export interface EvidenceExportItem {
   readonly metadata: EvidenceFile
   readonly integrity:

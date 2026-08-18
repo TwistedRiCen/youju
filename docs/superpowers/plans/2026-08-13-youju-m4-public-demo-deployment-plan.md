@@ -410,7 +410,7 @@ git commit -m "feat: load and reset fictional demo cases"
 - HTML title, heading and body include the demo warning without script or external resources.
 - Demo ZIP adds `DEMO-README.txt` and repeats the warning in its manifest/index; real-case output keeps its existing filenames and content apart from the approved CSV column and release metadata.
 
-- [ ] **Step 1: Write cross-format RED tests**
+- [x] **Step 1: Write cross-format RED tests**
 
 Assert the marker exists in every demo artifact and does not appear in real-case artifacts. Test filename sanitization and formula-injection safety.
 
@@ -420,15 +420,15 @@ pnpm exec vitest run packages/document-export/tests apps/web/tests/export.test.t
 
 Expected RED: origin is not rendered or included in filenames.
 
-- [ ] **Step 2: Implement a single deterministic demo-marking policy**
+- [x] **Step 2: Implement a single deterministic demo-marking policy**
 
 Expose one helper from `@youju/document-export`; renderers consume it rather than duplicating title checks.
 
-- [ ] **Step 3: Add browser export regression**
+- [x] **Step 3: Add browser export regression**
 
 Load the public demo, export, inspect ZIP entries and extracted text, then export a user case and assert no demo marker contamination.
 
-- [ ] **Step 4: Run Task 5 gates**
+- [x] **Step 4: Run Task 5 gates**
 
 ```powershell
 pnpm exec vitest run packages/document-export/tests apps/web/tests/export.test.ts
@@ -437,7 +437,7 @@ pnpm typecheck
 git diff --check
 ```
 
-- [ ] **Step 5: Commit and stop**
+- [x] **Step 5: Commit and stop**
 
 ```powershell
 git add packages/document-export apps/web/src/services/export-service.ts apps/web/tests/export.test.ts tests/e2e/public-demo-export.spec.ts docs/superpowers/plans/2026-08-13-youju-m4-public-demo-deployment-plan.md
